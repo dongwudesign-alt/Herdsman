@@ -520,11 +520,9 @@
 
   /* Asset Panel */
   .asset-panel {
-    position: absolute;
-    top: 48px;
-    right: 20px;
     width: 0;
     height: calc(100% - 60px);
+    margin: 48px 0 12px 0;
     background: rgba(20, 20, 22, 0.45);
     backdrop-filter: blur(40px) saturate(140%);
     -webkit-backdrop-filter: blur(40px) saturate(140%);
@@ -539,12 +537,15 @@
       0 4px 12px rgba(0,0,0,0.5),
       0 16px 48px rgba(0,0,0,0.45),
       0 0 0 1px rgba(255,255,255,0.06) inset;
-    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), margin 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    flex-shrink: 0;
+    position: relative;
     z-index: 20;
   }
 
   .asset-panel.show {
     width: 260px;
+    margin: 48px 12px 12px 0;
     opacity: 1;
     pointer-events: auto;
   }
@@ -774,6 +775,7 @@
   /* Main */
   .main {
     flex: 1;
+    min-width: 0;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -929,11 +931,37 @@
     max-width: 780px;
     padding: 0 24px;
     gap: 28px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 100%;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* 自定义滚动条 */
+  .content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .content::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+  }
+
+  .content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+
   .content.shift-left {
-    transform: translateX(-130px);
+    /* 自适应布局，不再需要固定偏移 */
   }
 
   h1 {
@@ -945,10 +973,99 @@
     line-height: 1.2;
   }
 
+  /* File Attachment */
+  .file-attachment {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    animation: fileSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 280px;
+  }
+
+  @keyframes fileSlideIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .file-attachment-icon {
+    flex-shrink: 0;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .file-attachment-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-attachment-name {
+    font-size: 0.88rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  .file-attachment-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .file-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-top-color: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .file-attachment-close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .file-attachment-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
   /* Glass Input */
   .glass-input-wrap {
     width: 100%;
     margin-top: 8px;
+    position: relative;
   }
 
   .glass-input {
@@ -964,7 +1081,7 @@
     gap: 14px;
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .glass-input::before {
@@ -1014,6 +1131,10 @@
     z-index: 2;
   }
 
+  .input-footer > .btn {
+    position: relative;
+  }
+
   .btn {
     display: inline-flex;
     align-items: center;
@@ -1032,6 +1153,193 @@
   .btn:hover {
     background: rgba(255,255,255,0.06);
     color: var(--text);
+  }
+
+  /* Model Dropdown */
+  .model-dropdown {
+    position: fixed;
+    width: 240px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .model-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .model-dropdown-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .model-dropdown-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+    padding: 2px 4px;
+  }
+
+  .model-mode-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .model-mode-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .model-mode-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .model-mode-item.active {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  .model-dropdown-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 8px 0;
+  }
+
+  .model-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .model-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .model-list-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .model-list-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .model-indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .model-indicator.green {
+    background: #4ade80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  }
+
+  .model-indicator.gray {
+    background: #6b7280;
+    box-shadow: 0 0 4px rgba(107, 114, 128, 0.3);
+  }
+
+  .model-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Upload Dropdown */
+  .upload-dropdown {
+    position: fixed;
+    width: 180px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .upload-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .upload-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .upload-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .upload-item svg {
+    flex-shrink: 0;
+  }
+
+  .upload-item span {
+    white-space: nowrap;
   }
 
   .btn-group {
@@ -1061,12 +1369,895 @@
   }
 
   .icon-btn.send {
-    background: rgba(255,255,255,0.1);
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
     color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+    overflow: visible;
+  }
+
+  /* 顶部强光晕 */
+  .icon-btn.send::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 15%;
+    right: 15%;
+    height: 10px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+    z-index: -1;
+  }
+
+  /* 底部柔和漫反射光晕 */
+  .icon-btn.send::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 20%;
+    right: 20%;
+    height: 8px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+    z-index: -1;
   }
 
   .icon-btn.send:hover {
-    background: rgba(255,255,255,0.18);
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
+      inset 1px 0 0 0 rgba(255,255,255,0.16),
+      inset -1px 0 0 0 rgba(255,255,255,0.16),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 6px 28px rgba(0,0,0,0.3),
+      0 0 32px rgba(255,255,255,0.08);
+    text-shadow: 0 0 10px rgba(255,255,255,0.20);
+  }
+
+  .icon-btn.send:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
+  }
+
+  .icon-btn.send:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
+  .icon-btn.send svg {
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
+  }
+
+  .icon-btn.send:hover svg {
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+  }
+
+  /* ===== Model Launch Modal ===== */
+  .model-launch-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .model-launch-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .model-launch-modal {
+    width: 420px;
+    max-width: 90vw;
+    max-height: 600px;
+    height: auto;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @media (max-height: 750px) {
+    .model-launch-modal {
+      max-height: 80vh;
+    }
+  }
+
+  /* 自定义滚动条 */
+  .model-launch-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.25);
+  }
+
+  .model-launch-modal {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+
+  .model-launch-overlay.show .model-launch-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .model-launch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .model-launch-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .model-launch-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .model-launch-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  /* Launch Section */
+  .launch-section {
+    margin-bottom: 20px;
+  }
+
+  .launch-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .launch-section-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .launch-section-value {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .launch-slider-wrap {
+    position: relative;
+    height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  .launch-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    outline: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  .launch-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.15);
+    transition: box-shadow 0.15s ease;
+  }
+
+  .launch-slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5), 0 0 0 5px rgba(255,255,255,0.25);
+  }
+
+  .launch-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.15);
+  }
+
+  .launch-slider-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .launch-slider-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffffff, #aaaaaa);
+    border-radius: 4px;
+    transition: width 0.1s ease;
+  }
+
+  .launch-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  /* Advanced Panel */
+  .launch-advanced {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 16px;
+    margin-bottom: 20px;
+  }
+
+  .launch-advanced-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+    transition: color 0.15s ease;
+  }
+
+  .launch-advanced-toggle:hover {
+    color: var(--text);
+  }
+
+  .launch-advanced-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .launch-advanced.open .launch-advanced-icon {
+    transform: rotate(180deg);
+  }
+
+  .launch-advanced-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, margin-top 0.35s ease;
+  }
+
+  .launch-advanced.open .launch-advanced-content {
+    max-height: 600px;
+    margin-top: 12px;
+  }
+
+  .advanced-group-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .advanced-num-input {
+    width: 72px;
+    height: 26px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.8rem;
+    font-family: inherit;
+    text-align: right;
+    padding: 0 8px;
+    outline: none;
+    transition: all 0.15s ease;
+    -moz-appearance: textfield;
+  }
+
+  .advanced-num-input::-webkit-outer-spin-button,
+  .advanced-num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .advanced-num-input:focus {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Toggle Switch */
+  .advanced-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .advanced-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .advanced-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    transition: all 0.25s ease;
+  }
+
+  .advanced-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+  }
+
+  .advanced-toggle-switch input:checked + .advanced-toggle-slider {
+    background: rgba(255,255,255,0.25);
+  }
+
+  .advanced-toggle-switch input:checked + .advanced-toggle-slider::before {
+    transform: translateX(16px);
+    background: #fff;
+  }
+
+  .advanced-param {
+    margin-bottom: 14px;
+  }
+
+  .advanced-param:last-child {
+    margin-bottom: 0;
+  }
+
+  .advanced-param-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .advanced-param-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .advanced-param-value {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .advanced-param .launch-slider {
+    height: 3px;
+  }
+
+  .advanced-param .launch-slider::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .advanced-param .launch-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Launch Footer */
+  .launch-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .launch-btn {
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .launch-btn-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    flex: 1;
+  }
+
+  .launch-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .launch-btn-default {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(255,255,255,0.1);
+    flex: 1;
+  }
+
+  .launch-btn-default:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .launch-btn-start {
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+    overflow: visible;
+    flex: 1;
+  }
+
+  .launch-btn-start:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.07) 50%,
+      rgba(255,255,255,0.10) 75%,
+      rgba(255,255,255,0.15) 100%
+    );
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.08),
+      inset 1px 0 0 0 rgba(255,255,255,0.14),
+      inset -1px 0 0 0 rgba(255,255,255,0.14),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 4px 24px rgba(0,0,0,0.30),
+      0 0 32px rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+  }
+
+  /* ===== Chat Conversation ===== */
+  .chat-conversation {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .chat-user-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .chat-user-bubble {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px 20px;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 70%;
+  }
+
+  .chat-user-meta {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .chat-ai-response {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Thinking Panel */
+  .thinking-panel {
+    position: relative;
+    padding-left: 16px;
+  }
+
+  .thinking-panel::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(251, 191, 36, 0.3);
+    border-radius: 2px;
+  }
+
+  .thinking-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .thinking-toggle:hover {
+    color: var(--text);
+  }
+
+  .thinking-icon {
+    color: #fbbf24;
+  }
+
+  .thinking-arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .thinking-panel.open .thinking-arrow {
+    transform: rotate(180deg);
+  }
+
+  .thinking-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+
+  .thinking-panel.open .thinking-content {
+    max-height: 1200px;
+    opacity: 1;
+    margin-top: 8px;
+  }
+
+  .thinking-content {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 0 20px;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    line-height: 1.75;
+  }
+
+  .thinking-panel.open .thinking-content {
+    padding: 16px 20px;
+  }
+
+  .thinking-content p {
+    margin: 0 0 12px;
+  }
+
+  .thinking-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .thinking-content ul,
+  .thinking-content ol {
+    margin: 0 0 12px;
+    padding-left: 24px;
+  }
+
+  .thinking-content li {
+    margin: 4px 0;
+  }
+
+  .thinking-content strong {
+    color: var(--text);
+  }
+
+  /* AI Content */
+  .ai-content {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .ai-content p {
+    margin: 0 0 16px;
+  }
+
+  .ai-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 24px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-content h3:first-child {
+    margin-top: 0;
+  }
+
+  .emoji-icon {
+    font-size: 1.2rem;
+  }
+
+  .ai-content ol,
+  .ai-content ul {
+    margin: 0 0 16px;
+    padding-left: 24px;
+  }
+
+  .ai-content li {
+    margin: 8px 0;
+  }
+
+  .ai-content strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .ai-content ul {
+    list-style-type: disc;
+  }
+
+  .ai-content ul ul {
+    margin: 8px 0;
+  }
+
+  /* Copy Button */
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+  }
+
+  .copy-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .copy-btn.copied {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.3);
+    color: #22c55e;
+  }
+
+  /* ===== Loading Overlay ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .loading-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .loading-modal {
+    width: 320px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .loading-overlay.show .loading-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .loading-spinner-ring {
+    position: relative;
+    width: 72px;
+    height: 72px;
+  }
+
+  .loading-spinner-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+
+  .loading-spinner-progress {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #fff;
+    border-right-color: rgba(255,255,255,0.4);
+    animation: spinnerRotate 1s linear infinite;
+  }
+
+  @keyframes spinnerRotate {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-spinner-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    animation: corePulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes corePulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .loading-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .loading-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 1.2em;
+    transition: opacity 0.3s ease;
+  }
+
+  .loading-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .loading-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), #fff);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+    width: 0%;
+  }
+
+  .loading-percent {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
   }
 
   /* Action chips */
@@ -1311,92 +2502,408 @@
   </div>
 
   <div class="content" id="chatView">
-    <h1>How can i help you today?</h1>
+    <h1>今天我能帮你什么？</h1>
 
     <div class="glass-input-wrap">
       <div class="glass-input">
-        <textarea placeholder="What do you want to know ?" rows="1" id="mainInput"></textarea>
+        <!-- 文件附件区域（内部） -->
+        <div class="file-attachment" id="fileAttachment" style="display:none;">
+          <div class="file-attachment-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="file-attachment-info">
+            <div class="file-attachment-name" id="fileAttachmentName">2026-07-01.pdf</div>
+            <div class="file-attachment-status" id="fileAttachmentStatus">
+              <span class="file-spinner"></span>
+              <span class="file-status-text">转换中</span>
+            </div>
+          </div>
+          <button class="file-attachment-close" id="fileAttachmentClose" title="移除">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          </button>
+        </div>
+        <textarea placeholder="你想知道什么？" rows="1" id="mainInput"></textarea>
         <div class="input-footer">
-          <button class="btn">
+          <button class="btn" id="modelSelectBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Gemma 412B指令版
+            <span id="selectedModelName">Gemma 4 12B 指令版</span>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="btn-group">
-            <button class="icon-btn" title="添加">
+            <button class="icon-btn" id="addFileBtn" title="添加">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
-            <button class="icon-btn" title="表情">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-            </button>
-            <button class="icon-btn" title="语音">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-            </button>
             <button class="icon-btn send" title="发送">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><path d="M9 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- 上传文件下拉菜单 -->
+      <div class="upload-dropdown" id="uploadDropdown">
+        <button class="upload-item" id="btnUploadImage">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>上传图片</span>
+        </button>
+        <button class="upload-item" id="btnUploadFile">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>
+          <span>上传文件</span>
+        </button>
+      </div>
+      <!-- 模型选择下拉菜单（移到 glass-input 外部，避免被 overflow:hidden 裁剪） -->
+      <div class="model-dropdown" id="modelDropdown">
+        <div class="model-dropdown-section">
+          <div class="model-dropdown-label">推理模式</div>
+          <div class="model-mode-group">
+            <button class="model-mode-item active" data-mode="speed">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              速度
+            </button>
+            <button class="model-mode-item" data-mode="balance">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              平衡
+            </button>
+            <button class="model-mode-item" data-mode="quality">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3l1 10"/><path d="M2 9h20"/><path d="M13 3l-2 6"/><path d="M11 3l2 6"/></svg>
+              质量
+            </button>
+          </div>
+        </div>
+        <div class="model-dropdown-divider"></div>
+        <div class="model-dropdown-section">
+          <div class="model-dropdown-label">选择模型</div>
+          <div class="model-list">
+            <button class="model-list-item active" data-model="gemma-4-12b" data-name="Gemma 4 12B 指令版">
+              <span class="model-indicator green"></span>
+              <span class="model-name">Gemma 4 12B 指令版</span>
+            </button>
+            <button class="model-list-item" data-model="hunyuan-mt2-7b" data-name="混元 MT2 7B 翻译模型">
+              <span class="model-indicator gray"></span>
+              <span class="model-name">混元 MT2 7B 翻译模型</span>
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="actions">
+    <!-- 启动模型弹窗 -->
+    <div class="model-launch-overlay" id="modelLaunchOverlay">
+      <div class="model-launch-modal" id="modelLaunchModal">
+        <div class="model-launch-header">
+          <h2 class="model-launch-title">启动模型</h2>
+          <button class="model-launch-close" id="btnCloseLaunch" title="关闭">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          </button>
+        </div>
+
+        <!-- 上下文大小调节 -->
+        <div class="launch-section">
+          <div class="launch-section-header">
+            <span class="launch-section-label">上下文大小</span>
+            <span class="launch-section-value" id="contextValue">54K</span>
+          </div>
+          <div class="launch-slider-wrap">
+            <input type="range" class="launch-slider" id="contextSlider" min="1" max="256" value="54">
+            <div class="launch-slider-track">
+              <div class="launch-slider-fill" id="contextSliderFill"></div>
+            </div>
+          </div>
+          <div class="launch-slider-labels">
+            <span>1K</span>
+            <span>256K</span>
+          </div>
+        </div>
+
+        <!-- 高级参数折叠面板 -->
+        <div class="launch-advanced">
+          <button class="launch-advanced-toggle" id="btnAdvancedToggle">
+            <svg class="launch-advanced-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            高级参数
+          </button>
+          <div class="launch-advanced-content" id="advancedContent">
+            <!-- 生成采样参数 -->
+            <div class="advanced-group-label">生成采样参数</div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">K/V 缓存量化</span>
+                <label class="advanced-toggle-switch">
+                  <input type="checkbox" id="kvQuantToggle">
+                  <span class="advanced-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Temperature</span>
+                <span class="advanced-param-value" id="tempValue">0.7</span>
+              </div>
+              <input type="range" class="launch-slider" id="tempSlider" min="0" max="200" value="70">
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Top P</span>
+                <span class="advanced-param-value" id="topPValue">0.6</span>
+              </div>
+              <input type="range" class="launch-slider" id="topPSlider" min="0" max="100" value="60">
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Top K</span>
+                <input type="number" class="advanced-num-input" id="topKInput" value="20" min="1" max="200">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Min P</span>
+                <input type="number" class="advanced-num-input" id="minPInput" value="0.05" min="0" max="1" step="0.01">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">重复惩罚</span>
+                <span class="advanced-param-value" id="repPenaltyValue">1.05</span>
+              </div>
+              <input type="range" class="launch-slider" id="repPenaltySlider" min="100" max="200" value="105">
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">并发数</span>
+                <input type="number" class="advanced-num-input" id="concurrencyInput" value="1" min="1" max="64">
+              </div>
+            </div>
+
+            <!-- 硬件参数 -->
+            <div class="advanced-group-label" style="margin-top:12px;">硬件参数</div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Batch Size</span>
+                <input type="number" class="advanced-num-input" id="batchSizeInput" value="512" min="1" max="4096">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Micro Batch</span>
+                <input type="number" class="advanced-num-input" id="microBatchInput" value="1" min="1" max="64">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">GPU 层数</span>
+                <input type="number" class="advanced-num-input" id="gpuLayersInput" value="99" min="0" max="200">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">线程数</span>
+                <input type="number" class="advanced-num-input" id="threadsInput" value="4" min="1" max="64">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">Batch 线程数</span>
+                <input type="number" class="advanced-num-input" id="batchThreadsInput" value="4" min="1" max="64">
+              </div>
+            </div>
+
+            <div class="advanced-param">
+              <div class="advanced-param-header">
+                <span class="advanced-param-label">RAM Prompt Cache (MiB)</span>
+                <input type="number" class="advanced-num-input" id="ramCacheInput" value="8192" min="0" max="65536" step="512">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部操作按钮 -->
+        <div class="launch-footer">
+          <button class="launch-btn launch-btn-cancel" id="btnCancelLaunch">取消</button>
+          <button class="launch-btn launch-btn-default" id="btnResetLaunch">恢复默认</button>
+          <button class="launch-btn launch-btn-start" id="btnStartLaunch">启动</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载动画弹窗 -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-modal" id="loadingModal">
+        <div class="loading-spinner-ring">
+          <div class="loading-spinner-track"></div>
+          <div class="loading-spinner-progress" id="loadingSpinnerProgress"></div>
+          <div class="loading-spinner-core"></div>
+        </div>
+        <div class="loading-title">正在启动模型</div>
+        <div class="loading-subtitle" id="loadingSubtitle">初始化上下文引擎...</div>
+        <div class="loading-progress-bar">
+          <div class="loading-progress-fill" id="loadingProgressFill"></div>
+        </div>
+        <div class="loading-percent" id="loadingPercent">0%</div>
+      </div>
+    </div>
+
+    <div class="actions" id="homeActions">
       <div class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M9 12l2 2 4-4"/></svg>
-        Generate ideas
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+        分析目录
+      </div>
+      <div class="chip" id="chipReadDoc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        阅读文档
       </div>
       <div class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/><path d="M12 12a8 8 0 0 0 8-8"/><path d="M12 12a8 8 0 0 1 8 8"/><path d="M12 12a8 8 0 0 0-8 8"/><path d="M12 12a8 8 0 0 1-8-8"/></svg>
-        Motion concept
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        运行测试
       </div>
       <div class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
-        Market analysis
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="18" x2="8" y2="18"/><line x1="16" y1="14" x2="12" y2="14"/></svg>
+        生成报告
       </div>
-      <div class="chip">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Ask AI anything
+    </div>
+
+    <!-- 聊天对话区域（初始隐藏） -->
+    <div class="chat-conversation" id="chatConversation" style="display:none;">
+      <!-- 用户消息 -->
+      <div class="chat-user-msg">
+        <div class="chat-user-bubble">阅读我附加的文档，提炼目标、风险和下一步行动。</div>
+        <div class="chat-user-meta">已完成 · 本地文件系统</div>
+      </div>
+
+      <!-- AI 回复 -->
+      <div class="chat-ai-response">
+        <!-- 深度思考折叠面板 -->
+        <div class="thinking-panel" id="thinkingPanel">
+          <button class="thinking-toggle" id="thinkingToggle">
+            <svg class="thinking-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            深度思考
+            <svg class="thinking-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="thinking-content" id="thinkingContent">
+            <p>The user wants me to extract "Goals" (目标), "Risks" (风险), and "Next Actions" (下一步行动) from the provided document titled "智能纪要：UI新版更新工作相关事项确认 2026年7月23日.md".</p>
+            <p>I will scan the content of the document:</p>
+            <ul>
+              <li><strong>Goals:</strong>
+                <ul>
+                  <li>UI new version update completion (home page fix, channel pages, icons).</li>
+                  <li>Portfolio creation (作品集制作).</li>
+                  <li>Weekly schedule management (social, training, rest, competition).</li>
+                  <li>Health/Weight loss goals.</li>
+                  <li>Abu Dhabi city research.</li>
+                  <li>Short-term: Jump jobs (跳槽), complete competitions.</li>
+                  <li>Long-term: Become a global travel photographer.</li>
+                </ul>
+              </li>
+              <li><strong>Risks:</strong>
+                <ul>
+                  <li>Flu symptoms worsening (health risk).</li>
+                  <li>Urgent tasks stacking up causing delays in portfolio progress.</li>
+                  <li>Content direction for the portfolio was initially unclear (now clarified but was a bottleneck).</li>
+                </ul>
+              </li>
+              <li><strong>Next Actions:</strong>
+                <ul>
+                  <li>Portfolio: Make it the core priority tomorrow, fill with todo list and videos.</li>
+                  <li>Research: Deep dive into Abu Dhabi's specific sections/details.</li>
+                  <li>Health: Run today to lose weight; avoid staying up late due to flu.</li>
+                  <li>Schedule execution: Follow the 7-day plan (Mon rest, Tue male social, Wed-Fri training, Sat female social, Sun competition).</li>
+                </ul>
+              </li>
+            </ul>
+            <p>I will structure the output clearly in Chinese as requested by the user's prompt language.</p>
+          </div>
+        </div>
+
+        <!-- AI 正式回复内容 -->
+        <div class="ai-content">
+          <p>根据您提供的文档，我为您提炼的目标、风险及下一步行动如下：</p>
+
+          <h3><span class="emoji-icon">🎯</span> 核心目标</h3>
+          <ol>
+            <li><strong>UI新版更新完成：</strong>确保首页修复（对话顺序、头像等）、频道页画面制作及全系列 icon 版本升级全部落地。</li>
+            <li><strong>作品集制作：</strong>完成内容填充，作为近期的核心工作任务。</li>
+            <li><strong>个人发展规划：</strong>
+              <ul>
+                <li><strong>短期目标：</strong>顺利完成跳槽，并参与/完成相关赛事。</li>
+                <li><strong>远期目标：</strong>成为全球旅行摄影师。</li>
+              </ul>
+            </li>
+            <li><strong>生活与健康管理：</strong>落实减肥计划（跑步），并按既定的周度日程（社交、训练、比赛、休息）规范化生活。</li>
+            <li><strong>城市调研：</strong>深度细化阿布扎比各核心板块的调研信息。</li>
+          </ol>
+
+          <h3><span class="emoji-icon">️</span> 潜在风险</h3>
+          <ol>
+            <li><strong>健康状况风险：</strong>发言人近期流感症状加重，可能影响精力，需注意避免熬夜。</li>
+            <li><strong>进度滞后风险：</strong>因紧急任务堆积，作品集推进可能受阻（已识别卡点）。</li>
+            <li><strong>内容模糊风险：</strong>前期作品集内容方向不明确，现已初步明确可填充 todo list 和视频。</li>
+          </ol>
+
+          <h3><span class="emoji-icon">🚀</span> 下一步行动</h3>
+          <ol>
+            <li><strong>作品集专项推进：</strong>次日将作品集作为核心优先级，直接填充 todo list 及相关视频内容。</li>
+            <li><strong>深度调研补充：</strong>针对阿布扎比各板块的细化信息进行深入梳理和调研。</li>
+            <li><strong>健康管理落实：</strong>今日安排跑步项目以配合减肥计划，并严格控制作息。</li>
+            <li><strong>周度日程执行：</strong>严格按照划分好的 7 天模块（如周二打球、周六出游等）开始有序执行。</li>
+          </ol>
+        </div>
+
+        <!-- 复制按钮 -->
+        <button class="copy-btn" id="copyBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          复制
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- 资产库卡片 -->
-  <div class="asset-panel" id="assetPanel">
-    <div class="asset-header">
-      <span class="asset-title">任务检查器</span>
-      <button class="asset-close" id="btnCloseAsset" title="收起">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-      </button>
+</main>
+
+<!-- 资产库卡片 -->
+<div class="asset-panel" id="assetPanel">
+  <div class="asset-header">
+    <span class="asset-title">任务检查器</span>
+    <button class="asset-close" id="btnCloseAsset" title="收起">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+  <div class="asset-tabs">
+    <button class="asset-tab">轨迹</button>
+    <button class="asset-tab active">上下文 (1)</button>
+    <button class="asset-tab">产物</button>
+  </div>
+  <div class="asset-body">
+    <div class="asset-section">
+      <div class="asset-section-label">WORKSPACE</div>
+      <div class="asset-section-title">本地文件系统</div>
     </div>
-    <div class="asset-tabs">
-      <button class="asset-tab">轨迹</button>
-      <button class="asset-tab active">上下文 (1)</button>
-      <button class="asset-tab">产物</button>
-    </div>
-    <div class="asset-body">
-      <div class="asset-section">
-        <div class="asset-section-label">WORKSPACE</div>
-        <div class="asset-section-title">本地文件系统</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-card-label">本地文档</div>
-        <div class="asset-file-card">
-          <div class="asset-file-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          </div>
-          <div class="asset-file-info">
-            <div class="asset-file-name">提示词.md</div>
-            <div class="asset-file-meta">缓存命中 · 975 chars</div>
-          </div>
+    <div class="asset-card">
+      <div class="asset-card-label">本地文档</div>
+      <div class="asset-file-card">
+        <div class="asset-file-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="asset-file-info">
+          <div class="asset-file-name">提示词.md</div>
+          <div class="asset-file-meta">缓存命中 · 975 chars</div>
         </div>
       </div>
-      <div class="asset-card">
-        <div class="asset-card-label">图片</div>
-        <div class="asset-empty">未附加图片</div>
-      </div>
+    </div>
+    <div class="asset-card">
+      <div class="asset-card-label">图片</div>
+      <div class="asset-empty">未附加图片</div>
     </div>
   </div>
-</main>
+</div>
 </div>
 
 <script>
@@ -1529,15 +3036,12 @@
   const assetBtn = document.querySelector('.toolbar-btn:last-child');
   const assetPanel = document.getElementById('assetPanel');
   const assetCloseBtn = document.getElementById('btnCloseAsset');
-  const contentArea = document.querySelector('.content');
 
   if (assetBtn && assetPanel) {
     assetBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      assetPanel.classList.toggle('show');
-      if (contentArea) {
-        contentArea.classList.toggle('shift-left', assetPanel.classList.contains('show'));
-      }
+      assetPanel.classList.add('show');
+      assetBtn.style.display = 'none';
     });
   }
 
@@ -1545,9 +3049,7 @@
     assetCloseBtn.addEventListener('click', function(e) {
       e.stopPropagation();
       assetPanel.classList.remove('show');
-      if (contentArea) {
-        contentArea.classList.remove('shift-left');
-      }
+      if (assetBtn) assetBtn.style.display = '';
     });
   }
 
@@ -1559,7 +3061,490 @@
       tab.classList.add('active');
     });
   });
-</script>
 
+  // 模型选择下拉菜单交互
+  const modelSelectBtn = document.getElementById('modelSelectBtn');
+  const modelDropdown = document.getElementById('modelDropdown');
+  const selectedModelName = document.getElementById('selectedModelName');
+  const modelModeItems = document.querySelectorAll('.model-mode-item');
+  const modelListItems = document.querySelectorAll('.model-list-item');
+
+  // 上传文件下拉菜单交互
+  const addFileBtn = document.getElementById('addFileBtn');
+  const uploadDropdown = document.getElementById('uploadDropdown');
+
+  // 计算下拉菜单位置
+  function updateDropdownPosition() {
+    if (!modelSelectBtn || !modelDropdown) return;
+    const btnRect = modelSelectBtn.getBoundingClientRect();
+    const dropdownHeight = modelDropdown.offsetHeight;
+    
+    // 计算按钮上方显示
+    let top = btnRect.top - dropdownHeight - 8;
+    let left = btnRect.left;
+    
+    // 确保不超出视口
+    if (top < 8) {
+      top = btnRect.bottom + 8;
+    }
+    if (left + 240 > window.innerWidth) {
+      left = window.innerWidth - 248;
+    }
+    
+    modelDropdown.style.top = top + 'px';
+    modelDropdown.style.left = left + 'px';
+  }
+
+  // 点击模型选择按钮显示/隐藏下拉菜单
+  if (modelSelectBtn && modelDropdown) {
+    modelSelectBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isShowing = modelDropdown.classList.contains('show');
+      if (!isShowing) {
+        updateDropdownPosition();
+      }
+      modelDropdown.classList.toggle('show');
+    });
+  }
+
+  // 点击推理模式按钮切换选中状态
+  modelModeItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      modelModeItems.forEach(function(i) { i.classList.remove('active'); });
+      item.classList.add('active');
+    });
+  });
+
+  // 点击模型列表项切换选中状态并更新按钮文本
+  modelListItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      modelListItems.forEach(function(i) { i.classList.remove('active'); });
+      item.classList.add('active');
+      const modelName = item.getAttribute('data-name');
+      if (selectedModelName && modelName) {
+        selectedModelName.textContent = modelName;
+      }
+      // 选择模型后关闭下拉菜单
+      modelDropdown.classList.remove('show');
+    });
+  });
+
+  // 点击外部区域关闭下拉菜单
+  document.addEventListener('click', function() {
+    if (modelDropdown) {
+      modelDropdown.classList.remove('show');
+    }
+    if (uploadDropdown) {
+      uploadDropdown.classList.remove('show');
+    }
+  });
+
+  // 计算上传下拉菜单位置
+  function updateUploadDropdownPosition() {
+    if (!addFileBtn || !uploadDropdown) return;
+    const btnRect = addFileBtn.getBoundingClientRect();
+    const dropdownHeight = uploadDropdown.offsetHeight;
+    
+    // 计算按钮上方显示
+    let top = btnRect.top - dropdownHeight - 8;
+    let left = btnRect.left;
+    
+    // 确保不超出视口
+    if (top < 8) {
+      top = btnRect.bottom + 8;
+    }
+    if (left + 180 > window.innerWidth) {
+      left = window.innerWidth - 188;
+    }
+    
+    uploadDropdown.style.top = top + 'px';
+    uploadDropdown.style.left = left + 'px';
+  }
+
+  // 点击添加文件按钮显示/隐藏下拉菜单
+  if (addFileBtn && uploadDropdown) {
+    addFileBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isShowing = uploadDropdown.classList.contains('show');
+      if (!isShowing) {
+        updateUploadDropdownPosition();
+      }
+      uploadDropdown.classList.toggle('show');
+    });
+  }
+
+  // 点击上传按钮后关闭菜单
+  const uploadItems = document.querySelectorAll('.upload-item');
+  uploadItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (uploadDropdown) {
+        uploadDropdown.classList.remove('show');
+      }
+    });
+  });
+
+  // 文件上传功能
+  const btnUploadFile = document.getElementById('btnUploadFile');
+  const fileAttachment = document.getElementById('fileAttachment');
+  const fileAttachmentName = document.getElementById('fileAttachmentName');
+  const fileAttachmentStatus = document.getElementById('fileAttachmentStatus');
+  const fileAttachmentClose = document.getElementById('fileAttachmentClose');
+
+  // 创建隐藏的文件输入框
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+
+  // 点击上传文件按钮触发文件选择
+  if (btnUploadFile && fileInput) {
+    btnUploadFile.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fileInput.click();
+    });
+  }
+
+  // 文件选择后处理
+  fileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // 显示文件附件区域
+    if (fileAttachment) {
+      fileAttachment.style.display = 'flex';
+    }
+
+    // 设置文件名
+    if (fileAttachmentName) {
+      fileAttachmentName.textContent = file.name;
+    }
+
+    // 显示转换中状态
+    if (fileAttachmentStatus) {
+      fileAttachmentStatus.innerHTML = '<span class="file-spinner"></span><span class="file-status-text">转换中</span>';
+    }
+
+    // 3秒后更新为文件大小
+    setTimeout(function() {
+      const fileSize = formatFileSize(file.size);
+      if (fileAttachmentStatus) {
+        fileAttachmentStatus.innerHTML = '<span class="file-status-text">已就绪 · ' + fileSize + '</span>';
+      }
+    }, 3000);
+  });
+
+  // 关闭文件附件
+  if (fileAttachmentClose && fileAttachment) {
+    fileAttachmentClose.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fileAttachment.style.display = 'none';
+      fileInput.value = '';
+    });
+  }
+
+  // 格式化文件大小
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // 阅读文档 chip 点击事件
+  const chipReadDoc = document.getElementById('chipReadDoc');
+  const mainInput = document.getElementById('mainInput');
+  if (chipReadDoc && mainInput) {
+    chipReadDoc.addEventListener('click', function() {
+      mainInput.value = '阅读我附加的文档，提炼目标、风险和下一步行动。';
+      mainInput.focus();
+    });
+  }
+
+  // ===== 启动模型弹窗 =====
+  const sendBtn = document.querySelector('.icon-btn.send');
+  const modelLaunchOverlay = document.getElementById('modelLaunchOverlay');
+  const btnCloseLaunch = document.getElementById('btnCloseLaunch');
+  const btnCancelLaunch = document.getElementById('btnCancelLaunch');
+  const btnStartLaunch = document.getElementById('btnStartLaunch');
+  const btnResetLaunch = document.getElementById('btnResetLaunch');
+  const btnAdvancedToggle = document.getElementById('btnAdvancedToggle');
+  const advancedContent = document.getElementById('advancedContent');
+
+  const contextSlider = document.getElementById('contextSlider');
+  const contextValue = document.getElementById('contextValue');
+  const contextSliderFill = document.getElementById('contextSliderFill');
+
+  const tempSlider = document.getElementById('tempSlider');
+  const tempValue = document.getElementById('tempValue');
+
+  const topPSlider = document.getElementById('topPSlider');
+  const topPValue = document.getElementById('topPValue');
+
+  const maxTokensSlider = document.getElementById('maxTokensSlider');
+  const maxTokensValue = document.getElementById('maxTokensValue');
+
+  const repPenaltySlider = document.getElementById('repPenaltySlider');
+  const repPenaltyValue = document.getElementById('repPenaltyValue');
+
+  // 默认值
+  const defaults = {
+    context: 54,
+    temp: 70,
+    topP: 60,
+    topK: 20,
+    minP: 0.05,
+    repPenalty: 105,
+    concurrency: 1,
+    batchSize: 512,
+    microBatch: 1,
+    gpuLayers: 99,
+    threads: 4,
+    batchThreads: 4,
+    ramCache: 8192
+  };
+
+  // 打开弹窗
+  if (sendBtn && modelLaunchOverlay) {
+    sendBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      modelLaunchOverlay.classList.add('show');
+      updateSliderFill();
+    });
+  }
+
+  // 关闭弹窗
+  function closeLaunchModal() {
+    if (modelLaunchOverlay) {
+      modelLaunchOverlay.classList.remove('show');
+    }
+  }
+
+  if (btnCloseLaunch) btnCloseLaunch.addEventListener('click', closeLaunchModal);
+  if (btnCancelLaunch) btnCancelLaunch.addEventListener('click', closeLaunchModal);
+
+  // 点击遮罩关闭
+  if (modelLaunchOverlay) {
+    modelLaunchOverlay.addEventListener('click', function(e) {
+      if (e.target === modelLaunchOverlay) {
+        closeLaunchModal();
+      }
+    });
+  }
+
+  // 高级参数折叠
+  if (btnAdvancedToggle) {
+    btnAdvancedToggle.addEventListener('click', function() {
+      this.parentElement.classList.toggle('open');
+    });
+  }
+
+  // 更新滑块填充
+  function updateSliderFill() {
+    if (contextSlider && contextSliderFill) {
+      const pct = ((contextSlider.value - contextSlider.min) / (contextSlider.max - contextSlider.min)) * 100;
+      contextSliderFill.style.width = pct + '%';
+    }
+  }
+
+  // 上下文滑块
+  if (contextSlider) {
+    contextSlider.addEventListener('input', function() {
+      if (contextValue) contextValue.textContent = this.value + 'K';
+      updateSliderFill();
+    });
+    updateSliderFill();
+  }
+
+  // Temperature 滑块
+  if (tempSlider) {
+    tempSlider.addEventListener('input', function() {
+      if (tempValue) tempValue.textContent = (this.value / 100).toFixed(1);
+    });
+  }
+
+  // Top-p 滑块
+  if (topPSlider) {
+    topPSlider.addEventListener('input', function() {
+      if (topPValue) topPValue.textContent = (this.value / 100).toFixed(1);
+    });
+  }
+
+  // 重复惩罚滑块
+  if (repPenaltySlider) {
+    repPenaltySlider.addEventListener('input', function() {
+      if (repPenaltyValue) repPenaltyValue.textContent = (this.value / 100).toFixed(2);
+    });
+  }
+
+  // 恢复默认
+  if (btnResetLaunch) {
+    btnResetLaunch.addEventListener('click', function() {
+      contextSlider.value = defaults.context;
+      contextValue.textContent = defaults.context + 'K';
+      tempSlider.value = defaults.temp;
+      tempValue.textContent = (defaults.temp / 100).toFixed(1);
+      topPSlider.value = defaults.topP;
+      topPValue.textContent = (defaults.topP / 100).toFixed(1);
+      document.getElementById('topKInput').value = defaults.topK;
+      document.getElementById('minPInput').value = defaults.minP;
+      repPenaltySlider.value = defaults.repPenalty;
+      repPenaltyValue.textContent = (defaults.repPenalty / 100).toFixed(2);
+      document.getElementById('concurrencyInput').value = defaults.concurrency;
+      document.getElementById('batchSizeInput').value = defaults.batchSize;
+      document.getElementById('microBatchInput').value = defaults.microBatch;
+      document.getElementById('gpuLayersInput').value = defaults.gpuLayers;
+      document.getElementById('threadsInput').value = defaults.threads;
+      document.getElementById('batchThreadsInput').value = defaults.batchThreads;
+      document.getElementById('ramCacheInput').value = defaults.ramCache;
+      updateSliderFill();
+    });
+  }
+
+  // 启动
+  if (btnStartLaunch) {
+    btnStartLaunch.addEventListener('click', function() {
+      closeLaunchModal();
+      showLoadingAnimation();
+    });
+  }
+
+  // 加载动画
+  function showLoadingAnimation() {
+    const overlay = document.getElementById('loadingOverlay');
+    const progressFill = document.getElementById('loadingProgressFill');
+    const percentText = document.getElementById('loadingPercent');
+    const subtitle = document.getElementById('loadingSubtitle');
+
+    if (!overlay) return;
+
+    // 显示加载弹窗
+    overlay.classList.add('show');
+
+    // 阶段文本
+    const stages = [
+      { at: 0, text: '初始化上下文引擎...' },
+      { at: 20, text: '加载模型权重...' },
+      { at: 45, text: '配置 GPU 层数...' },
+      { at: 70, text: '建立 KV 缓存...' },
+      { at: 90, text: '模型就绪，准备响应...' }
+    ];
+
+    let progress = 0;
+    const duration = 5000;
+    const interval = 50;
+    const step = 100 / (duration / interval);
+
+    const timer = setInterval(function() {
+      progress += step;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(timer);
+        setTimeout(function() {
+          overlay.classList.remove('show');
+          // 切换到聊天视图
+          showChatView();
+        }, 400);
+      }
+
+      // 更新进度条
+      if (progressFill) progressFill.style.width = progress + '%';
+      if (percentText) percentText.textContent = Math.floor(progress) + '%';
+
+      // 更新阶段文本
+      for (let i = stages.length - 1; i >= 0; i--) {
+        if (progress >= stages[i].at) {
+          if (subtitle) subtitle.textContent = stages[i].text;
+          break;
+        }
+      }
+    }, interval);
+  }
+
+  // 切换到聊天视图
+  function showChatView() {
+    const chatView = document.getElementById('chatView');
+    const homeActions = document.getElementById('homeActions');
+    const chatConversation = document.getElementById('chatConversation');
+    const h1 = chatView.querySelector('h1');
+    const glassInputWrap = chatView.querySelector('.glass-input-wrap');
+    const mainEl = document.querySelector('.main');
+
+    // 调整 main 布局：顶部对齐，允许滚动
+    if (mainEl) {
+      mainEl.style.justifyContent = 'flex-start';
+    }
+
+    // 聊天视图添加顶部间距，设置高度铺满
+    chatView.style.paddingTop = '24px';
+    chatView.style.paddingBottom = '0';
+    chatView.style.height = '100%';
+    chatView.style.justifyContent = 'flex-start';
+
+    // 隐藏首页元素
+    if (h1) h1.style.display = 'none';
+    if (homeActions) homeActions.style.display = 'none';
+
+    // 显示聊天对话区域
+    if (chatConversation) chatConversation.style.display = 'flex';
+
+    // 调整输入框布局：固定在底部
+    if (glassInputWrap) {
+      glassInputWrap.style.position = 'relative';
+      glassInputWrap.style.bottom = 'auto';
+      glassInputWrap.style.zIndex = '1';
+      glassInputWrap.style.marginTop = '0';
+      glassInputWrap.style.paddingBottom = '0';
+      glassInputWrap.style.background = 'none';
+      glassInputWrap.style.flexShrink = '0';
+      glassInputWrap.style.order = '2';
+      glassInputWrap.style.marginBottom = '16px';
+    }
+
+    // 聊天对话区域自动填充剩余空间，内容可滚动
+    if (chatConversation) {
+      chatConversation.style.flex = '1';
+      chatConversation.style.minHeight = '0';
+      chatConversation.style.overflowY = 'auto';
+      chatConversation.style.width = '100%';
+      chatConversation.style.paddingBottom = '16px';
+      chatConversation.style.order = '1';
+    }
+
+    // 内容区禁止滚动（由聊天区域单独滚动）
+    chatView.style.overflow = 'hidden';
+  }
+
+  // 深度思考折叠面板
+  const thinkingToggle = document.getElementById('thinkingToggle');
+  const thinkingPanel = document.getElementById('thinkingPanel');
+  if (thinkingToggle && thinkingPanel) {
+    thinkingToggle.addEventListener('click', function() {
+      thinkingPanel.classList.toggle('open');
+    });
+  }
+
+  // 复制按钮
+  const copyBtn = document.getElementById('copyBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function() {
+      const aiContent = document.querySelector('.ai-content');
+      if (aiContent) {
+        const text = aiContent.innerText;
+        navigator.clipboard.writeText(text).then(function() {
+          copyBtn.classList.add('copied');
+          copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 已复制';
+          setTimeout(function() {
+            copyBtn.classList.remove('copied');
+            copyBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> 复制';
+          }, 2000);
+        });
+      }
+    });
+  }
+</script>
 </body>
 </html>
