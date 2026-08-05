@@ -772,6 +772,142 @@
     padding: 4px 0;
   }
 
+  /* 产物标签页内容 */
+  .asset-tab-content {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .asset-tab-content.active {
+    display: flex;
+  }
+
+  .product-card {
+    padding: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .product-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .product-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .product-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .product-card-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-card-meta {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-more-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .product-more-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .product-dropdown {
+    position: absolute;
+    right: 10px;
+    top: 44px;
+    min-width: 120px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    z-index: 30;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .product-dropdown.show {
+    display: flex;
+  }
+
+  .product-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .product-dropdown-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .product-dropdown-item.danger:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+  }
+
   /* Main */
   .main {
     flex: 1;
@@ -879,17 +1015,20 @@
     padding: 2px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
     color: var(--text-dim);
     font-family: inherit;
     font-size: 0.82rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
   }
 
   .toolbar-btn:hover {
     border-color: rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
     color: var(--text);
   }
 
@@ -918,6 +1057,66 @@
     height: 12px;
     background: rgba(255,255,255,0.2);
     flex-shrink: 0;
+  }
+
+  /* 对话标题栏 */
+  .conversation-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 520px;
+    margin: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 6px 16px;
+    height: 35px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .conv-status {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.12);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .conversation-title.answering .conv-status {
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.75), 0 0 2px rgba(74, 222, 128, 0.9);
+    animation: convPulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes convPulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45), 0 0 6px rgba(74, 222, 128, 0.8);
+    }
+    50% {
+      box-shadow: 0 0 0 5px rgba(74, 222, 128, 0), 0 0 14px rgba(74, 222, 128, 0.95);
+    }
+  }
+
+  .conv-title-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.01em;
   }
 
   /* Content */
@@ -1926,6 +2125,12 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .chat-conversation::-webkit-scrollbar {
+    display: none;
   }
 
   .chat-user-msg {
@@ -1952,6 +2157,59 @@
     font-size: 0.75rem;
     color: var(--text-dim);
     opacity: 0.6;
+  }
+
+  .chat-user-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 12px 16px;
+    max-width: 70%;
+    transition: all 0.2s ease;
+  }
+
+  .chat-user-file:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .chat-file-icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+  }
+
+  .chat-file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .chat-file-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chat-file-type {
+    font-size: 0.7rem;
+    color: var(--text-dim);
   }
 
   .chat-ai-response {
@@ -2135,6 +2393,367 @@
     color: #22c55e;
   }
 
+  /* ===== Markdown Artifact Card ===== */
+  .md-artifact-card {
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .md-artifact-card:hover {
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.045);
+  }
+
+  .md-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .md-card-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .md-file-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+  }
+
+  .md-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .md-file-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .md-saved-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #22c55e;
+    font-size: 0.68rem;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .md-file-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .md-file-stats .stat-sep {
+    opacity: 0.4;
+  }
+
+  .md-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .md-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 34px;
+  }
+
+  .md-action-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .md-card-preview {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 18px;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .md-preview-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .md-preview-code {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  .md-preview-code .md-h1 {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .md-preview-code .md-h2 {
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  /* ===== Document Preview Overlay ===== */
+  .doc-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 6, 6, 0.01);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .doc-preview-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .doc-preview-modal {
+    width: calc(100vw - 80px);
+    max-width: 720px;
+    height: calc(100vh - 80px);
+    max-height: 720px;
+    background: #1C1C1C;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .doc-preview-overlay.show .doc-preview-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .doc-preview-header {
+    flex-shrink: 0;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .doc-preview-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 34px;
+  }
+
+  .doc-preview-back:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .doc-preview-header-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .doc-preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .doc-preview-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 34px;
+  }
+
+  .doc-preview-action-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .doc-preview-close {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .doc-preview-meta-bar {
+    flex-shrink: 0;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.15);
+  }
+
+  .doc-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text-dim);
+    font-size: 0.7rem;
+  }
+
+  .doc-meta-chip .chip-label {
+    opacity: 0.6;
+  }
+
+  .doc-preview-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .doc-preview-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .doc-preview-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .doc-section {
+    margin-bottom: 32px;
+  }
+
+  .doc-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .doc-section-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .doc-section-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+
+  .doc-section-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .doc-item-dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    margin-top: 9px;
+  }
+
+  .doc-item-label {
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+  }
+
   /* ===== Loading Overlay ===== */
   .loading-overlay {
     position: fixed;
@@ -2306,6 +2925,7 @@
     h1 { font-size: 1.4rem; }
     .actions { gap: 8px; }
     .chip { padding: 8px 12px; font-size: 0.78rem; }
+    .conversation-title { max-width: 38vw; margin: 0 8px; padding: 6px 10px; }
   }
 
   @media (max-width: 480px) {
@@ -2496,6 +3116,13 @@
       <span class="btn-divider"></span>
       <span class="btn-part btn-part-text" style="width:64px">新对话</span>
     </button>
+
+    <!-- 对话标题栏（点击发送后显示） -->
+    <div class="conversation-title" id="conversationTitle" style="display:none;">
+      <span class="conv-status" id="convStatus"></span>
+      <span class="conv-title-text" id="convTitleText">阅读我附加的文档，提炼目标、风险和下一步行动。</span>
+    </div>
+
     <button class="toolbar-btn" style="height: 35px; width: 64px; padding-left: 6px;">
       <span class="btn-part btn-part-text" style="width:auto; padding: 0 6px; display: flex; justify-content: center;">资产库</span>
     </button>
@@ -2776,7 +3403,15 @@
       <!-- 用户消息 -->
       <div class="chat-user-msg">
         <div class="chat-user-bubble">阅读我附加的文档，提炼目标、风险和下一步行动。</div>
-        <div class="chat-user-meta">已完成 · 本地文件系统</div>
+        <div class="chat-user-file">
+          <div class="chat-file-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h6"/></svg>
+          </div>
+          <div class="chat-file-info">
+            <div class="chat-file-name">2026-07-01.pdf</div>
+            <div class="chat-file-type">PDF 文档</div>
+          </div>
+        </div>
       </div>
 
       <!-- AI 回复 -->
@@ -2857,6 +3492,55 @@
           </ol>
         </div>
 
+        <!-- Markdown 产物卡片 -->
+        <div class="md-artifact-card" id="mdArtifactCard">
+          <div class="md-card-header">
+            <div class="md-card-info">
+              <div class="md-file-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </div>
+              <div class="md-card-meta">
+                <div class="md-file-name">
+                  项目总结.md
+                  <span class="md-saved-badge">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    已保存
+                  </span>
+                </div>
+                <div class="md-file-stats">
+                  <span>Markdown</span>
+                  <span class="stat-sep">·</span>
+                  <span>v1</span>
+                  <span class="stat-sep">·</span>
+                  <span>694 B</span>
+                </div>
+              </div>
+            </div>
+            <div class="md-card-actions">
+              <button class="md-action-btn" id="mdPreviewBtn" title="预览文档">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                预览
+              </button>
+              <button class="md-action-btn" id="mdDownloadBtn" title="下载到本地">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                下载
+              </button>
+            </div>
+          </div>
+          <div class="md-card-preview">
+            <div class="md-preview-label">内容预览</div>
+<pre class="md-preview-code"><span class="md-h1"># 项目总结</span>
+
+<span class="md-h2">## 一、目标</span>
+1. 短期：完成跳槽，顺利参与并完成对应赛事
+2. 中期：逐步明确中期发展方向与落地路径
+3. 长期：成为全球旅行摄影师
+
+<span class="md-h2">## 二、风险</span>
+...</pre>
+          </div>
+        </div>
+
         <!-- 复制按钮 -->
         <button class="copy-btn" id="copyBtn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -2877,30 +3561,67 @@
     </button>
   </div>
   <div class="asset-tabs">
-    <button class="asset-tab">轨迹</button>
-    <button class="asset-tab active">上下文 (1)</button>
-    <button class="asset-tab">产物</button>
+    <button class="asset-tab" data-tab="track">轨迹</button>
+    <button class="asset-tab active" data-tab="context">上下文 (1)</button>
+    <button class="asset-tab" data-tab="product">产物</button>
   </div>
   <div class="asset-body">
-    <div class="asset-section">
-      <div class="asset-section-label">WORKSPACE</div>
-      <div class="asset-section-title">本地文件系统</div>
-    </div>
-    <div class="asset-card">
-      <div class="asset-card-label">本地文档</div>
-      <div class="asset-file-card">
-        <div class="asset-file-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        </div>
-        <div class="asset-file-info">
-          <div class="asset-file-name">提示词.md</div>
-          <div class="asset-file-meta">缓存命中 · 975 chars</div>
+    <!-- 上下文标签页内容 -->
+    <div class="asset-tab-content active" data-content="context">
+      <div class="asset-section">
+        <div class="asset-section-label">WORKSPACE</div>
+        <div class="asset-section-title">本地文件系统</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-card-label">本地文档</div>
+        <div class="asset-file-card">
+          <div class="asset-file-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="asset-file-info">
+            <div class="asset-file-name">提示词.md</div>
+            <div class="asset-file-meta">缓存命中 · 975 chars</div>
+          </div>
         </div>
       </div>
+      <div class="asset-card">
+        <div class="asset-card-label">图片</div>
+        <div class="asset-empty">未附加图片</div>
+      </div>
     </div>
-    <div class="asset-card">
-      <div class="asset-card-label">图片</div>
-      <div class="asset-empty">未附加图片</div>
+
+    <!-- 产物标签页内容 -->
+    <div class="asset-tab-content" data-content="product">
+      <div class="asset-section">
+        <div class="asset-section-label">ARTIFACTS</div>
+        <div class="asset-section-title">已生成产物 (1)</div>
+      </div>
+      <div class="product-card" id="productCardMd">
+        <div class="product-card-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="product-card-info">
+          <div class="product-card-name">项目总结.md</div>
+          <div class="product-card-meta">text/markdown · 69 KB...</div>
+        </div>
+        <button class="product-more-btn" id="productMoreBtn" title="更多操作">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+        <div class="product-dropdown" id="productDropdown">
+          <button class="product-dropdown-item" data-action="preview">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            预览
+          </button>
+          <button class="product-dropdown-item" data-action="download">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            下载
+          </button>
+          <button class="product-dropdown-item danger" data-action="delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            删除
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3055,12 +3776,67 @@
 
   // 标签页切换
   const assetTabs = document.querySelectorAll('.asset-tab');
+  const assetTabContents = document.querySelectorAll('.asset-tab-content');
   assetTabs.forEach(function(tab) {
     tab.addEventListener('click', function() {
       assetTabs.forEach(function(t) { t.classList.remove('active'); });
       tab.classList.add('active');
+      const tabName = tab.getAttribute('data-tab');
+      assetTabContents.forEach(function(c) {
+        if (c.getAttribute('data-content') === tabName) {
+          c.classList.add('active');
+        } else {
+          c.classList.remove('active');
+        }
+      });
     });
   });
+
+  // 产物卡片 - 更多按钮下拉菜单
+  const productMoreBtn = document.getElementById('productMoreBtn');
+  const productDropdown = document.getElementById('productDropdown');
+
+  if (productMoreBtn && productDropdown) {
+    productMoreBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      productDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!productDropdown.contains(e.target) && e.target !== productMoreBtn) {
+        productDropdown.classList.remove('show');
+      }
+    });
+
+    productDropdown.querySelectorAll('.product-dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        const action = item.getAttribute('data-action');
+        productDropdown.classList.remove('show');
+        if (action === 'preview') {
+          if (typeof openDocPreview === 'function') openDocPreview();
+        } else if (action === 'download') {
+          const mdContent = '# 项目总结\n\n## 一、目标\n1. 短期：完成跳槽，顺利参与并完成对应赛事\n2. 中期：逐步明确中期发展方向与落地路径\n3. 长期：成为全球旅行摄影师\n\n## 二、风险\n...';
+          const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '项目总结.md';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } else if (action === 'delete') {
+          const card = document.getElementById('productCardMd');
+          if (card) {
+            card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(-10px)';
+            setTimeout(function() { card.remove(); }, 300);
+          }
+        }
+      });
+    });
+  }
 
   // 模型选择下拉菜单交互
   const modelSelectBtn = document.getElementById('modelSelectBtn');
@@ -3407,6 +4183,12 @@
   // 启动
   if (btnStartLaunch) {
     btnStartLaunch.addEventListener('click', function() {
+      // 显示对话标题栏，标记为正在回答
+      const convTitle = document.getElementById('conversationTitle');
+      if (convTitle) {
+        convTitle.style.display = 'inline-flex';
+        convTitle.classList.add('answering');
+      }
       closeLaunchModal();
       showLoadingAnimation();
     });
@@ -3479,7 +4261,7 @@
     }
 
     // 聊天视图添加顶部间距，设置高度铺满
-    chatView.style.paddingTop = '24px';
+    chatView.style.paddingTop = '100px';
     chatView.style.paddingBottom = '0';
     chatView.style.height = '100%';
     chatView.style.justifyContent = 'flex-start';
@@ -3510,12 +4292,20 @@
       chatConversation.style.minHeight = '0';
       chatConversation.style.overflowY = 'auto';
       chatConversation.style.width = '100%';
-      chatConversation.style.paddingBottom = '16px';
+      chatConversation.style.paddingTop = '24px';
+      chatConversation.style.paddingBottom = '24px';
       chatConversation.style.order = '1';
     }
 
     // 内容区禁止滚动（由聊天区域单独滚动）
     chatView.style.overflow = 'hidden';
+
+    // 对话标题栏标记为已完成（灰色指示灯）
+    const convTitle = document.getElementById('conversationTitle');
+    if (convTitle) {
+      convTitle.style.display = 'inline-flex';
+      convTitle.classList.remove('answering');
+    }
   }
 
   // 深度思考折叠面板
@@ -3545,6 +4335,138 @@
       }
     });
   }
+
+  // Markdown 产物卡片 - 预览按钮
+  const mdPreviewBtn = document.getElementById('mdPreviewBtn');
+  if (mdPreviewBtn) {
+    mdPreviewBtn.addEventListener('click', function() {
+      if (typeof openDocPreview === 'function') openDocPreview();
+    });
+  }
+
+  // Markdown 产物卡片 - 下载按钮
+  const mdDownloadBtn = document.getElementById('mdDownloadBtn');
+  if (mdDownloadBtn) {
+    mdDownloadBtn.addEventListener('click', function() {
+      const mdContent = '# 项目总结\n\n## 一、目标\n1. 短期：完成跳槽，顺利参与并完成对应赛事\n2. 中期：逐步明确中期发展方向与落地路径\n3. 长期：成为全球旅行摄影师\n\n## 二、风险\n...';
+      const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '项目总结.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+</script>
+
+<!-- 文档预览弹窗 -->
+<div class="doc-preview-overlay" id="docPreviewOverlay">
+  <div class="doc-preview-modal">
+    <div class="doc-preview-header">
+      <h1 class="doc-preview-title">项目总结</h1>
+      <div class="doc-preview-actions">
+        <button class="doc-preview-action-btn" id="docPreviewDownload" title="下载文档">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载
+        </button>
+        <button class="doc-preview-action-btn doc-preview-close" id="docPreviewClose" title="关闭预览">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="doc-preview-body">
+      <div class="doc-section">
+        <h2 class="doc-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          目标
+        </h2>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">短期目标：</span>完成跳槽，顺利参与并完成对应赛事</span>
+        </div>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">中期目标：</span>逐步明确中期发展方向与落地路径</span>
+        </div>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">长期目标：</span>成为全球旅行摄影师</span>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2 class="doc-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          风险
+        </h2>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">风险 1：</span>作品集内容填充方向暂不明确，存在进度延误风险</span>
+        </div>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">风险 2：</span>当前流感症状加重，可能影响工作状态和运动计划执行</span>
+        </div>
+      </div>
+
+      <div class="doc-section">
+        <h2 class="doc-section-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          下一步行动
+        </h2>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">行动 1：</span>明日将作品集作为核心工作优先级推进，完成 todo list、相关视频等内容填充</span>
+        </div>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">行动 2：</span>按既定日程安排执行：周一休息，周二打球，周三至周五训练，周六外出社交，周日参加比赛</span>
+        </div>
+        <div class="doc-section-item">
+          <span class="doc-item-dot"></span>
+          <span><span class="doc-item-label">行动 3：</span>继续推进阿布扎比城市调研，补充各板块的细化信息</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 文档预览弹窗交互
+  const docPreviewOverlay = document.getElementById('docPreviewOverlay');
+  const docPreviewClose = document.getElementById('docPreviewClose');
+  const docPreviewDownload = document.getElementById('docPreviewDownload');
+
+  function openDocPreview() {
+    if (docPreviewOverlay) docPreviewOverlay.classList.add('show');
+  }
+
+  function closeDocPreview() {
+    if (docPreviewOverlay) docPreviewOverlay.classList.remove('show');
+  }
+
+  if (docPreviewClose) docPreviewClose.addEventListener('click', closeDocPreview);
+  if (docPreviewOverlay) {
+    docPreviewOverlay.addEventListener('click', function(e) {
+      if (e.target === docPreviewOverlay) closeDocPreview();
+    });
+  }
+  if (docPreviewDownload) {
+    docPreviewDownload.addEventListener('click', function() {
+      const mdContent = '# 项目总结\n\n## 一、目标\n1. 短期：完成跳槽，顺利参与并完成对应赛事\n2. 中期：逐步明确中期发展方向与落地路径\n3. 长期：成为全球旅行摄影师\n\n## 二、风险\n1. 作品集内容填充方向暂不明确，存在进度延误风险\n2. 当前流感症状加重，可能影响工作状态和运动计划执行\n\n## 三、下一步行动\n1. 明日将作品集作为核心工作优先级推进，完成 todo list、相关视频等内容填充\n2. 按既定日程安排执行：周一休息，周二打球，周三至周五训练，周六外出社交，周日参加比赛\n3. 继续推进阿布扎比城市调研，补充各板块的细化信息';
+      const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '项目总结.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
 </script>
 </body>
-</html>
