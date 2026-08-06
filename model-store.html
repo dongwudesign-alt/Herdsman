@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模型管理 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --installed: rgba(74, 222, 128, 0.15);
+    --installed-border: rgba(74, 222, 128, 0.3);
+    --installed-text: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Model Store View */
+  .model-store-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style (same as ig-card) */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+
+  .ms-nav-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ms-nav-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ms-nav-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--text);
+  }
+
+  /* Main Store Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ms-main-header {
+    padding: 14px 18px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-main-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .ms-page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .ms-search {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .ms-search:focus-within {
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .ms-search svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .ms-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    width: 100%;
+  }
+
+  .ms-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  /* Category Tabs */
+  .ms-categories {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    overflow-x: auto;
+  }
+
+  .ms-categories::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .ms-cat-tab {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ms-cat-tab:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .ms-cat-tab.active {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.14);
+    color: var(--text);
+  }
+
+  /* Model Grid */
+  .ms-grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 18px 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-grid-wrap::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-grid-wrap::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  /* Model Card */
+  .model-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .model-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .model-card.installed {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .model-card.installed::after {
+    background: radial-gradient(
+      ellipse 80% 80% at 70% 70%,
+      rgba(74, 222, 128, 0.12) 0%,
+      rgba(74, 222, 128, 0.06) 25%,
+      rgba(74, 222, 128, 0.02) 45%,
+      rgba(74, 222, 128, 0.005) 65%,
+      transparent 85%
+    );
+  }
+
+  .model-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .model-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .model-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .model-version {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .model-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--text);
+  }
+
+  .model-icon svg,
+  .model-icon img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .model-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .model-tag-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .model-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .model-tag.speed {
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
+  }
+
+  .model-tag.speed.medium {
+    background: rgba(251, 146, 60, 0.12);
+    color: #fb923c;
+  }
+
+  .model-tag.vram {
+    background: rgba(167, 139, 250, 0.12);
+    color: #a78bfa;
+  }
+
+  .model-tag.capability {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+  }
+
+  .model-desc {
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .model-actions {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+  }
+
+  .model-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+
+  .model-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .model-btn.primary {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .model-btn.primary:hover {
+    background: rgba(255,255,255,0.12);
+  }
+
+  .model-btn.downloaded {
+    background: var(--installed);
+    border-color: var(--installed-border);
+    color: var(--installed-text);
+    cursor: default;
+  }
+
+  .model-btn.downloaded:hover {
+    background: var(--installed);
+    border-color: var(--installed-border);
+  }
+
+  .model-btn svg {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  /* Element-specific: third card download button transparent background */
+  #modelGrid > .model-card:nth-child(3) > .model-actions > .model-btn {
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+  /* Element-specific: third card description hidden */
+  #modelGrid > .model-card:nth-child(3) > .model-desc {
+    visibility: hidden;
+  }
+
+  /* Element-specific: gemma4-e4b swap tags and desc order */
+  .model-card[data-id="gemma4-e4b"] .model-card-header { order: 0; }
+  .model-card[data-id="gemma4-e4b"] .model-desc { order: 1; }
+  .model-card[data-id="gemma4-e4b"] .model-tags { order: 2; }
+  .model-card[data-id="gemma4-e4b"] .download-progress { order: 3; }
+
+  /* Frosted glass glow effect for all cards */
+  .model-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: -20%;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(
+      ellipse 80% 80% at 70% 70%,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 25%,
+      rgba(255, 255, 255, 0.02) 45%,
+      rgba(255, 255, 255, 0.005) 65%,
+      transparent 85%
+    );
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 12px;
+  }
+
+  .model-card > *:not(.model-actions) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Detail Modal */
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 6, 6, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .detail-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .detail-modal {
+    width: 520px;
+    max-width: 90vw;
+    max-height: 600px;
+    background: rgba(20, 20, 22, 0.85);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    transform: scale(0.96);
+    transition: transform 0.3s ease;
+  }
+
+  .detail-overlay.show .detail-modal {
+    transform: scale(1);
+  }
+
+  .detail-header {
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .detail-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .detail-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .detail-version {
+    font-size: 0.76rem;
+    color: var(--text-dim);
+  }
+
+  .detail-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .detail-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .detail-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .detail-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .detail-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-section-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .detail-params {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .detail-param-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+  }
+
+  .detail-param-key {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .detail-param-val {
+    font-size: 0.78rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .detail-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .detail-footer {
+    padding: 14px 20px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .detail-footer .model-btn {
+    flex: 1;
+    width: auto;
+    height: 38px;
+    font-size: 0.82rem;
+    gap: 6px;
+    padding: 0 12px;
+  }
+
+  /* Download progress */
+  .download-progress {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .download-progress.show {
+    display: flex;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(96, 165, 250, 0.8), rgba(167, 139, 250, 0.8));
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item active" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <div class="s-item" title="时钟">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="s-item" title="数据库">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div class="s-item" title="统计">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      </div>
+      <div class="s-item" title="更多">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </div>
+    </div>
+    <div class="sidebar-group bottom">
+      <div class="s-item" title="用户">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Store View -->
+  <div class="model-store-view" id="modelStoreView">
+
+    <!-- Left: Navigation Card (220px) -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">模型管理</span>
+      </div>
+      <div class="ms-nav-list">
+        <div class="ms-nav-item active" data-page="store">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          模型中心
+        </div>
+        <div class="ms-nav-item" data-page="benchmark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          模型管理
+        </div>
+        <div class="ms-nav-item" data-page="api">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          接口文档
+        </div>
+        <div class="ms-nav-item" data-page="stats">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          调用统计
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Model Store Main Area -->
+    <div class="ms-card ms-main">
+      <div class="ms-main-header">
+        <div class="ms-main-top">
+          <span class="ms-page-title">模型商店</span>
+          <div class="ms-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="搜索模型名称、描述、标签...">
+          </div>
+        </div>
+        <div class="ms-categories" id="categoryTabs">
+          <button class="ms-cat-tab active" data-cat="all">全部</button>
+          <button class="ms-cat-tab" data-cat="dialogue">对话 / 语言</button>
+          <button class="ms-cat-tab" data-cat="multimodal">多模态</button>
+          <button class="ms-cat-tab" data-cat="vision">视觉语言</button>
+          <button class="ms-cat-tab" data-cat="image">图像生成</button>
+          <button class="ms-cat-tab" data-cat="tts">语音合成</button>
+          <button class="ms-cat-tab" data-cat="asr">语音识别</button>
+          <button class="ms-cat-tab" data-cat="embedding">向量嵌入</button>
+          <button class="ms-cat-tab" data-cat="reranker">重排序</button>
+          <button class="ms-cat-tab" data-cat="ocr">OCR</button>
+          <button class="ms-cat-tab" data-cat="doc">文档处理</button>
+          <button class="ms-cat-tab" data-cat="npu">NPU 系列模型 (WinML)</button>
+        </div>
+      </div>
+
+      <div class="ms-grid-wrap">
+        <div class="ms-grid" id="modelGrid">
+          <!-- Model cards rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <div class="detail-title-group">
+        <span class="detail-title" id="detailTitle"></span>
+        <span class="detail-version" id="detailVersion"></span>
+      </div>
+      <button class="detail-close" id="detailClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+    <div class="detail-footer" id="detailFooter"></div>
+  </div>
+</div>
+
+<script>
+  // Model data
+  const models = [
+    {
+      id: 'gemma4-12b',
+      name: 'Gemma 4 12B',
+      version: 'v4.0.0',
+      installed: true,
+      speed: '快',
+      vram: '7.1GB',
+      categories: ['multimodal', 'dialogue'],
+      capabilities: ['多模态', '多语言', '对话', '推理'],
+      desc: 'Google 开源的多模态大语言模型，支持图文理解与多语言对话，速度快，适合通用场景。',
+      params: [
+        { key: '参数量', val: '12B' },
+        { key: '上下文长度', val: '128K' },
+        { key: '显存占用', val: '7.1GB' },
+        { key: '速度等级', val: '快' },
+        { key: '许可协议', val: 'Gemma License' }
+      ]
+    },
+    {
+      id: 'hunyuan-mt2-7b',
+      name: '混元 MT2 7B 翻译',
+      version: 'v2.0.0',
+      installed: true,
+      speed: '快',
+      vram: '4.3GB',
+      categories: ['dialogue'],
+      capabilities: ['对话', '推理', '多语言', '翻译'],
+      desc: '腾讯混元翻译专用模型，支持多语言互译，低显存占用，适合实时翻译场景。',
+      params: [
+        { key: '参数量', val: '7B' },
+        { key: '上下文长度', val: '32K' },
+        { key: '显存占用', val: '4.3GB' },
+        { key: '速度等级', val: '快' },
+        { key: '许可协议', val: 'MIT License' }
+      ]
+    },
+    {
+      id: 'qwen35-35b-a',
+      name: 'Qwen3.5-35B-A',
+      version: 'v3.5.0',
+      installed: false,
+      speed: '中',
+      vram: '22.0GB',
+      categories: ['dialogue', 'multimodal'],
+      capabilities: ['对话', '语言', '推理', '多语言'],
+      desc: '通义千问 3.5 系列大型语言模型，具备强大的推理与多语言能力，适合复杂任务处理。',
+      params: [
+        { key: '参数量', val: '35B' },
+        { key: '上下文长度', val: '128K' },
+        { key: '显存占用', val: '22.0GB' },
+        { key: '速度等级', val: '中' },
+        { key: '许可协议', val: 'Apache 2.0' }
+      ]
+    },
+    {
+      id: 'qwen36-35b-a',
+      name: 'Qwen3.6-35B-A',
+      version: 'v3.6.0',
+      installed: false,
+      speed: '中',
+      vram: '22.5GB',
+      categories: ['dialogue', 'multimodal', 'vision'],
+      capabilities: ['多模态', '对话', '推理', '多语言', '视觉理解'],
+      desc: '通义千问 3.6 升级版本，增强视觉语言理解能力，支持图文混合输入与复杂推理。',
+      params: [
+        { key: '参数量', val: '35B' },
+        { key: '上下文长度', val: '256K' },
+        { key: '显存占用', val: '22.5GB' },
+        { key: '速度等级', val: '中' },
+        { key: '许可协议', val: 'Apache 2.0' }
+      ]
+    },
+    {
+      id: 'hunyuan-mt15-18b',
+      name: '混元 MT1.5 1.8B',
+      version: 'v1.5.0',
+      installed: false,
+      speed: '快',
+      vram: '1.2GB',
+      categories: ['dialogue'],
+      capabilities: ['对话', '语言', '翻译'],
+      desc: '腾讯混元轻量级翻译模型，超低显存占用，适合边缘设备部署与实时翻译。',
+      params: [
+        { key: '参数量', val: '1.8B' },
+        { key: '上下文长度', val: '8K' },
+        { key: '显存占用', val: '1.2GB' },
+        { key: '速度等级', val: '快' },
+        { key: '许可协议', val: 'MIT License' }
+      ]
+    },
+    {
+      id: 'qwen36-27b',
+      name: 'Qwen3.6-27B',
+      version: 'v3.6.0',
+      installed: false,
+      speed: '中',
+      vram: '17.0GB',
+      categories: ['dialogue', 'multimodal'],
+      capabilities: ['对话', '推理', '多语言', '代码生成'],
+      desc: '通义千问 3.6 中型模型，平衡性能与资源消耗，支持代码生成与复杂推理任务。',
+      params: [
+        { key: '参数量', val: '27B' },
+        { key: '上下文长度', val: '128K' },
+        { key: '显存占用', val: '17.0GB' },
+        { key: '速度等级', val: '中' },
+        { key: '许可协议', val: 'Apache 2.0' }
+      ]
+    },
+    {
+      id: 'gemma4-26b-a',
+      name: 'Gemma 4 26B-A',
+      version: 'v4.0.0',
+      installed: false,
+      speed: '中',
+      vram: '16.0GB',
+      categories: ['multimodal', 'dialogue'],
+      capabilities: ['多模态', '对话', '推理', '多语言'],
+      desc: 'Google Gemma 4 大型多模态模型，更强的理解与生成能力，适合企业级应用场景。',
+      params: [
+        { key: '参数量', val: '26B' },
+        { key: '上下文长度', val: '128K' },
+        { key: '显存占用', val: '16.0GB' },
+        { key: '速度等级', val: '中' },
+        { key: '许可协议', val: 'Gemma License' }
+      ]
+    },
+    {
+      id: 'gemma4-e4b',
+      name: 'Gemma 4 E4B',
+      version: 'v4.0.0',
+      installed: false,
+      speed: '快',
+      vram: '2.5GB',
+      categories: ['embedding'],
+      capabilities: ['向量嵌入', '语义检索'],
+      desc: 'Google Gemma 4 嵌入模型，高效的文本向量化能力，适用于语义搜索与检索增强生成。',
+      params: [
+        { key: '参数量', val: '4B' },
+        { key: '向量维度', val: '2048' },
+        { key: '显存占用', val: '2.5GB' },
+        { key: '速度等级', val: '快' },
+        { key: '许可协议', val: 'Gemma License' }
+      ]
+    }
+  ];
+
+  let currentCategory = 'all';
+  let currentSearch = '';
+
+  // Model icons
+  const iconMap = {
+    'gemma4-12b': '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>',
+    'hunyuan-mt2-7b': '<img src="icon%20svg/%E8%85%BE%E8%AE%AF%E6%B7%B7%E5%85%83.svg" alt="混元"/>',
+    'qwen35-35b-a': '<img src="icon%20svg/Tongyi-Qianwen.svg" alt="Qwen"/>',
+    'qwen36-35b-a': '<img src="icon%20svg/Tongyi-Qianwen.svg" alt="Qwen"/>',
+    'hunyuan-mt15-18b': '<img src="icon%20svg/%E8%85%BE%E8%AE%AF%E6%B7%B7%E5%85%83.svg" alt="混元"/>',
+    'qwen36-27b': '<img src="icon%20svg/Tongyi-Qianwen.svg" alt="Qwen"/>',
+    'gemma4-26b-a': '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>',
+    'gemma4-e4b': '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>'
+  };
+  const defaultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>';
+
+  // Render model cards
+  function renderModels() {
+    const grid = document.getElementById('modelGrid');
+    const filtered = models.filter(m => {
+      const catMatch = currentCategory === 'all' || m.categories.includes(currentCategory);
+      const searchMatch = currentSearch === '' ||
+        m.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+        m.desc.toLowerCase().includes(currentSearch.toLowerCase()) ||
+        m.capabilities.some(c => c.toLowerCase().includes(currentSearch.toLowerCase()));
+      return catMatch && searchMatch;
+    });
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.86rem;">未找到匹配的模型</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(m => `
+      <div class="model-card ${m.installed ? 'installed' : ''}" data-id="${m.id}" onclick="openDetail('${m.id}')">
+        <div class="model-card-header">
+          <div class="model-icon">${iconMap[m.id] || defaultIcon}</div>
+          <div class="model-info">
+            <span class="model-name">${m.name}</span>
+            <span class="model-version">${m.version}</span>
+          </div>
+        </div>
+        <div class="model-tags">
+          <div class="model-tag-row">
+            ${m.capabilities.slice(0, 4).map(c => `<span class="model-tag capability">${c}</span>`).join('')}
+          </div>
+          <div class="model-tag-row">
+            <span class="model-tag speed ${m.speed === '中' ? 'medium' : ''}">${m.speed}</span>
+            <span class="model-tag vram">${m.vram}</span>
+          </div>
+        </div>
+        <div class="download-progress" id="progress-${m.id}">
+          <div class="progress-bar"><div class="progress-fill" id="fill-${m.id}"></div></div>
+          <span class="progress-text" id="text-${m.id}">下载中 0%</span>
+        </div>
+        <div class="model-actions">
+          ${m.installed
+            ? `<button class="model-btn downloaded" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已下载</button>`
+            : `<button class="model-btn primary" onclick="event.stopPropagation(); downloadModel('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载模型</button>`
+          }
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Category tab switching
+  document.querySelectorAll('.ms-cat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.ms-cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentCategory = tab.dataset.cat;
+      renderModels();
+    });
+  });
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    currentSearch = e.target.value;
+    renderModels();
+  });
+
+  // Nav item switching
+  document.querySelectorAll('.ms-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.ms-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Download model
+  function downloadModel(id) {
+    const model = models.find(m => m.id === id);
+    if (!model || model.installed) return;
+
+    const btn = event.target.closest('.model-btn');
+    const progress = document.getElementById('progress-' + id);
+    const fill = document.getElementById('fill-' + id);
+    const text = document.getElementById('text-' + id);
+
+    btn.disabled = true;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>下载中...';
+    progress.classList.add('show');
+
+    let pct = 0;
+    const interval = setInterval(() => {
+      pct += Math.random() * 15;
+      if (pct >= 100) {
+        pct = 100;
+        clearInterval(interval);
+        fill.style.width = '100%';
+        text.textContent = '下载完成';
+        setTimeout(() => {
+          model.installed = true;
+          renderModels();
+        }, 800);
+      } else {
+        fill.style.width = pct + '%';
+        text.textContent = '下载中 ' + Math.floor(pct) + '%';
+      }
+    }, 400);
+  }
+
+  // Detail modal
+  function openDetail(id) {
+    const model = models.find(m => m.id === id);
+    if (!model) return;
+
+    document.getElementById('detailTitle').textContent = model.name;
+    document.getElementById('detailVersion').textContent = model.version;
+
+    const body = document.getElementById('detailBody');
+    body.innerHTML = `
+      <div class="detail-section">
+        <span class="detail-section-label">性能标签</span>
+        <div class="detail-tags">
+          <span class="model-tag speed ${model.speed === '中' ? 'medium' : ''}">速度: ${model.speed}</span>
+          <span class="model-tag vram">显存: ${model.vram}</span>
+        </div>
+      </div>
+      <div class="detail-section">
+        <span class="detail-section-label">能力标签</span>
+        <div class="detail-tags">
+          ${model.capabilities.map(c => `<span class="model-tag capability">${c}</span>`).join('')}
+        </div>
+      </div>
+      <div class="detail-section">
+        <span class="detail-section-label">模型介绍</span>
+        <p class="detail-desc">${model.desc}</p>
+      </div>
+      <div class="detail-section">
+        <span class="detail-section-label">模型参数</span>
+        <div class="detail-params">
+          ${model.params.map(p => `
+            <div class="detail-param-row">
+              <span class="detail-param-key">${p.key}</span>
+              <span class="detail-param-val">${p.val}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    const footer = document.getElementById('detailFooter');
+    if (model.installed) {
+      footer.innerHTML = `<button class="model-btn downloaded" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已安装</button>`;
+    } else {
+      footer.innerHTML = `<button class="model-btn primary" onclick="closeDetail(); downloadModel('${model.id}');"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载模型</button>`;
+    }
+
+    document.getElementById('detailOverlay').classList.add('show');
+  }
+
+  function closeDetail() {
+    document.getElementById('detailOverlay').classList.remove('show');
+  }
+
+  document.getElementById('detailClose').addEventListener('click', closeDetail);
+  document.getElementById('detailOverlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDetail();
+  });
+
+  // Initial render
+  renderModels();
+</script>
+
+</body>
+</html>
