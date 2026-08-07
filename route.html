@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="laser-flow.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js"
+  }
+}
+</script>
 <style>
   :root {
     --bg: #060606;
@@ -362,7 +370,7 @@
     min-width: 0;
     position: relative;
     overflow: hidden;
-    background: #000;
+    background: transparent;
     border-radius: 16px;
   }
 
@@ -779,11 +787,219 @@
     mix-blend-mode: screen;
     animation: flowGradient 3s linear infinite;
   }
+
+  /* === Local Route Card === */
+  .local-route-card {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    z-index: 10;
+  }
+
+  .local-route-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .lrc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 14px;
+  }
+
+  .lrc-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  /* Toggle Switch */
+  .lrc-toggle {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.25s ease, border-color 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .lrc-toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
+  }
+
+  .lrc-toggle.on {
+    background: rgba(80, 200, 120, 0.25);
+    border-color: rgba(80, 200, 120, 0.4);
+  }
+
+  .lrc-toggle.on .lrc-toggle-knob {
+    transform: translateX(18px);
+    background: rgb(100, 220, 130);
+    box-shadow: 0 0 8px rgba(80, 200, 120, 0.6);
+  }
+
+  .lrc-body {
+    padding: 0 18px 18px;
+  }
+
+  .lrc-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Dropdown */
+  .lrc-dropdown {
+    position: relative;
+  }
+
+  .lrc-dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .lrc-dropdown-header:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .lrc-dropdown-text {
+    flex: 1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .lrc-dropdown-arrow {
+    width: 14px;
+    height: 14px;
+    color: var(--text-dim);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .lrc-dropdown.open .lrc-dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .lrc-dropdown-list {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: rgba(28, 28, 32, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  }
+
+  .lrc-dropdown.open .lrc-dropdown-list {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .lrc-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .lrc-dropdown-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .lrc-dropdown-item.selected {
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* Status indicator dot */
+  .lrc-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .lrc-status-dot.active {
+    background: rgb(80, 220, 120);
+    box-shadow: 0 0 6px rgba(80, 200, 120, 0.6);
+  }
+
+  .lrc-status-dot.inactive {
+    background: rgba(255,255,255,0.2);
+  }
 </style>
 </head>
 <body>
 
 <div class="app-window">
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;"></div>
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
@@ -854,25 +1070,37 @@
       </div>
     </div>
 
-    <!-- Right: Main Area (light beam effect) -->
+    <!-- Right: Main Area -->
     <div class="ms-main">
-      <div class="beam-stage">
-        <div class="beam-outer-glow"></div>
-        <div class="beam-mid-glow"></div>
-        <div class="beam-inner-glow"></div>
-        <div class="beam-core"></div>
-        <div class="beam-core-highlight"></div>
-        <div class="beam-flow-outer"></div>
-        <div class="beam-flow-wide"></div>
-        <div class="beam-flow"></div>
-        <div class="beam-streaks" id="beamStreaks"></div>
-        <div class="splash-rays"></div>
-        <div class="beam-splash"></div>
-        <div class="ground-fragments"></div>
-        <div class="ground-ripple"></div>
-        <div class="ground-line"></div>
-        <div class="ground-plane"></div>
-        <div class="beam-particles" id="beamParticles"></div>
+
+      <!-- Local Route Card -->
+      <div class="local-route-card">
+        <div class="lrc-header">
+          <span class="lrc-title">本地路由</span>
+          <button class="lrc-toggle" id="routeToggle">
+            <span class="lrc-toggle-knob"></span>
+          </button>
+        </div>
+        <div class="lrc-body">
+          <div class="lrc-label">模型选择</div>
+          <div class="lrc-dropdown" id="modelDropdown">
+            <div class="lrc-dropdown-header" id="dropdownHeader">
+              <span class="lrc-status-dot active" id="headerDot"></span>
+              <span class="lrc-dropdown-text" id="headerText">Gemma412B指令版</span>
+              <svg class="lrc-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="lrc-dropdown-list" id="dropdownList">
+              <div class="lrc-dropdown-item selected" data-model="gemma" data-active="true">
+                <span class="lrc-status-dot active"></span>
+                <span>Gemma412B指令版</span>
+              </div>
+              <div class="lrc-dropdown-item" data-model="hunyuan" data-active="false">
+                <span class="lrc-status-dot inactive"></span>
+                <span>混元MT27B翻译模型</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -888,67 +1116,82 @@
     });
   });
 
-  // Generate fine vertical streaks
-  (function generateStreaks() {
-    const container = document.getElementById('beamStreaks');
-    const streakCount = 120;
-    for (let i = 0; i < streakCount; i++) {
-      const streak = document.createElement('div');
-      streak.className = 'streak';
-      // Distribute streaks with higher density near center
-      const side = Math.random() > 0.5 ? 1 : -1;
-      const distance = Math.pow(Math.random(), 1.8) * 22; // bias toward center
-      const leftPercent = 50 + side * distance;
-      const opacity = (0.04 + Math.random() * 0.16) * (1 - distance / 25);
+  // Toggle switch — controls #laserFlowMount visibility
+  const routeToggle = document.getElementById('routeToggle');
+  const laserMount = document.getElementById('laserFlowMount');
+  laserMount.style.display = 'none';
+  routeToggle.addEventListener('click', () => {
+    routeToggle.classList.toggle('on');
+    laserMount.style.display = routeToggle.classList.contains('on') ? 'block' : 'none';
+  });
 
-      streak.style.left = leftPercent + '%';
-      streak.style.setProperty('--opacity', opacity);
-      streak.style.filter = `blur(${0.3 + Math.random() * 1.2}px)`;
+  // Dropdown
+  const dropdown = document.getElementById('modelDropdown');
+  const dropdownHeader = document.getElementById('dropdownHeader');
+  const dropdownList = document.getElementById('dropdownList');
+  const headerDot = document.getElementById('headerDot');
+  const headerText = document.getElementById('headerText');
 
-      // Background-position flow (streak stays in place, light flows upward)
-      const duration = 1 + Math.random() * 2.5;
-      const delay = Math.random() * 2;
-      streak.style.animation = `flowGradient ${duration}s linear ${delay}s infinite`;
+  dropdownHeader.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
 
-      container.appendChild(streak);
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
     }
-  })();
+  });
 
-  // Generate scattered particles
-  (function generateParticles() {
-    const container = document.getElementById('beamParticles');
-    const particleCount = 80;
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
+  // Dropdown item selection
+  dropdownList.querySelectorAll('.lrc-dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      dropdownList.querySelectorAll('.lrc-dropdown-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
 
-      // Bias particles toward beam vicinity
-      const side = Math.random() > 0.5 ? 1 : -1;
-      const distance = Math.pow(Math.random(), 1.5) * 35;
-      const leftPercent = 50 + side * distance;
-      const topPercent = Math.random() * 78;
+      const isActive = item.dataset.active === 'true';
+      const dot = item.querySelector('.lrc-status-dot');
+      const text = item.querySelector('span:last-child').textContent;
 
-      // Size: 1-3px
-      const size = 0.5 + Math.random() * 2.5;
+      headerText.textContent = text;
+      headerDot.className = 'lrc-status-dot ' + (isActive ? 'active' : 'inactive');
 
-      // Brightness: higher near beam center
-      const brightness = (0.15 + Math.random() * 0.5) * (1 - distance / 40);
+      dropdown.classList.remove('open');
+    });
+  });
+</script>
 
-      particle.style.left = leftPercent + '%';
-      particle.style.top = topPercent + '%';
-      particle.style.width = size + 'px';
-      particle.style.height = size + 'px';
-      particle.style.setProperty('--brightness', brightness);
-      particle.style.filter = `blur(${0.3 + Math.random() * 0.8}px)`;
+<script type="module">
+  import { LaserFlow } from './laser-flow.js';
 
-      // Float upward animation with random timing
-      const pDuration = 2 + Math.random() * 4;
-      const pDelay = Math.random() * 4;
-      particle.style.animation = `floatUp ${pDuration}s ease-out ${pDelay}s infinite`;
+  const mount = document.getElementById('laserFlowMount');
+  const appWindow = document.querySelector('.app-window');
 
-      container.appendChild(particle);
-    }
-  })();
+  // Fill .app-window with 270deg rotation (swap width/height)
+  function fitRotated() {
+    const w = appWindow.clientWidth;
+    const h = appWindow.clientHeight;
+    mount.style.width = h + 'px';
+    mount.style.height = w + 'px';
+  }
+  fitRotated();
+  new ResizeObserver(fitRotated).observe(appWindow);
+
+  const laserFlow = new LaserFlow(mount, {
+    color: '#ffffff',
+    wispDensity: 1,
+    flowSpeed: 0.35,
+    verticalSizing: 2,
+    horizontalSizing: 0.5,
+    fogIntensity: 0.45,
+    fogScale: 0.3,
+    wispSpeed: 15,
+    wispIntensity: 5,
+    flowStrength: 0.25,
+    decay: 1.1,
+    horizontalBeamOffset: 0,
+    verticalBeamOffset: -0.5
+  });
 </script>
 </body>
 </html>
