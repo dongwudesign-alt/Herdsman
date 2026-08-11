@@ -619,11 +619,249 @@
     overflow: hidden;
   }
 
-  .model-actions {
+  /* Card Download Button (top-right, shown on hover) */
+  .card-download-btn {
     position: absolute;
     top: 14px;
     right: 14px;
-    z-index: 2;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease, border-color 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 3;
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+
+  .model-card:hover .card-download-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .card-download-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .card-download-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  .card-download-btn.run {
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.3);
+    color: #4ade80;
+  }
+
+  .card-download-btn.run:hover {
+    background: rgba(74, 222, 128, 0.2);
+    border-color: rgba(74, 222, 128, 0.45);
+  }
+
+  /* Running state: icon-only orb, no chrome */
+  .card-download-btn.running {
+    background: transparent;
+    border: none;
+    color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    cursor: pointer;
+    padding: 0;
+    height: auto;
+    gap: 0;
+  }
+
+  .card-download-btn.running:hover {
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .card-download-btn .orb-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .card-download-btn .orb-wrap canvas {
+    display: block;
+  }
+
+  .card-download-btn .running-text {
+    line-height: 1;
+  }
+
+  /* Running card: stronger blue glow */
+  .model-card.running::after {
+    background: radial-gradient(
+      ellipse 80% 80% at 70% 70%,
+      rgba(96, 165, 250, 0.22) 0%,
+      rgba(96, 165, 250, 0.12) 25%,
+      rgba(96, 165, 250, 0.05) 45%,
+      rgba(96, 165, 250, 0.02) 65%,
+      transparent 85%
+    );
+  }
+
+  .card-more-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 3;
+  }
+
+  .card-more-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  .card-more-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .card-more-btn.active {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.22);
+    color: var(--text);
+  }
+
+  /* Card context menu: same glass style as the homepage upload menu */
+  .card-menu {
+    position: fixed;
+    width: 138px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .card-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .card-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .card-menu-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .card-menu-item svg {
+    flex-shrink: 0;
+  }
+
+  .card-menu-item.danger {
+    color: #f87171;
+  }
+
+  .card-menu-item.danger:hover {
+    background: rgba(248,113,113,0.12);
+    color: #fca5a5;
+  }
+
+  /* Pause button: right of the more button (4px gap), only on running cards while hovered */
+  .card-pause-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 48px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(96, 165, 250, 0.35);
+    background: rgba(96, 165, 250, 0.14);
+    color: #60a5fa;
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 3;
+    opacity: 0;
+    transform: translateY(4px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .model-card.running:hover .card-pause-btn {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .card-pause-btn:hover {
+    background: rgba(96, 165, 250, 0.26);
+    border-color: rgba(96, 165, 250, 0.55);
+  }
+
+  .card-pause-btn svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
   }
 
   .model-btn {
@@ -677,11 +915,6 @@
     flex-shrink: 0;
   }
 
-  /* Element-specific: third card download button transparent background */
-  #modelGrid > .model-card:nth-child(3) > .model-actions > .model-btn {
-    background-color: rgba(255, 255, 255, 0);
-  }
-
   /* Element-specific: third card description hidden */
   #modelGrid > .model-card:nth-child(3) > .model-desc {
     visibility: hidden;
@@ -714,7 +947,7 @@
     border-radius: 12px;
   }
 
-  .model-card > *:not(.model-actions) {
+  .model-card > *:not(.card-download-btn):not(.card-more-btn):not(.card-pause-btn) {
     position: relative;
     z-index: 2;
   }
@@ -1038,6 +1271,18 @@
   </div>
 </div>
 
+<!-- Card context menu (fixed-position singleton, mirrors homepage upload menu) -->
+<div class="card-menu" id="cardMenu">
+  <button class="card-menu-item" id="cardMenuDetail">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+    <span>查看详情</span>
+  </button>
+  <button class="card-menu-item danger" id="cardMenuUninstall">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    <span>卸载</span>
+  </button>
+</div>
+
 <!-- Detail Modal -->
 <div class="detail-overlay" id="detailOverlay">
   <div class="detail-modal">
@@ -1259,12 +1504,11 @@
           <div class="progress-bar"><div class="progress-fill" id="fill-${m.id}"></div></div>
           <span class="progress-text" id="text-${m.id}">下载中 0%</span>
         </div>
-        <div class="model-actions">
-          ${m.installed
-            ? `<button class="model-btn downloaded" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已下载</button>`
-            : `<button class="model-btn primary" onclick="event.stopPropagation(); downloadModel('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载模型</button>`
-          }
-        </div>
+        ${m.installed
+          ? `<button class="card-download-btn run" onclick="event.stopPropagation(); runModel('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>运行</button><button class="card-pause-btn" onclick="event.stopPropagation(); pauseModel('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>暂停</button>`
+          : `<button class="card-download-btn" onclick="event.stopPropagation(); downloadModel('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载</button>`
+        }
+        <button class="card-more-btn" onclick="event.stopPropagation(); toggleCardMenu('${m.id}', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
       </div>
     `).join('');
   }
@@ -1298,7 +1542,7 @@
     const model = models.find(m => m.id === id);
     if (!model || model.installed) return;
 
-    const btn = event.target.closest('.model-btn');
+    const btn = event.target.closest('.card-download-btn');
     const progress = document.getElementById('progress-' + id);
     const fill = document.getElementById('fill-' + id);
     const text = document.getElementById('text-' + id);
@@ -1368,7 +1612,7 @@
 
     const footer = document.getElementById('detailFooter');
     if (model.installed) {
-      footer.innerHTML = `<button class="model-btn downloaded" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>已安装</button>`;
+      footer.innerHTML = `<button class="model-btn primary" onclick="closeDetail(); runModel('${model.id}');"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>运行</button>`;
     } else {
       footer.innerHTML = `<button class="model-btn primary" onclick="closeDetail(); downloadModel('${model.id}');"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>下载模型</button>`;
     }
@@ -1380,6 +1624,124 @@
     document.getElementById('detailOverlay').classList.remove('show');
   }
 
+  // Stop a running model and restore the card to its installed (green) state
+  function stopModel(model, card, btn) {
+    model.running = false;
+    if (card) card.classList.remove('running');
+    if (model._orbRoot) {
+      try { model._orbRoot.unmount(); } catch (e) {}
+      model._orbRoot = null;
+    }
+    if (btn) {
+      btn.classList.remove('running');
+      btn.classList.add('run');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>运行';
+    }
+  }
+
+  // Pause a running model (bottom-left pause button)
+  function pauseModel(id) {
+    const model = models.find(m => m.id === id);
+    if (!model || !model.installed || !model.running) return;
+    const card = document.querySelector('.model-card[data-id="' + id + '"]');
+    const btn = card ? card.querySelector('.card-download-btn') : null;
+    stopModel(model, card, btn);
+  }
+
+  // Close the card context menu
+  function closeCardMenu() {
+    const menu = document.getElementById('cardMenu');
+    if (menu) menu.classList.remove('show');
+    document.querySelectorAll('.card-more-btn.active').forEach(b => b.classList.remove('active'));
+  }
+
+  // Toggle the card context menu next to the more button
+  function toggleCardMenu(id, btn) {
+    const menu = document.getElementById('cardMenu');
+    if (!menu) return;
+    if (menu.classList.contains('show') && menu.dataset.id === id) {
+      closeCardMenu();
+      return;
+    }
+
+    menu.dataset.id = id;
+    const model = models.find(m => m.id === id);
+    const uninstallBtn = document.getElementById('cardMenuUninstall');
+    if (uninstallBtn) uninstallBtn.style.display = (model && model.installed) ? '' : 'none';
+
+    // Position below the more button, right-aligned; shift right only when
+    // it would overflow the left edge, flip above only when no room below
+    const rect = btn.getBoundingClientRect();
+    const mw = menu.offsetWidth;
+    const mh = menu.offsetHeight;
+    let top = rect.bottom + 8;
+    if (top + mh > window.innerHeight - 8) top = rect.top - mh - 8;
+    let left = rect.right - mw;
+    if (left < 8) left = 8;
+    if (left + mw > window.innerWidth - 8) left = window.innerWidth - mw - 8;
+
+    menu.style.top = top + 'px';
+    menu.style.left = left + 'px';
+    menu.classList.add('show');
+    btn.classList.add('active');
+  }
+
+  // Uninstall a model: clears running state and restores the download card
+  function uninstallModel(id) {
+    const model = models.find(m => m.id === id);
+    if (!model || !model.installed) return;
+    model.installed = false;
+    model.running = false;
+    model._orbRoot = null;
+    closeCardMenu();
+    renderModels();
+  }
+
+  // Card menu wiring
+  document.getElementById('cardMenuDetail').addEventListener('click', () => {
+    const id = document.getElementById('cardMenu').dataset.id;
+    closeCardMenu();
+    if (id) openDetail(id);
+  });
+  document.getElementById('cardMenuUninstall').addEventListener('click', () => {
+    const id = document.getElementById('cardMenu').dataset.id;
+    if (id) uninstallModel(id);
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.card-more-btn') && !e.target.closest('#cardMenu')) {
+      closeCardMenu();
+    }
+  });
+
+  // Run model (toggle running state)
+  function runModel(id) {
+    const model = models.find(m => m.id === id);
+    if (!model || !model.installed) return;
+    const card = document.querySelector('.model-card[data-id="' + id + '"]');
+    const btn = card ? card.querySelector('.card-download-btn') : null;
+
+    model.running = !model.running;
+
+    if (model.running) {
+      if (card) card.classList.add('running');
+      if (btn) {
+        btn.classList.remove('run');
+        btn.classList.add('running');
+        btn.innerHTML = '<span class="orb-wrap"></span>';
+        if (window.ThinkingOrbs) {
+          model._orbRoot = ThinkingOrbs.mountOrb(btn.querySelector('.orb-wrap'), {
+            state: 'working',
+            size: 36,
+            theme: 'dark',
+            color: [96, 165, 250]
+          });
+        }
+      }
+    } else {
+      stopModel(model, card, btn);
+    }
+  }
+
   document.getElementById('detailClose').addEventListener('click', closeDetail);
   document.getElementById('detailOverlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeDetail();
@@ -1388,6 +1750,8 @@
   // Initial render
   renderModels();
 </script>
+
+<script src="thinking-orbs-main/bundled/thinking-orbs.bundle.js"></script>
 
 </body>
 </html>
