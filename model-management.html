@@ -1,0 +1,3453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模型管理 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --installed: rgba(74, 222, 128, 0.15);
+    --installed-border: rgba(74, 222, 128, 0.3);
+    --installed-text: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Model Management View */
+  .model-mgmt-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .ms-nav-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ms-nav-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ms-nav-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--text);
+  }
+
+  /* Main Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ms-main-header {
+    padding: 14px 18px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-main-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .ms-page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* Import Model Button */
+  .import-model-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 18px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: visible;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+  }
+
+  .import-model-btn::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 10%;
+    right: 10%;
+    height: 12px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  .import-model-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 12%;
+    right: 12%;
+    height: 10px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+  }
+
+  .import-model-btn:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
+      inset 1px 0 0 0 rgba(255,255,255,0.16),
+      inset -1px 0 0 0 rgba(255,255,255,0.16),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 6px 28px rgba(0,0,0,0.3),
+      0 0 32px rgba(255,255,255,0.08);
+    text-shadow: 0 0 10px rgba(255,255,255,0.20);
+    transform: translateY(-1px);
+  }
+
+  .import-model-btn:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
+  }
+
+  .import-model-btn:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
+  /* ===== System Resource Monitor ===== */
+  .resource-section {
+    padding: 0 18px 14px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .resource-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .resource-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .resource-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .resource-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .resource-label svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .resource-value {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .resource-bar {
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .resource-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .resource-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+  }
+
+  .resource-fill.low {
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.7), rgba(74, 222, 128, 0.9));
+  }
+
+  .resource-fill.medium {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.7), rgba(251, 191, 36, 0.9));
+  }
+
+  .resource-fill.high {
+    background: linear-gradient(90deg, rgba(248, 113, 113, 0.7), rgba(248, 113, 113, 0.9));
+  }
+
+  .resource-detail {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  /* ===== Model List Table ===== */
+  .model-list-section {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0 18px 14px;
+    position: relative;
+    z-index: 1;
+    min-height: 0;
+  }
+
+  .model-list-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 4px;
+    flex-shrink: 0;
+  }
+
+  .model-list-col {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .col-name { width: 200px; flex-shrink: 0; }
+  .col-perf { width: 160px; flex-shrink: 0; }
+  .col-cap { flex: 1; min-width: 0; }
+  .col-status { width: 100px; flex-shrink: 0; text-align: center; }
+  .col-actions { width: 80px; flex-shrink: 0; text-align: right; }
+
+  .model-list-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .model-list-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .model-list-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .model-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: all 0.15s ease;
+    border-radius: 10px;
+    margin: 4px 0;
+    position: relative;
+  }
+
+  .model-row:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .model-row.running {
+    background: rgba(209, 209, 209, 0.08);
+  }
+
+  /* Column: Name */
+  .row-name {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .row-model-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .row-model-icon img,
+  .row-model-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .row-model-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .row-model-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-model-version {
+    font-size: 0.74rem;
+    color: var(--text-dim);
+  }
+
+  .update-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.6rem;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+
+  /* Column: Performance */
+  .row-perf {
+    width: 160px;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  /* Column: Capabilities */
+  .row-cap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .perf-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .perf-tag.speed {
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
+  }
+
+  .perf-tag.speed.medium {
+    background: rgba(251, 146, 60, 0.12);
+    color: #fb923c;
+  }
+
+  .perf-tag.vram {
+    background: rgba(167, 139, 250, 0.12);
+    color: #a78bfa;
+  }
+
+  .cap-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    white-space: nowrap;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+  }
+
+  /* Column: Status Toggle */
+  .row-status {
+    width: 100px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .status-toggle {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .status-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .status-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 22px;
+    transition: all 0.25s ease;
+  }
+
+  .status-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+  }
+
+  .status-toggle input:checked + .status-toggle-slider {
+    background: rgba(74, 222, 128, 0.25);
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+
+  .status-toggle input:checked + .status-toggle-slider::before {
+    transform: translateY(-50%) translateX(16px);
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+  }
+
+  /* Column: Actions */
+  .row-actions {
+    width: 80px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+  }
+
+  .action-more-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .action-more-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .action-dropdown {
+    position: absolute;
+    top: 34px;
+    right: 0;
+    width: 150px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    overflow: hidden;
+  }
+
+  .action-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .dropdown-item.danger {
+    color: #f87171;
+  }
+
+  .dropdown-item.danger:hover {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+  }
+
+  .dropdown-item svg {
+    flex-shrink: 0;
+  }
+
+  /* ===== Model Launch Modal ===== */
+  .model-launch-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .model-launch-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .model-launch-modal {
+    width: 420px;
+    max-width: 90vw;
+    max-height: 600px;
+    height: auto;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @media (max-height: 750px) {
+    .model-launch-modal {
+      max-height: 80vh;
+    }
+  }
+
+  .model-launch-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .model-launch-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.25);
+  }
+
+  .model-launch-modal {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+
+  .model-launch-overlay.show .model-launch-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .model-launch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .model-launch-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .model-launch-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .model-launch-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .launch-section {
+    margin-bottom: 20px;
+  }
+
+  .launch-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .launch-section-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .launch-section-value {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .launch-slider-wrap {
+    position: relative;
+    height: 24px;
+    display: flex;
+    align-items: center;
+  }
+
+  .launch-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    outline: none;
+    position: relative;
+    z-index: 2;
+  }
+
+  .launch-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.15);
+    transition: box-shadow 0.15s ease;
+  }
+
+  .launch-slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5), 0 0 0 5px rgba(255,255,255,0.25);
+  }
+
+  .launch-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.15);
+  }
+
+  .launch-slider-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .launch-slider-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffffff, #aaaaaa);
+    border-radius: 4px;
+    transition: width 0.1s ease;
+  }
+
+  .launch-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .launch-advanced {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 16px;
+    margin-bottom: 20px;
+  }
+
+  .launch-advanced-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+    transition: color 0.15s ease;
+  }
+
+  .launch-advanced-toggle:hover {
+    color: var(--text);
+  }
+
+  .launch-advanced-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .launch-advanced.open .launch-advanced-icon {
+    transform: rotate(180deg);
+  }
+
+  .launch-advanced-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, margin-top 0.35s ease;
+  }
+
+  .launch-advanced.open .launch-advanced-content {
+    max-height: 600px;
+    margin-top: 12px;
+  }
+
+  .advanced-group-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+
+  .advanced-num-input {
+    width: 72px;
+    height: 26px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.8rem;
+    font-family: inherit;
+    text-align: right;
+    padding: 0 8px;
+    outline: none;
+    transition: all 0.15s ease;
+    -moz-appearance: textfield;
+  }
+
+  .advanced-num-input::-webkit-outer-spin-button,
+  .advanced-num-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .advanced-num-input:focus {
+    border-color: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+  }
+
+  .advanced-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .advanced-toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .advanced-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    transition: all 0.25s ease;
+  }
+
+  .advanced-toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background: rgba(255,255,255,0.4);
+    border-radius: 50%;
+    transition: all 0.25s ease;
+  }
+
+  .advanced-toggle-switch input:checked + .advanced-toggle-slider {
+    background: rgba(255,255,255,0.25);
+  }
+
+  .advanced-toggle-switch input:checked + .advanced-toggle-slider::before {
+    transform: translateX(16px);
+    background: #fff;
+  }
+
+  .advanced-param {
+    margin-bottom: 14px;
+  }
+
+  .advanced-param:last-child {
+    margin-bottom: 0;
+  }
+
+  .advanced-param-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .advanced-param-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .advanced-param-value {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .advanced-param .launch-slider {
+    height: 3px;
+  }
+
+  .advanced-param .launch-slider::-webkit-slider-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .advanced-param .launch-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  .launch-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .launch-btn {
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .launch-btn-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    flex: 1;
+  }
+
+  .launch-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .launch-btn-default {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(255,255,255,0.1);
+    flex: 1;
+  }
+
+  .launch-btn-default:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .launch-btn-start {
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+    overflow: visible;
+    flex: 1;
+  }
+
+  .launch-btn-start:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.07) 50%,
+      rgba(255,255,255,0.10) 75%,
+      rgba(255,255,255,0.15) 100%
+    );
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.08),
+      inset 1px 0 0 0 rgba(255,255,255,0.14),
+      inset -1px 0 0 0 rgba(255,255,255,0.14),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 4px 24px rgba(0,0,0,0.30),
+      0 0 32px rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+  }
+
+  /* ===== Loading Overlay ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .loading-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .loading-modal {
+    width: 320px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .loading-overlay.show .loading-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .loading-spinner-ring {
+    position: relative;
+    width: 72px;
+    height: 72px;
+  }
+
+  .loading-spinner-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+
+  .loading-spinner-progress {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #fff;
+    border-right-color: rgba(255,255,255,0.4);
+    animation: spinnerRotate 1s linear infinite;
+  }
+
+  @keyframes spinnerRotate {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-spinner-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    animation: corePulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes corePulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .loading-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .loading-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 1.2em;
+    transition: opacity 0.3s ease;
+  }
+
+  .loading-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .loading-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), #fff);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+    width: 0%;
+  }
+
+  .loading-percent {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  /* ===== Import Model Modal ===== */
+  .import-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .import-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .import-modal {
+    width: 480px;
+    max-width: 90vw;
+    max-height: 600px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @media (max-height: 750px) {
+    .import-modal {
+      max-height: 80vh;
+    }
+  }
+
+  .import-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .import-modal::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .import-overlay.show .import-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .import-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .import-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .import-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .import-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  /* Tab Switcher */
+  .import-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .import-tab {
+    flex: 1;
+    padding: 8px 0;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .import-tab:hover {
+    color: var(--text);
+  }
+
+  .import-tab.active {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Form Fields */
+  .import-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .import-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .import-field-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .import-field-row .import-field {
+    flex: 1;
+  }
+
+  .import-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .import-input,
+  .import-select {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .import-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .import-input:focus,
+  .import-select:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .import-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  .import-select option {
+    background: #1a1a1e;
+    color: var(--text);
+  }
+
+  /* Custom Select Dropdown (matches homepage upload-dropdown style) */
+  .custom-select {
+    position: relative;
+  }
+
+  .custom-select-trigger {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .custom-select-trigger:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .custom-select.open .custom-select-trigger {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .custom-select-text {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .custom-select-arrow {
+    flex-shrink: 0;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+    color: var(--text-dim);
+  }
+
+  .custom-select.open .custom-select-arrow {
+    transform: rotate(180deg);
+  }
+
+  .custom-select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .custom-select.open .custom-select-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .custom-select-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .custom-select-option:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .custom-select-option.active {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  /* File Selector */
+  .file-selector {
+    display: flex;
+    gap: 8px;
+  }
+
+  .file-selector .import-input {
+    flex: 1;
+  }
+
+  .file-browse-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-browse-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  /* Tab Content */
+  .import-tab-content {
+    display: none;
+  }
+
+  .import-tab-content.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Footer */
+  .import-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 20px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .import-btn-cancel {
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .import-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .import-btn-confirm {
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      0 4px 20px rgba(0,0,0,0.25);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+  }
+
+  .import-btn-confirm:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    transform: translateY(-1px);
+  }
+
+  /* Import number input */
+  .import-num-input {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .import-num-input:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .import-num-input::-webkit-inner-spin-button,
+  .import-num-input::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
+
+  /* Field hint */
+  .import-field-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* Field error */
+  .import-field-error {
+    font-size: 0.72rem;
+    color: #f87171;
+    margin-top: 2px;
+    display: none;
+  }
+
+  .import-field-error.show {
+    display: block;
+  }
+
+  .import-input.error,
+  .import-select.error {
+    border-color: rgba(248, 113, 113, 0.5) !important;
+    background: rgba(248, 113, 113, 0.05);
+  }
+
+  /* Test connection button */
+  .test-connection-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .test-connection-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .test-connection-btn.testing {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .test-connection-btn.success {
+    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(74, 222, 128, 0.08);
+    color: #4ade80;
+  }
+
+  .test-connection-btn.fail {
+    border-color: rgba(248, 113, 113, 0.3);
+    background: rgba(248, 113, 113, 0.08);
+    color: #f87171;
+  }
+
+  .test-spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+
+  .test-connection-btn.testing .test-spinner {
+    display: block;
+  }
+
+  .test-connection-btn.testing .test-icon-default {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* URL with test button row */
+  .url-with-test {
+    display: flex;
+    gap: 8px;
+  }
+
+  .url-with-test .import-input {
+    flex: 1;
+  }
+
+  /* Connection status */
+  .connection-status {
+    font-size: 0.72rem;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .connection-status.show {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .connection-status.success {
+    color: #4ade80;
+  }
+
+  .connection-status.fail {
+    color: #f87171;
+  }
+
+  /* Toast notification */
+  .toast-notification {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(28, 28, 32, 0.98);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 10002;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    font-weight: 500;
+  }
+
+  .toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast-notification.success {
+    border-color: rgba(74, 222, 128, 0.25);
+  }
+
+  .toast-notification.success .toast-icon {
+    color: #4ade80;
+  }
+
+  .toast-notification.error {
+    border-color: rgba(248, 113, 113, 0.25);
+  }
+
+  .toast-notification.error .toast-icon {
+    color: #f87171;
+  }
+
+  .toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .import-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 4px 0;
+  }
+
+  /* Field row with 3 columns */
+  .import-field-row-3 {
+    display: flex;
+    gap: 12px;
+  }
+
+  .import-field-row-3 .import-field {
+    flex: 1;
+  }
+
+  /* ===== Delete Confirmation Dialog ===== */
+  .delete-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .delete-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .delete-modal {
+    width: 360px;
+    background: rgba(28, 28, 32, 0.98);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+    transform: scale(0.94);
+    transition: transform 0.25s ease;
+  }
+
+  .delete-overlay.show .delete-modal {
+    transform: scale(1);
+  }
+
+  .delete-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f87171;
+    margin-bottom: 14px;
+  }
+
+  .delete-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .delete-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .delete-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .delete-btn {
+    height: 34px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+  }
+
+  .delete-btn-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+  }
+
+  .delete-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .delete-btn-confirm {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+  }
+
+  .delete-btn-confirm:hover {
+    background: rgba(248, 113, 113, 0.25);
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item active" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="route.html" title="路由管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </a>
+      <div class="s-item" title="数据库">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      </div>
+      <div class="s-item" title="统计">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+      </div>
+      <div class="s-item" title="更多">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      </div>
+    </div>
+    <div class="sidebar-group bottom">
+      <div class="s-item" title="用户">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Management View -->
+  <div class="model-mgmt-view" id="modelMgmtView">
+
+    <!-- Left: Navigation Card (220px) -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">模型管理</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item" href="model-store.html" data-page="store">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          模型中心
+        </a>
+        <div class="ms-nav-item active" data-page="management">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          模型管理
+        </div>
+        <div class="ms-nav-item" data-page="api">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          接口文档
+        </div>
+        <div class="ms-nav-item" data-page="stats">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          调用统计
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Model Management Main Area -->
+    <div class="ms-card ms-main">
+      <div class="ms-main-header">
+        <div class="ms-main-top">
+          <span class="ms-page-title">模型管理</span>
+          <button class="import-model-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            导入模型
+          </button>
+        </div>
+      </div>
+
+      <!-- System Resource Monitor -->
+      <div class="resource-section">
+        <div class="resource-grid">
+          <div class="resource-card">
+            <div class="resource-header">
+              <span class="resource-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                CPU
+              </span>
+              <span class="resource-value" id="cpuValue">32%</span>
+            </div>
+            <div class="resource-bar">
+              <div class="resource-fill low" id="cpuFill" style="width: 32%;"></div>
+            </div>
+            <div class="resource-detail">Intel Core i9-13900K</div>
+          </div>
+
+          <div class="resource-card">
+            <div class="resource-header">
+              <span class="resource-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="18" y1="10" x2="18" y2="14"/></svg>
+                GPU
+              </span>
+              <span class="resource-value" id="gpuValue">67%</span>
+            </div>
+            <div class="resource-bar">
+              <div class="resource-fill medium" id="gpuFill" style="width: 67%;"></div>
+            </div>
+            <div class="resource-detail">NVIDIA RTX 4090</div>
+          </div>
+
+          <div class="resource-card">
+            <div class="resource-header">
+              <span class="resource-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="12" rx="2"/><line x1="7" y1="10" x2="7" y2="14"/><line x1="11" y1="10" x2="11" y2="14"/><line x1="15" y1="10" x2="15" y2="14"/><line x1="19" y1="10" x2="19" y2="14"/></svg>
+                RAM
+              </span>
+              <span class="resource-value" id="ramValue">45%</span>
+            </div>
+            <div class="resource-bar">
+              <div class="resource-fill low" id="ramFill" style="width: 45%;"></div>
+            </div>
+            <div class="resource-detail">28.8 / 64 GB</div>
+          </div>
+
+          <div class="resource-card">
+            <div class="resource-header">
+              <span class="resource-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><rect x="6" y="6" width="12" height="12" rx="1"/><line x1="10" y1="2" x2="10" y2="6"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="10" y1="18" x2="10" y2="22"/><line x1="14" y1="18" x2="14" y2="22"/></svg>
+                VRAM
+              </span>
+              <span class="resource-value" id="vramValue">81%</span>
+            </div>
+            <div class="resource-bar">
+              <div class="resource-fill high" id="vramFill" style="width: 81%;"></div>
+            </div>
+            <div class="resource-detail">19.4 / 24 GB</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model List Table -->
+      <div class="model-list-section">
+        <div class="model-list-header">
+          <div class="model-list-col col-name">模型</div>
+          <div class="model-list-col col-perf">性能</div>
+          <div class="model-list-col col-cap">能力</div>
+          <div class="model-list-col col-status">状态</div>
+          <div class="model-list-col col-actions">操作</div>
+        </div>
+        <div class="model-list-body" id="modelListBody">
+          <!-- Model rows rendered by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Model Launch Modal -->
+<div class="model-launch-overlay" id="modelLaunchOverlay">
+  <div class="model-launch-modal" id="modelLaunchModal">
+    <div class="model-launch-header">
+      <h2 class="model-launch-title" id="launchModelTitle">启动模型</h2>
+      <button class="model-launch-close" id="btnCloseLaunch" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+
+    <!-- 上下文大小调节 -->
+    <div class="launch-section">
+      <div class="launch-section-header">
+        <span class="launch-section-label">上下文大小</span>
+        <span class="launch-section-value" id="contextValue">54K</span>
+      </div>
+      <div class="launch-slider-wrap">
+        <input type="range" class="launch-slider" id="contextSlider" min="1" max="256" value="54">
+        <div class="launch-slider-track">
+          <div class="launch-slider-fill" id="contextSliderFill"></div>
+        </div>
+      </div>
+      <div class="launch-slider-labels">
+        <span>1K</span>
+        <span>256K</span>
+      </div>
+    </div>
+
+    <!-- 高级参数折叠面板 -->
+    <div class="launch-advanced" id="launchAdvanced">
+      <button class="launch-advanced-toggle" id="btnAdvancedToggle">
+        <svg class="launch-advanced-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        高级参数
+      </button>
+      <div class="launch-advanced-content" id="advancedContent">
+        <div class="advanced-group-label">生成采样参数</div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">K/V 缓存量化</span>
+            <label class="advanced-toggle-switch">
+              <input type="checkbox" id="kvQuantToggle">
+              <span class="advanced-toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Temperature</span>
+            <span class="advanced-param-value" id="tempValue">0.7</span>
+          </div>
+          <input type="range" class="launch-slider" id="tempSlider" min="0" max="200" value="70">
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Top P</span>
+            <span class="advanced-param-value" id="topPValue">0.6</span>
+          </div>
+          <input type="range" class="launch-slider" id="topPSlider" min="0" max="100" value="60">
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Top K</span>
+            <input type="number" class="advanced-num-input" id="topKInput" value="20" min="1" max="200">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Min P</span>
+            <input type="number" class="advanced-num-input" id="minPInput" value="0.05" min="0" max="1" step="0.01">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">重复惩罚</span>
+            <span class="advanced-param-value" id="repPenaltyValue">1.05</span>
+          </div>
+          <input type="range" class="launch-slider" id="repPenaltySlider" min="100" max="200" value="105">
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">并发数</span>
+            <input type="number" class="advanced-num-input" id="concurrencyInput" value="1" min="1" max="64">
+          </div>
+        </div>
+
+        <div class="advanced-group-label" style="margin-top:12px;">硬件参数</div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Batch Size</span>
+            <input type="number" class="advanced-num-input" id="batchSizeInput" value="512" min="1" max="4096">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Micro Batch</span>
+            <input type="number" class="advanced-num-input" id="microBatchInput" value="1" min="1" max="64">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">GPU 层数</span>
+            <input type="number" class="advanced-num-input" id="gpuLayersInput" value="99" min="0" max="200">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">线程数</span>
+            <input type="number" class="advanced-num-input" id="threadsInput" value="4" min="1" max="64">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">Batch 线程数</span>
+            <input type="number" class="advanced-num-input" id="batchThreadsInput" value="4" min="1" max="64">
+          </div>
+        </div>
+
+        <div class="advanced-param">
+          <div class="advanced-param-header">
+            <span class="advanced-param-label">RAM Prompt Cache (MiB)</span>
+            <input type="number" class="advanced-num-input" id="ramCacheInput" value="8192" min="0" max="65536" step="512">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部操作按钮 -->
+    <div class="launch-footer">
+      <button class="launch-btn launch-btn-cancel" id="btnCancelLaunch">取消</button>
+      <button class="launch-btn launch-btn-default" id="btnResetLaunch">恢复默认</button>
+      <button class="launch-btn launch-btn-start" id="btnStartLaunch">启动</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-modal" id="loadingModal">
+    <div class="loading-spinner-ring">
+      <div class="loading-spinner-track"></div>
+      <div class="loading-spinner-progress" id="loadingSpinnerProgress"></div>
+      <div class="loading-spinner-core"></div>
+    </div>
+    <div class="loading-title">正在启动模型</div>
+    <div class="loading-subtitle" id="loadingSubtitle">初始化上下文引擎...</div>
+    <div class="loading-progress-bar">
+      <div class="loading-progress-fill" id="loadingProgressFill"></div>
+    </div>
+    <div class="loading-percent" id="loadingPercent">0%</div>
+  </div>
+</div>
+
+<!-- Import Model Modal -->
+<div class="import-overlay" id="importOverlay">
+  <div class="import-modal" id="importModal">
+    <div class="import-header">
+      <h2 class="import-title">导入模型</h2>
+      <button class="import-close" id="btnCloseImport" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="import-tabs">
+      <button class="import-tab active" data-tab="gguf">GGUF</button>
+      <button class="import-tab" data-tab="openai">OpenAI 兼容</button>
+    </div>
+
+    <!-- GGUF Tab Content -->
+    <div class="import-tab-content active" id="tab-gguf">
+      <div class="import-field">
+        <label class="import-label">主 GGUF 文件</label>
+        <div class="file-selector">
+          <input type="text" class="import-input" id="ggufFile" placeholder="选择 .gguf 模型文件" readonly>
+          <button class="file-browse-btn" id="btnBrowseFile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            选择文件
+          </button>
+        </div>
+        <span class="import-field-error" id="ggufFileError">请选择 GGUF 模型文件</span>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型名称</label>
+          <input type="text" class="import-input" id="ggufModelName" placeholder="输入模型名称">
+          <span class="import-field-error" id="ggufNameError">请输入模型名称</span>
+        </div>
+        <div class="import-field">
+          <label class="import-label">模型类型</label>
+          <div class="custom-select" data-select-id="ggufModelType">
+            <input type="hidden" id="ggufModelType" value="text">
+            <button class="custom-select-trigger" type="button">
+              <span class="custom-select-text">文本生成</span>
+              <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-dropdown">
+              <button class="custom-select-option active" data-value="text" type="button">文本生成</button>
+              <button class="custom-select-option" data-value="multimodal" type="button">多模态</button>
+              <button class="custom-select-option" data-value="ocr" type="button">OCR 识别</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="import-divider"></div>
+
+      <div class="import-field">
+        <label class="import-label">思考能力</label>
+        <div class="custom-select" data-select-id="ggufThinking">
+          <input type="hidden" id="ggufThinking" value="auto">
+          <button class="custom-select-trigger" type="button">
+            <span class="custom-select-text">自动识别旧字段</span>
+            <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-dropdown">
+            <button class="custom-select-option active" data-value="auto" type="button">自动识别旧字段</button>
+            <button class="custom-select-option" data-value="none" type="button">不支持深度思考</button>
+            <button class="custom-select-option" data-value="thinking_enabled" type="button">思考开关 thinking_enabled</button>
+            <button class="custom-select-option" data-value="reasoning_effort" type="button">推理级别 reasoning_effort</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OpenAI Compatible Tab Content -->
+    <div class="import-tab-content" id="tab-openai">
+      <div class="import-field">
+        <label class="import-label">API Base URL</label>
+        <div class="url-with-test">
+          <input type="text" class="import-input" id="openaiUrl" placeholder="https://api.openai.com/v1">
+          <button class="test-connection-btn" id="btnTestConnection">
+            <span class="test-spinner"></span>
+            <svg class="test-icon-default" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span class="test-text">测试连接</span>
+          </button>
+        </div>
+        <span class="import-field-error" id="openaiUrlError">请输入 API Base URL</span>
+        <span class="connection-status" id="connectionStatus"></span>
+      </div>
+
+      <div class="import-field">
+        <label class="import-label">API Key</label>
+        <input type="password" class="import-input" id="openaiKey" placeholder="sk-...">
+        <span class="import-field-hint">部分本地服务可留空</span>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型名称</label>
+          <input type="text" class="import-input" id="openaiModelName" placeholder="本地展示名称">
+          <span class="import-field-error" id="openaiNameError">请输入模型名称</span>
+        </div>
+        <div class="import-field">
+          <label class="import-label">模型 ID</label>
+          <input type="text" class="import-input" id="openaiModelId" placeholder="gpt-4o / deepseek-chat">
+          <span class="import-field-error" id="openaiIdError">请输入模型 ID</span>
+        </div>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型类型</label>
+          <div class="custom-select" data-select-id="openaiModelType">
+            <input type="hidden" id="openaiModelType" value="text">
+            <button class="custom-select-trigger" type="button">
+              <span class="custom-select-text">文本生成</span>
+              <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-dropdown">
+              <button class="custom-select-option active" data-value="text" type="button">文本生成</button>
+              <button class="custom-select-option" data-value="multimodal" type="button">多模态</button>
+              <button class="custom-select-option" data-value="ocr" type="button">OCR 识别</button>
+            </div>
+          </div>
+        </div>
+        <div class="import-field">
+          <label class="import-label">上下文长度</label>
+          <input type="number" class="import-num-input" id="openaiContextLen" min="512" max="1048576" step="512" placeholder="留空使用服务默认值">
+          <span class="import-field-hint">留空使用服务默认值</span>
+        </div>
+      </div>
+
+      <div class="import-divider"></div>
+
+      <div class="import-field">
+        <label class="import-label">思考能力</label>
+        <div class="custom-select" data-select-id="openaiThinking">
+          <input type="hidden" id="openaiThinking" value="auto">
+          <button class="custom-select-trigger" type="button">
+            <span class="custom-select-text">按模型 ID 自动识别</span>
+            <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-dropdown">
+            <button class="custom-select-option active" data-value="auto" type="button">按模型 ID 自动识别</button>
+            <button class="custom-select-option" data-value="none" type="button">不支持深度思考</button>
+            <button class="custom-select-option" data-value="thinking_enabled" type="button">思考开关 thinking_enabled</button>
+            <button class="custom-select-option" data-value="reasoning_effort" type="button">推理级别 reasoning_effort</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="import-footer">
+      <button class="import-btn-cancel" id="btnCancelImport">取消</button>
+      <button class="import-btn-confirm" id="btnConfirmImport">导入模型</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notification" id="toastNotification">
+  <span class="toast-icon" id="toastIcon"></span>
+  <span class="toast-text" id="toastText"></span>
+</div>
+
+<!-- Delete Confirmation Dialog -->
+<div class="delete-overlay" id="deleteOverlay">
+  <div class="delete-modal">
+    <div class="delete-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    </div>
+    <div class="delete-title">删除模型</div>
+    <div class="delete-desc" id="deleteDesc">确定要删除该模型吗？删除后无法恢复，需要重新下载。</div>
+    <div class="delete-actions">
+      <button class="delete-btn delete-btn-cancel" id="btnCancelDelete">取消</button>
+      <button class="delete-btn delete-btn-confirm" id="btnConfirmDelete">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== Model Data =====
+  const models = [
+    {
+      id: 'gemma4-12b',
+      name: 'Gemma 4 12B',
+      version: 'v4.0.0',
+      running: true,
+      hasUpdate: true,
+      speed: '快',
+      vram: '7.1GB',
+      capabilities: ['多模态', '多语言', '对话', '推理'],
+      icon: '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>'
+    },
+    {
+      id: 'hunyuan-mt2-7b',
+      name: '混元 MT2 7B',
+      version: 'v2.0.0',
+      running: false,
+      hasUpdate: false,
+      speed: '快',
+      vram: '4.3GB',
+      capabilities: ['对话', '推理', '多语言', '翻译'],
+      icon: '<img src="icon%20svg/%E8%85%BE%E8%AE%AF%E6%B7%B7%E5%85%83.svg" alt="混元"/>'
+    },
+    {
+      id: 'qwen35-35b-a',
+      name: 'Qwen3.5-35B-A',
+      version: 'v3.5.0',
+      running: false,
+      hasUpdate: true,
+      speed: '中',
+      vram: '22.0GB',
+      capabilities: ['对话', '语言', '推理', '多语言'],
+      icon: '<img src="icon%20svg/Tongyi-Qianwen.svg" alt="Qwen"/>'
+    },
+    {
+      id: 'qwen36-35b-a',
+      name: 'Qwen3.6-35B-A',
+      version: 'v3.6.0',
+      running: false,
+      hasUpdate: false,
+      speed: '中',
+      vram: '22.5GB',
+      capabilities: ['多模态', '对话', '推理', '多语言', '视觉理解'],
+      icon: '<img src="icon%20svg/Tongyi-Qianwen.svg" alt="Qwen"/>'
+    },
+    {
+      id: 'gemma4-26b-a',
+      name: 'Gemma 4 26B-A',
+      version: 'v4.0.0',
+      running: false,
+      hasUpdate: true,
+      speed: '中',
+      vram: '16.0GB',
+      capabilities: ['多模态', '对话', '推理', '多语言'],
+      icon: '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>'
+    },
+    {
+      id: 'gemma4-e4b',
+      name: 'Gemma 4 E4B',
+      version: 'v4.0.0',
+      running: false,
+      hasUpdate: false,
+      speed: '快',
+      vram: '2.5GB',
+      capabilities: ['向量嵌入', '语义检索'],
+      icon: '<img src="icon%20svg/gemini-icon-seeklogo.svg" alt="Gemma"/>'
+    }
+  ];
+
+  let pendingDeleteId = null;
+  let currentLaunchModel = null;
+
+  // ===== Render Model List =====
+  function renderModelList() {
+    const body = document.getElementById('modelListBody');
+    body.innerHTML = models.map(m => `
+      <div class="model-row ${m.running ? 'running' : ''}" data-id="${m.id}">
+        <div class="row-name">
+          <div class="row-model-icon">${m.icon}</div>
+          <div class="row-model-info">
+            <span class="row-model-name">${m.name}</span>
+            <span class="row-model-version">${m.version}</span>
+          </div>
+        </div>
+        <div class="row-perf">
+          <span class="perf-tag speed ${m.speed === '中' ? 'medium' : ''}">速度: ${m.speed}</span>
+          <span class="perf-tag vram">${m.vram}</span>
+        </div>
+        <div class="row-cap">
+          ${m.capabilities.map(c => `<span class="cap-tag">${c}</span>`).join('')}
+        </div>
+        <div class="row-status">
+          <label class="status-toggle">
+            <input type="checkbox" ${m.running ? 'checked' : ''} data-id="${m.id}" onchange="toggleModel('${m.id}')">
+            <span class="status-toggle-slider"></span>
+          </label>
+        </div>
+        <div class="row-actions">
+          <button class="action-more-btn" onclick="toggleDropdown('${m.id}')" title="更多操作">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+          <div class="action-dropdown" id="dropdown-${m.id}">
+            <div class="dropdown-item" onclick="openLaunchModal('${m.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              管理
+            </div>
+            <div class="dropdown-item danger" onclick="openDeleteConfirm('${m.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              删除
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ===== Toggle Model Running State =====
+  function toggleModel(id) {
+    const model = models.find(m => m.id === id);
+    if (!model) return;
+    const checkbox = event.target;
+    if (checkbox.checked) {
+      // 开启时弹出启动弹窗
+      openLaunchModal(id);
+    } else {
+      // 关闭时直接切换状态
+      model.running = false;
+      const row = document.querySelector(`.model-row[data-id="${id}"]`);
+      if (row) {
+        row.classList.remove('running');
+      }
+    }
+  }
+
+  // ===== Toggle Dropdown =====
+  function toggleDropdown(id) {
+    event.stopPropagation();
+    // Close all other dropdowns
+    document.querySelectorAll('.action-dropdown').forEach(d => {
+      if (d.id !== 'dropdown-' + id) d.classList.remove('show');
+    });
+    const dropdown = document.getElementById('dropdown-' + id);
+    dropdown.classList.toggle('show');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+  });
+
+  // ===== Model Launch Modal =====
+  const modelLaunchOverlay = document.getElementById('modelLaunchOverlay');
+  const btnCloseLaunch = document.getElementById('btnCloseLaunch');
+  const btnCancelLaunch = document.getElementById('btnCancelLaunch');
+  const btnStartLaunch = document.getElementById('btnStartLaunch');
+  const btnResetLaunch = document.getElementById('btnResetLaunch');
+  const btnAdvancedToggle = document.getElementById('btnAdvancedToggle');
+  const launchAdvanced = document.getElementById('launchAdvanced');
+
+  const contextSlider = document.getElementById('contextSlider');
+  const contextValue = document.getElementById('contextValue');
+  const contextSliderFill = document.getElementById('contextSliderFill');
+
+  const tempSlider = document.getElementById('tempSlider');
+  const tempValue = document.getElementById('tempValue');
+
+  const topPSlider = document.getElementById('topPSlider');
+  const topPValue = document.getElementById('topPValue');
+
+  const repPenaltySlider = document.getElementById('repPenaltySlider');
+  const repPenaltyValue = document.getElementById('repPenaltyValue');
+
+  const defaults = {
+    context: 54,
+    temp: 70,
+    topP: 60,
+    topK: 20,
+    minP: 0.05,
+    repPenalty: 105,
+    concurrency: 1,
+    batchSize: 512,
+    microBatch: 1,
+    gpuLayers: 99,
+    threads: 4,
+    batchThreads: 4,
+    ramCache: 8192
+  };
+
+  function openLaunchModal(id) {
+    event.stopPropagation();
+    // Close dropdown
+    document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+
+    const model = models.find(m => m.id === id);
+    if (!model) return;
+    currentLaunchModel = model;
+
+    document.getElementById('launchModelTitle').textContent = '启动 ' + model.name;
+    modelLaunchOverlay.classList.add('show');
+    updateSliderFill();
+  }
+
+  function closeLaunchModal() {
+    modelLaunchOverlay.classList.remove('show');
+    // 如果模型未启动，取消勾选 toggle
+    if (currentLaunchModel && !currentLaunchModel.running) {
+      const checkbox = document.querySelector(`input[data-id="${currentLaunchModel.id}"]`);
+      if (checkbox) checkbox.checked = false;
+    }
+  }
+
+  btnCloseLaunch.addEventListener('click', closeLaunchModal);
+  btnCancelLaunch.addEventListener('click', closeLaunchModal);
+
+  modelLaunchOverlay.addEventListener('click', function(e) {
+    if (e.target === modelLaunchOverlay) closeLaunchModal();
+  });
+
+  btnAdvancedToggle.addEventListener('click', function() {
+    launchAdvanced.classList.toggle('open');
+  });
+
+  function updateSliderFill() {
+    if (contextSlider && contextSliderFill) {
+      const pct = ((contextSlider.value - contextSlider.min) / (contextSlider.max - contextSlider.min)) * 100;
+      contextSliderFill.style.width = pct + '%';
+    }
+  }
+
+  contextSlider.addEventListener('input', function() {
+    contextValue.textContent = this.value + 'K';
+    updateSliderFill();
+  });
+  updateSliderFill();
+
+  tempSlider.addEventListener('input', function() {
+    tempValue.textContent = (this.value / 100).toFixed(1);
+  });
+
+  topPSlider.addEventListener('input', function() {
+    topPValue.textContent = (this.value / 100).toFixed(1);
+  });
+
+  repPenaltySlider.addEventListener('input', function() {
+    repPenaltyValue.textContent = (this.value / 100).toFixed(2);
+  });
+
+  btnResetLaunch.addEventListener('click', function() {
+    contextSlider.value = defaults.context;
+    contextValue.textContent = defaults.context + 'K';
+    tempSlider.value = defaults.temp;
+    tempValue.textContent = (defaults.temp / 100).toFixed(1);
+    topPSlider.value = defaults.topP;
+    topPValue.textContent = (defaults.topP / 100).toFixed(1);
+    document.getElementById('topKInput').value = defaults.topK;
+    document.getElementById('minPInput').value = defaults.minP;
+    repPenaltySlider.value = defaults.repPenalty;
+    repPenaltyValue.textContent = (defaults.repPenalty / 100).toFixed(2);
+    document.getElementById('concurrencyInput').value = defaults.concurrency;
+    document.getElementById('batchSizeInput').value = defaults.batchSize;
+    document.getElementById('microBatchInput').value = defaults.microBatch;
+    document.getElementById('gpuLayersInput').value = defaults.gpuLayers;
+    document.getElementById('threadsInput').value = defaults.threads;
+    document.getElementById('batchThreadsInput').value = defaults.batchThreads;
+    document.getElementById('ramCacheInput').value = defaults.ramCache;
+    updateSliderFill();
+  });
+
+  btnStartLaunch.addEventListener('click', function() {
+    if (currentLaunchModel) {
+      currentLaunchModel.running = true;
+      const row = document.querySelector(`.model-row[data-id="${currentLaunchModel.id}"]`);
+      if (row) {
+        row.classList.add('running');
+      }
+    }
+    closeLaunchModal();
+    showLoadingAnimation();
+  });
+
+  // ===== Loading Animation =====
+  function showLoadingAnimation() {
+    const overlay = document.getElementById('loadingOverlay');
+    const progressFill = document.getElementById('loadingProgressFill');
+    const percentText = document.getElementById('loadingPercent');
+    const subtitle = document.getElementById('loadingSubtitle');
+
+    if (!overlay) return;
+
+    overlay.classList.add('show');
+
+    const stages = [
+      { at: 0, text: '初始化上下文引擎...' },
+      { at: 20, text: '加载模型权重...' },
+      { at: 45, text: '配置 GPU 层数...' },
+      { at: 70, text: '建立 KV 缓存...' },
+      { at: 90, text: '模型就绪，准备响应...' }
+    ];
+
+    let progress = 0;
+    const duration = 5000;
+    const interval = 50;
+    const step = 100 / (duration / interval);
+
+    const timer = setInterval(function() {
+      progress += step;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(timer);
+        setTimeout(function() {
+          overlay.classList.remove('show');
+        }, 400);
+      }
+
+      if (progressFill) progressFill.style.width = progress + '%';
+      if (percentText) percentText.textContent = Math.floor(progress) + '%';
+
+      for (let i = stages.length - 1; i >= 0; i--) {
+        if (progress >= stages[i].at) {
+          if (subtitle) subtitle.textContent = stages[i].text;
+          break;
+        }
+      }
+    }, interval);
+  }
+
+  // ===== Delete Confirmation =====
+  const deleteOverlay = document.getElementById('deleteOverlay');
+  const btnCancelDelete = document.getElementById('btnCancelDelete');
+  const btnConfirmDelete = document.getElementById('btnConfirmDelete');
+  const deleteDesc = document.getElementById('deleteDesc');
+
+  function openDeleteConfirm(id) {
+    event.stopPropagation();
+    document.querySelectorAll('.action-dropdown').forEach(d => d.classList.remove('show'));
+
+    const model = models.find(m => m.id === id);
+    if (!model) return;
+    pendingDeleteId = id;
+    deleteDesc.textContent = `确定要删除 ${model.name} 吗？删除后无法恢复，需要重新下载。`;
+    deleteOverlay.classList.add('show');
+  }
+
+  btnCancelDelete.addEventListener('click', function() {
+    deleteOverlay.classList.remove('show');
+    pendingDeleteId = null;
+  });
+
+  btnConfirmDelete.addEventListener('click', function() {
+    if (pendingDeleteId) {
+      const idx = models.findIndex(m => m.id === pendingDeleteId);
+      if (idx > -1) {
+        models.splice(idx, 1);
+        renderModelList();
+      }
+    }
+    deleteOverlay.classList.remove('show');
+    pendingDeleteId = null;
+  });
+
+  deleteOverlay.addEventListener('click', function(e) {
+    if (e.target === deleteOverlay) {
+      deleteOverlay.classList.remove('show');
+      pendingDeleteId = null;
+    }
+  });
+
+  // ===== Simulate Resource Monitor Updates =====
+  function updateResources() {
+    const resources = [
+      { id: 'cpu', min: 15, max: 55 },
+      { id: 'gpu', min: 40, max: 85 },
+      { id: 'ram', min: 30, max: 60 },
+      { id: 'vram', min: 60, max: 95 }
+    ];
+
+    resources.forEach(r => {
+      const val = Math.floor(Math.random() * (r.max - r.min + 1)) + r.min;
+      const valEl = document.getElementById(r.id + 'Value');
+      const fillEl = document.getElementById(r.id + 'Fill');
+      if (valEl) valEl.textContent = val + '%';
+      if (fillEl) {
+        fillEl.style.width = val + '%';
+        fillEl.className = 'resource-fill ' + (val < 50 ? 'low' : val < 75 ? 'medium' : 'high');
+      }
+    });
+  }
+
+  setInterval(updateResources, 3000);
+
+  // ===== Import Model Modal =====
+  const importOverlay = document.getElementById('importOverlay');
+  const btnImportModel = document.querySelector('.import-model-btn');
+  const btnCloseImport = document.getElementById('btnCloseImport');
+  const btnCancelImport = document.getElementById('btnCancelImport');
+  const btnConfirmImport = document.getElementById('btnConfirmImport');
+  const btnBrowseFile = document.getElementById('btnBrowseFile');
+  const btnTestConnection = document.getElementById('btnTestConnection');
+  const importTabs = document.querySelectorAll('.import-tab');
+
+  // ===== Custom Select Dropdowns =====
+  function setCustomSelectValue(selectId, value) {
+    const hiddenInput = document.getElementById(selectId);
+    if (!hiddenInput) return;
+    hiddenInput.value = value;
+    const container = hiddenInput.closest('.custom-select');
+    if (!container) return;
+    const options = container.querySelectorAll('.custom-select-option');
+    options.forEach(function(opt) {
+      opt.classList.toggle('active', opt.dataset.value === value);
+    });
+    const activeOption = container.querySelector('.custom-select-option.active');
+    if (activeOption) {
+      container.querySelector('.custom-select-text').textContent = activeOption.textContent;
+    }
+  }
+
+  document.querySelectorAll('.custom-select').forEach(function(sel) {
+    const trigger = sel.querySelector('.custom-select-trigger');
+    const options = sel.querySelectorAll('.custom-select-option');
+    const hiddenInput = sel.querySelector('input[type="hidden"]');
+
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.querySelectorAll('.custom-select.open').forEach(function(s) {
+        if (s !== sel) s.classList.remove('open');
+      });
+      sel.classList.toggle('open');
+    });
+
+    options.forEach(function(option) {
+      option.addEventListener('click', function() {
+        const value = option.dataset.value;
+        hiddenInput.value = value;
+        sel.querySelector('.custom-select-text').textContent = option.textContent;
+        options.forEach(function(o) { o.classList.remove('active'); });
+        option.classList.add('active');
+        sel.classList.remove('open');
+      });
+    });
+  });
+
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.custom-select.open').forEach(function(s) {
+      s.classList.remove('open');
+    });
+  });
+
+  // ===== Toast Notification =====
+  const toastNotification = document.getElementById('toastNotification');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastText = document.getElementById('toastText');
+  let toastTimer = null;
+
+  function showToast(message, type) {
+    type = type || 'success';
+    clearTimeout(toastTimer);
+    toastText.textContent = message;
+    toastNotification.className = 'toast-notification ' + type;
+    if (type === 'success') {
+      toastIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+    } else {
+      toastIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    }
+    toastNotification.classList.add('show');
+    toastTimer = setTimeout(function() {
+      toastNotification.classList.remove('show');
+    }, 3000);
+  }
+
+  // ===== Form Validation Helpers =====
+  function showFieldError(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
+    if (input) input.classList.add('error');
+    if (error) error.classList.add('show');
+  }
+
+  function clearFieldError(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
+    if (input) input.classList.remove('error');
+    if (error) error.classList.remove('show');
+  }
+
+  function clearAllErrors() {
+    document.querySelectorAll('.import-field-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.import-input, .import-select').forEach(e => e.classList.remove('error'));
+  }
+
+  // ===== Reset Import Form =====
+  function resetImportForm() {
+    document.getElementById('ggufFile').value = '';
+    document.getElementById('ggufModelName').value = '';
+    setCustomSelectValue('ggufModelType', 'text');
+    setCustomSelectValue('ggufThinking', 'auto');
+    document.getElementById('openaiUrl').value = '';
+    document.getElementById('openaiKey').value = '';
+    document.getElementById('openaiModelName').value = '';
+    document.getElementById('openaiModelId').value = '';
+    setCustomSelectValue('openaiModelType', 'text');
+    document.getElementById('openaiContextLen').value = '';
+    setCustomSelectValue('openaiThinking', 'auto');
+
+    // Reset test connection button
+    btnTestConnection.className = 'test-connection-btn';
+    btnTestConnection.querySelector('.test-text').textContent = '测试连接';
+    document.getElementById('connectionStatus').className = 'connection-status';
+    document.getElementById('connectionStatus').textContent = '';
+
+    clearAllErrors();
+  }
+
+  // Open import modal
+  if (btnImportModel) {
+    btnImportModel.addEventListener('click', function() {
+      importOverlay.classList.add('show');
+    });
+  }
+
+  // Close import modal
+  function closeImportModal() {
+    importOverlay.classList.remove('show');
+    setTimeout(resetImportForm, 300);
+  }
+
+  btnCloseImport.addEventListener('click', closeImportModal);
+  btnCancelImport.addEventListener('click', closeImportModal);
+
+  importOverlay.addEventListener('click', function(e) {
+    if (e.target === importOverlay) closeImportModal();
+  });
+
+  // Tab switching
+  importTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      importTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.import-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      clearAllErrors();
+    });
+  });
+
+  // ===== Main GGUF file browse =====
+  if (btnBrowseFile) {
+    btnBrowseFile.addEventListener('click', function() {
+      const fakeInput = document.createElement('input');
+      fakeInput.type = 'file';
+      fakeInput.accept = '.gguf';
+      fakeInput.style.display = 'none';
+      fakeInput.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          document.getElementById('ggufFile').value = file.name;
+          clearFieldError('ggufFile', 'ggufFileError');
+          const nameInput = document.getElementById('ggufModelName');
+          if (!nameInput.value) {
+            const baseName = file.name.replace(/\.gguf$/i, '');
+            nameInput.value = baseName;
+            clearFieldError('ggufModelName', 'ggufNameError');
+          }
+        }
+      });
+      document.body.appendChild(fakeInput);
+      fakeInput.click();
+      document.body.removeChild(fakeInput);
+    });
+  }
+
+  // ===== Test Connection (OpenAI) =====
+  if (btnTestConnection) {
+    btnTestConnection.addEventListener('click', function() {
+      const url = document.getElementById('openaiUrl').value.trim();
+      const statusEl = document.getElementById('connectionStatus');
+
+      if (!url) {
+        showFieldError('openaiUrl', 'openaiUrlError');
+        return;
+      }
+      clearFieldError('openaiUrl', 'openaiUrlError');
+
+      btnTestConnection.className = 'test-connection-btn testing';
+      btnTestConnection.querySelector('.test-text').textContent = '测试中...';
+      statusEl.className = 'connection-status';
+
+      setTimeout(function() {
+        const isValid = /^https?:\/\/.+/.test(url);
+        if (isValid) {
+          btnTestConnection.className = 'test-connection-btn success';
+          btnTestConnection.querySelector('.test-text').textContent = '已连接';
+          statusEl.className = 'connection-status show success';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 连接成功，可以导入模型';
+        } else {
+          btnTestConnection.className = 'test-connection-btn fail';
+          btnTestConnection.querySelector('.test-text').textContent = '连接失败';
+          statusEl.className = 'connection-status show fail';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> URL 格式不正确，请检查后重试';
+        }
+      }, 1500);
+    });
+  }
+
+  // Clear errors on input
+  document.getElementById('ggufFile').addEventListener('change', () => clearFieldError('ggufFile', 'ggufFileError'));
+  document.getElementById('ggufModelName').addEventListener('input', () => clearFieldError('ggufModelName', 'ggufNameError'));
+  document.getElementById('openaiUrl').addEventListener('input', () => {
+    clearFieldError('openaiUrl', 'openaiUrlError');
+    btnTestConnection.className = 'test-connection-btn';
+    btnTestConnection.querySelector('.test-text').textContent = '测试连接';
+    document.getElementById('connectionStatus').className = 'connection-status';
+  });
+  document.getElementById('openaiModelName').addEventListener('input', () => clearFieldError('openaiModelName', 'openaiNameError'));
+  document.getElementById('openaiModelId').addEventListener('input', () => clearFieldError('openaiModelId', 'openaiIdError'));
+
+  // ===== Confirm Import =====
+  btnConfirmImport.addEventListener('click', function() {
+    const activeTab = document.querySelector('.import-tab.active').dataset.tab;
+
+    if (activeTab === 'gguf') {
+      const file = document.getElementById('ggufFile').value;
+      const name = document.getElementById('ggufModelName').value;
+      let hasError = false;
+
+      if (!file) {
+        showFieldError('ggufFile', 'ggufFileError');
+        hasError = true;
+      }
+      if (!name) {
+        showFieldError('ggufModelName', 'ggufNameError');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const modelType = document.getElementById('ggufModelType').value;
+      const thinking = document.getElementById('ggufThinking').value;
+
+      // Add model to list
+      const newModel = {
+        id: 'imported-' + Date.now(),
+        name: name,
+        version: '本地导入',
+        running: false,
+        hasUpdate: false,
+        speed: '中',
+        vram: '未知',
+        capabilities: getModelCapabilities(modelType),
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+      };
+      models.push(newModel);
+      renderModelList();
+
+      closeImportModal();
+      showLoadingAnimation();
+      setTimeout(function() {
+        showToast('模型 "' + name + '" 导入成功', 'success');
+      }, 5500);
+
+    } else {
+      const url = document.getElementById('openaiUrl').value.trim();
+      const modelName = document.getElementById('openaiModelName').value.trim();
+      const modelId = document.getElementById('openaiModelId').value.trim();
+      let hasError = false;
+
+      if (!url) {
+        showFieldError('openaiUrl', 'openaiUrlError');
+        hasError = true;
+      }
+      if (!modelName) {
+        showFieldError('openaiModelName', 'openaiNameError');
+        hasError = true;
+      }
+      if (!modelId) {
+        showFieldError('openaiModelId', 'openaiIdError');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const modelType = document.getElementById('openaiModelType').value;
+      const thinking = document.getElementById('openaiThinking').value;
+
+      const newModel = {
+        id: 'openai-' + Date.now(),
+        name: modelName,
+        version: 'OpenAI 兼容',
+        running: false,
+        hasUpdate: false,
+        speed: '快',
+        vram: '云端',
+        capabilities: getModelCapabilities(modelType),
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+      };
+      models.push(newModel);
+      renderModelList();
+
+      closeImportModal();
+      showToast('模型 "' + modelName + '" 导入成功', 'success');
+    }
+  });
+
+  // Helper: get capabilities based on model type
+  function getModelCapabilities(type) {
+    const capMap = {
+      text: ['对话', '推理', '文本生成'],
+      multimodal: ['多模态', '视觉理解', '对话'],
+      ocr: ['OCR 识别', '图像理解']
+    };
+    return capMap[type] || ['对话'];
+  }
+
+  // ===== Initial Render =====
+  renderModelList();
+</script>
+
+</body>
+</html>
