@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>路由管理 - AI Assistant</title>
+<title>网关连接 - AI Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -345,6 +345,7 @@
     color: var(--text);
     font-size: 0.82rem;
     font-weight: 500;
+    text-decoration: none;
   }
 
   .ms-nav-item:hover {
@@ -364,451 +365,26 @@
     color: var(--text);
   }
 
-  /* Main Area */
+  /* Main Area - 与路由配置页面一致 */
   .ms-main {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
     position: relative;
     overflow: hidden;
-    background: transparent;
-    border-radius: 16px;
-  }
-
-  /* === Light Beam Effect === */
-  .beam-stage {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    border-radius: 16px;
-  }
-
-  /* Outer atmospheric glow */
-  .beam-outer-glow {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom,
-      rgba(0, 60, 140, 0) 0%,
-      rgba(0, 80, 180, 0.04) 15%,
-      rgba(0, 100, 200, 0.07) 40%,
-      rgba(0, 120, 220, 0.10) 65%,
-      rgba(0, 140, 240, 0.14) 85%,
-      rgba(0, 100, 200, 0) 100%
-    );
-    filter: blur(40px);
-  }
-
-  /* Mid glow */
-  .beam-mid-glow {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 18%;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom,
-      rgba(0, 140, 220, 0) 0%,
-      rgba(0, 160, 240, 0.08) 15%,
-      rgba(0, 180, 255, 0.15) 40%,
-      rgba(20, 200, 255, 0.22) 65%,
-      rgba(40, 220, 255, 0.28) 85%,
-      rgba(0, 160, 240, 0) 100%
-    );
-    filter: blur(15px);
-  }
-
-  /* Inner glow */
-  .beam-inner-glow {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 8%;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom,
-      rgba(100, 200, 255, 0) 0%,
-      rgba(120, 220, 255, 0.15) 15%,
-      rgba(150, 230, 255, 0.30) 40%,
-      rgba(180, 240, 255, 0.45) 65%,
-      rgba(200, 245, 255, 0.55) 85%,
-      rgba(120, 220, 255, 0) 100%
-    );
-    filter: blur(6px);
-  }
-
-  /* Core beam */
-  .beam-core {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 2.5%;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom,
-      rgba(200, 235, 255, 0) 0%,
-      rgba(220, 245, 255, 0.3) 10%,
-      rgba(230, 250, 255, 0.6) 30%,
-      rgba(245, 252, 255, 0.85) 55%,
-      rgba(255, 255, 255, 1) 80%,
-      rgba(220, 245, 255, 0) 100%
-    );
-    filter: blur(1.5px);
-  }
-
-  /* Core highlight (sharpest center) */
-  .beam-core-highlight {
-    position: absolute;
-    left: 50%;
-    top: 5%;
-    bottom: 24%;
-    width: 0.8%;
-    transform: translateX(-50%);
-    background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.4) 20%,
-      rgba(255, 255, 255, 0.7) 50%,
-      rgba(255, 255, 255, 1) 78%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    filter: blur(0.5px);
-  }
-
-  /* Fine streaks container */
-  .beam-streaks {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .streak {
-    position: absolute;
-    width: 1px;
-    top: 0;
-    bottom: 22%;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 6%,
-      rgba(150, 210, 255, var(--opacity, 0.1)) 8%,
-      rgba(200, 240, 255, calc(var(--opacity, 0.1) * 1.5)) 10%,
-      rgba(180, 230, 255, var(--opacity, 0.1)) 12%,
-      transparent 14%,
-      transparent 20%
-    );
-    background-size: 100% 200%;
-    filter: blur(0.5px);
-  }
-
-  /* Base splash / bloom */
-  .beam-splash {
-    position: absolute;
-    left: 50%;
-    bottom: 18%;
-    width: 35%;
-    height: 25%;
-    transform: translateX(-50%);
-    background: radial-gradient(
-      ellipse 60% 80% at 50% 100%,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(180, 230, 255, 0.25) 15%,
-      rgba(80, 180, 255, 0.15) 35%,
-      rgba(20, 120, 220, 0.06) 60%,
-      transparent 85%
-    );
-    filter: blur(8px);
-  }
-
-  /* Splash core (brightest point) */
-  .beam-splash-core {
-    position: absolute;
-    left: 50%;
-    bottom: 20%;
-    width: 8%;
-    height: 8%;
-    transform: translateX(-50%);
-    background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(220, 245, 255, 0.5) 30%,
-      rgba(100, 200, 255, 0.2) 60%,
-      transparent 100%
-    );
-    filter: blur(3px);
-  }
-
-  /* Ground plane */
-  .ground-plane {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 22%;
-    background: linear-gradient(to bottom,
-      rgba(0, 30, 60, 0.4) 0%,
-      rgba(0, 15, 35, 0.6) 30%,
-      rgba(0, 5, 15, 0.85) 60%,
-      #000 100%
-    );
-  }
-
-  /* Ground reflection line */
-  .ground-line {
-    position: absolute;
-    left: 50%;
-    bottom: 21.5%;
-    width: 100%;
-    height: 1px;
-    transform: translateX(-50%);
-    background: linear-gradient(to right,
-      transparent 0%,
-      rgba(100, 180, 255, 0.05) 20%,
-      rgba(150, 210, 255, 0.2) 40%,
-      rgba(200, 235, 255, 0.4) 50%,
-      rgba(150, 210, 255, 0.2) 60%,
-      rgba(100, 180, 255, 0.05) 80%,
-      transparent 100%
-    );
-    filter: blur(1px);
-  }
-
-  /* Ground ripple reflections */
-  .ground-ripple {
-    position: absolute;
-    left: 50%;
-    bottom: 15%;
-    width: 40%;
-    height: 12%;
-    transform: translateX(-50%);
-    background: radial-gradient(
-      ellipse 70% 100% at 50% 0%,
-      rgba(80, 170, 255, 0.12) 0%,
-      rgba(30, 100, 200, 0.06) 30%,
-      transparent 70%
-    );
-    filter: blur(6px);
-  }
-
-  /* Ground scattered light fragments */
-  .ground-fragments {
-    position: absolute;
-    left: 50%;
-    bottom: 5%;
-    width: 60%;
-    height: 18%;
-    transform: translateX(-50%);
-    background:
-      radial-gradient(ellipse 15% 30% at 30% 50%, rgba(100, 190, 255, 0.08), transparent),
-      radial-gradient(ellipse 20% 40% at 70% 60%, rgba(60, 150, 230, 0.06), transparent),
-      radial-gradient(ellipse 10% 25% at 50% 30%, rgba(120, 200, 255, 0.10), transparent),
-      radial-gradient(ellipse 8% 20% at 20% 70%, rgba(40, 130, 210, 0.05), transparent),
-      radial-gradient(ellipse 12% 28% at 80% 40%, rgba(80, 170, 240, 0.07), transparent);
-    filter: blur(4px);
-  }
-
-  /* Particles container */
-  .beam-particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(200, 230, 255, var(--brightness, 0.4));
-    filter: blur(0.5px);
-  }
-
-  /* Subtle vertical light rays from splash */
-  .splash-rays {
-    position: absolute;
-    left: 50%;
-    bottom: 18%;
-    width: 50%;
-    height: 30%;
-    transform: translateX(-50%);
-    background:
-      linear-gradient(170deg, transparent 45%, rgba(100, 190, 255, 0.03) 50%, transparent 55%),
-      linear-gradient(190deg, transparent 45%, rgba(100, 190, 255, 0.03) 50%, transparent 55%),
-      linear-gradient(175deg, transparent 40%, rgba(120, 200, 255, 0.04) 50%, transparent 60%),
-      linear-gradient(185deg, transparent 40%, rgba(120, 200, 255, 0.04) 50%, transparent 60%);
-    filter: blur(3px);
-    pointer-events: none;
-  }
-
-  /* === Flowing Animations === */
-  @keyframes flowUp {
-    0% { transform: translateY(100%); opacity: var(--opacity, 0.15); }
-    100% { transform: translateY(-120%); opacity: var(--opacity, 0.15); }
-  }
-
-  @keyframes floatUp {
-    0% { transform: translateY(0); opacity: 0; }
-    10% { opacity: var(--brightness, 0.5); }
-    80% { opacity: calc(var(--brightness, 0.5) * 0.5); }
-    100% { transform: translateY(-300px); opacity: 0; }
-  }
-
-  @keyframes flowGradient {
-    0% { background-position: 0 0%; }
-    100% { background-position: 0 100%; }
-  }
-
-  @keyframes flowGradientFast {
-    0% { background-position: 0 0%; }
-    100% { background-position: 0 100%; }
-  }
-
-  @keyframes corePulse {
-    0%, 100% { opacity: 1; filter: blur(1.5px) brightness(1); }
-    50% { opacity: 0.85; filter: blur(1.5px) brightness(1.15); }
-  }
-
-  @keyframes highlightPulse {
-    0%, 100% { opacity: 1; filter: blur(0.5px) brightness(1); }
-    50% { opacity: 0.9; filter: blur(0.5px) brightness(1.2); }
-  }
-
-  @keyframes midGlowPulse {
-    0%, 100% { opacity: 1; filter: blur(15px) brightness(1); }
-    50% { opacity: 0.85; filter: blur(15px) brightness(1.1); }
-  }
-
-  @keyframes innerGlowPulse {
-    0%, 100% { opacity: 1; filter: blur(6px) brightness(1); }
-    50% { opacity: 0.9; filter: blur(6px) brightness(1.12); }
-  }
-
-  @keyframes outerGlowPulse {
-    0%, 100% { opacity: 1; filter: blur(40px) brightness(1); }
-    50% { opacity: 0.8; filter: blur(40px) brightness(1.08); }
-  }
-
-  @keyframes splashPulse {
-    0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); filter: blur(8px) brightness(1); }
-    50% { opacity: 0.85; transform: translateX(-50%) scale(1.05); filter: blur(8px) brightness(1.15); }
-  }
-
-  @keyframes splashCorePulse {
-    0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); filter: blur(3px) brightness(1); }
-    50% { opacity: 0.9; transform: translateX(-50%) scale(1.1); filter: blur(3px) brightness(1.2); }
-  }
-
-  @keyframes groundLinePulse {
-    0%, 100% { opacity: 1; filter: blur(1px) brightness(1); }
-    50% { opacity: 0.7; filter: blur(1px) brightness(1.3); }
-  }
-
-  @keyframes ripplePulse {
-    0%, 100% { opacity: 1; transform: translateX(-50%) scaleY(1); filter: blur(6px); }
-    50% { opacity: 0.7; transform: translateX(-50%) scaleY(1.15); filter: blur(6px); }
-  }
-
-  /* Apply animations to static elements */
-  .beam-core { animation: corePulse 3s ease-in-out infinite; }
-  .beam-core-highlight { animation: highlightPulse 2.5s ease-in-out infinite; }
-  .beam-mid-glow { animation: midGlowPulse 4s ease-in-out infinite; }
-  .beam-inner-glow { animation: innerGlowPulse 3.5s ease-in-out infinite; }
-  .beam-outer-glow { animation: outerGlowPulse 5s ease-in-out infinite; }
-  .beam-splash { animation: splashPulse 3s ease-in-out infinite; }
-  .beam-splash-core { animation: splashCorePulse 2s ease-in-out infinite; }
-  .ground-line { animation: groundLinePulse 3s ease-in-out infinite; }
-  .ground-ripple { animation: ripplePulse 4s ease-in-out infinite; }
-
-  /* Flow overlay - visible light pulses traveling upward */
-  .beam-flow {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 5%;
-    transform: translateX(-50%);
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 8%,
-      rgba(200, 240, 255, 0.08) 10%,
-      rgba(255, 255, 255, 0.15) 12%,
-      rgba(200, 240, 255, 0.08) 14%,
-      transparent 16%,
-      transparent 24%
-    );
-    background-size: 100% 200%;
-    filter: blur(2px);
-    mix-blend-mode: screen;
-    animation: flowGradient 2s linear infinite;
-  }
-
-  .beam-flow-wide {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 12%;
-    transform: translateX(-50%);
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 15%,
-      rgba(100, 200, 255, 0.04) 17%,
-      rgba(150, 220, 255, 0.07) 19%,
-      rgba(100, 200, 255, 0.04) 21%,
-      transparent 23%,
-      transparent 35%
-    );
-    background-size: 100% 200%;
-    filter: blur(8px);
-    mix-blend-mode: screen;
-    animation: flowGradientFast 1.5s linear infinite;
-  }
-
-  .beam-flow-outer {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 22%;
-    width: 25%;
-    transform: translateX(-50%);
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0%,
-      transparent 20%,
-      rgba(0, 160, 240, 0.03) 22%,
-      rgba(0, 180, 255, 0.05) 24%,
-      rgba(0, 160, 240, 0.03) 26%,
-      transparent 28%,
-      transparent 45%
-    );
-    background-size: 100% 200%;
-    filter: blur(20px);
-    mix-blend-mode: screen;
-    animation: flowGradient 3s linear infinite;
-  }
-
-  /* === Local Route Card === */
-  .local-route-card {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 300px;
     background: rgba(30, 30, 34, 0.55);
     backdrop-filter: blur(40px) saturate(140%);
     -webkit-backdrop-filter: blur(40px) saturate(140%);
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 16px;
-    overflow: hidden;
     box-shadow:
       0 4px 12px rgba(0,0,0,0.5),
       0 16px 48px rgba(0,0,0,0.45),
       inset 0 0 40px rgba(255,255,255,0.02);
-    z-index: 10;
   }
 
-  .local-route-card::before {
+  .ms-main::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -828,178 +404,521 @@
     z-index: -1;
   }
 
-  .lrc-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 18px 14px;
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
   }
 
-  .lrc-title {
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+    border-radius: 3px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.22);
+  }
+
+  .ms-content-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+
+  /* Section */
+  .config-section {
+    margin-bottom: 16px;
+  }
+
+  .config-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .section-title {
     font-size: 0.92rem;
     font-weight: 600;
     color: var(--text);
-    letter-spacing: 0.02em;
   }
 
-  /* Toggle Switch */
-  .lrc-toggle {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.06);
+  .section-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,255,255,0.06) 20%,
+      rgba(255,255,255,0.06) 80%,
+      transparent 100%
+    );
+    margin: 12px 0;
+  }
+
+  /* ========== Agent 一键配置 ========== */
+  .agent-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 14px;
+    padding: 4px;
+    width: fit-content;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+  }
+
+  .agent-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 18px;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
     cursor: pointer;
-    position: relative;
-    transition: background 0.25s ease, border-color 0.25s ease;
-    padding: 0;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .agent-tab svg {
+    width: 13px;
+    height: 13px;
     flex-shrink: 0;
   }
 
-  .lrc-toggle-knob {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.4);
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
+  .agent-tab:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.05);
   }
 
-  .lrc-toggle.on {
-    background: rgba(80, 200, 120, 0.25);
-    border-color: rgba(80, 200, 120, 0.4);
-  }
-
-  .lrc-toggle.on .lrc-toggle-knob {
-    transform: translateX(18px);
-    background: rgb(100, 220, 130);
-    box-shadow: 0 0 8px rgba(80, 200, 120, 0.6);
-  }
-
-  .lrc-body {
-    padding: 0 18px 18px;
-  }
-
-  .lrc-label {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  /* Dropdown */
-  .lrc-dropdown {
-    position: relative;
-  }
-
-  .lrc-dropdown-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .lrc-dropdown-header:hover {
-    background: rgba(255,255,255,0.07);
-    border-color: rgba(255,255,255,0.14);
-  }
-
-  .lrc-dropdown-text {
-    flex: 1;
-    font-size: 0.82rem;
-    font-weight: 500;
+  .agent-tab.active {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.16);
     color: var(--text);
   }
 
-  .lrc-dropdown-arrow {
-    width: 14px;
-    height: 14px;
-    color: var(--text-dim);
-    transition: transform 0.25s ease;
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .agent-grid.hidden {
+    display: none;
+  }
+
+  .agent-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 13px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 120px;
+  }
+
+  .agent-card:hover {
+    background: rgba(255,255,255,0.045);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  /* 已连接卡片：更明显的背景与描边特效 */
+  .agent-card[data-state="connected"] {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.10) 0%,
+      rgba(255,255,255,0.05) 45%,
+      rgba(255,255,255,0.035) 100%);
+    border-color: rgba(255,255,255,0.26);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.08),
+      0 0 20px rgba(255,255,255,0.07),
+      inset 0 1px 0 0 rgba(255,255,255,0.14);
+  }
+
+  .agent-card[data-state="connected"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,255,255,0.5) 50%,
+      transparent 100%);
+    pointer-events: none;
+  }
+
+  .agent-card[data-state="connected"]:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.13) 0%,
+      rgba(255,255,255,0.07) 45%,
+      rgba(255,255,255,0.05) 100%);
+    border-color: rgba(255,255,255,0.36);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10),
+      0 0 26px rgba(255,255,255,0.10),
+      inset 0 1px 0 0 rgba(255,255,255,0.18);
+  }
+
+  .agent-card.busy {
+    pointer-events: none;
+  }
+
+  .agent-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .agent-badge {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
     flex-shrink: 0;
   }
 
-  .lrc-dropdown.open .lrc-dropdown-arrow {
-    transform: rotate(180deg);
+  .agent-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+    align-items: flex-start;
   }
 
-  .lrc-dropdown-list {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    background: rgba(28, 28, 32, 0.92);
-    backdrop-filter: blur(40px) saturate(140%);
-    -webkit-backdrop-filter: blur(40px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 10px;
+  .agent-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    width: 100%;
+    min-width: 0;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .agent-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .agent-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .agent-status.connected { color: rgb(80, 220, 120); }
+  .agent-status.connected .agent-dot { box-shadow: 0 0 6px rgba(80, 220, 120, 0.6); }
+
+  .agent-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    height: 30px;
+    margin-top: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    font: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .agent-action svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  /* 主操作：配置 / 重新检测（正常按钮，无光晕） */
+  .agent-action.config {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .agent-action.config:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.24);
+  }
+
+  /* 次级操作：刷新 */
+  .agent-action.refresh {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+  }
+
+  .agent-action.refresh:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.22);
+  }
+
+  .agent-action.loading {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  /* ========== WSL2 环境自动配置 ========== */
+  .wsl-card {
+    display: flex;
+    gap: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .wsl-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wsl-desc {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    transition: all 0.2s ease;
+  }
+
+  .wsl-desc-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .wsl-desc-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .wsl-desc-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.7;
+    opacity: 0.92;
+  }
+
+  .wsl-desc-text code {
+    font-family: inherit;
+    color: var(--text);
+    background: rgba(255,255,255,0.07);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  .wsl-desc.scanning {
+    align-items: center;
+    border-style: dashed;
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .wsl-desc.scanning .gw-spinner {
+    border-color: rgba(255,255,255,0.14);
+    border-top-color: var(--text-dim);
+  }
+
+  .wsl-scan-text {
+    font-size: 0.74rem;
+    color: var(--text-dim);
+  }
+
+  .wsl-action {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .wsl-action .agent-action {
+    width: 128px;
+    height: 34px;
+    margin-top: 0;
+  }
+
+  /* ========== Spinner ========== */
+  .gw-spinner {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.18);
+    border-top-color: currentColor;
+    animation: gw-spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .wsl-distro.scanning .gw-spinner {
+    border-color: rgba(255,255,255,0.14);
+    border-top-color: var(--text-dim);
+  }
+
+  @keyframes gw-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ========== Toast ========== */
+  .gw-toast {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-    z-index: 20;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    z-index: 50;
+    pointer-events: none;
   }
 
-  .lrc-dropdown.open .lrc-dropdown-list {
+  .gw-toast.show {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
-  .lrc-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .lrc-dropdown-item:hover {
-    background: rgba(255,255,255,0.06);
-  }
-
-  .lrc-dropdown-item.selected {
-    background: rgba(255,255,255,0.04);
-  }
-
-  /* Status indicator dot */
-  .lrc-status-dot {
-    width: 8px;
-    height: 8px;
+  .gw-toast-dot {
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .lrc-status-dot.active {
     background: rgb(80, 220, 120);
-    box-shadow: 0 0 6px rgba(80, 200, 120, 0.6);
-  }
-
-  .lrc-status-dot.inactive {
-    background: rgba(255,255,255,0.2);
+    box-shadow: 0 0 8px rgba(80, 220, 120, 0.7);
+    flex-shrink: 0;
   }
 </style>
 </head>
 <body>
 
 <div class="app-window">
-  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;"></div>
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
@@ -1026,19 +945,10 @@
       <a class="s-item" href="model-store.html" title="模型管理">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
       </a>
-      <a class="s-item active" href="route.html" title="路由管理">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <a class="s-item active" href="Routing policy.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
       </a>
-      <div class="s-item" title="数据库">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
       </div>
-      <div class="s-item" title="统计">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-      </div>
-      <div class="s-item" title="更多">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-      </div>
-    </div>
     <div class="sidebar-group bottom">
       <div class="s-item" title="用户">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1052,14 +962,18 @@
     <!-- Left: Navigation Card (220px) -->
     <div class="ms-card ms-nav">
       <div class="ms-nav-header">
-        <span class="ms-nav-title">路由管理</span>
+        <span class="ms-nav-title">网关连接</span>
       </div>
       <div class="ms-nav-list">
-        <div class="ms-nav-item active" data-page="strategy">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="11"/><line x1="9" y1="18" x2="15" y2="13"/></svg>
+        <a class="ms-nav-item" href="Routing policy.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
           路由策略
-        </div>
-        <div class="ms-nav-item" data-page="gateway">
+        </a>
+        <a class="ms-nav-item" href="Routing configuration.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="11"/><line x1="9" y1="18" x2="15" y2="13"/></svg>
+          路由配置
+        </a>
+        <div class="ms-nav-item active" data-page="gateway">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
           网关连接
         </div>
@@ -1072,35 +986,252 @@
 
     <!-- Right: Main Area -->
     <div class="ms-main">
+      <div class="ms-main-header">
+        <div class="ms-page-title">网关连接</div>
+        <div class="ms-page-subtitle">配置 Token Router 网关，自动打通各 Agent 与 WSL2 环境</div>
+      </div>
 
-      <!-- Local Route Card -->
-      <div class="local-route-card">
-        <div class="lrc-header">
-          <span class="lrc-title">本地路由</span>
-          <button class="lrc-toggle" id="routeToggle">
-            <span class="lrc-toggle-knob"></span>
-          </button>
-        </div>
-        <div class="lrc-body">
-          <div class="lrc-label">模型选择</div>
-          <div class="lrc-dropdown" id="modelDropdown">
-            <div class="lrc-dropdown-header" id="dropdownHeader">
-              <span class="lrc-status-dot active" id="headerDot"></span>
-              <span class="lrc-dropdown-text" id="headerText">Gemma412B指令版</span>
-              <svg class="lrc-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="ms-content-scroll">
+
+        <!-- Section 1: Agent 一键配置 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
             </div>
-            <div class="lrc-dropdown-list" id="dropdownList">
-              <div class="lrc-dropdown-item selected" data-model="gemma" data-active="true">
-                <span class="lrc-status-dot active"></span>
-                <span>Gemma412B指令版</span>
+            <span class="section-title">Agent 一键配置</span>
+            <span class="section-desc">将网关地址、模型信息、鉴权信息自动写入本地配置</span>
+          </div>
+          <div class="agent-tabs">
+            <button class="agent-tab active" data-tab="agents">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+              Agent配置
+            </button>
+            <button class="agent-tab" data-tab="ccswitch">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="16" cy="12" r="3"/></svg>
+              CC SWITCH
+            </button>
+          </div>
+          <div class="agent-grid" data-panel="agents">
+
+            <div class="agent-card" data-agent="FlowyAIPC" data-state="connected">
+              <div class="agent-card-head">
+  <div class="agent-badge">F</div>
+  <div class="agent-card-info">
+    <span class="agent-name">FlowyAIPC</span>
+    <span class="agent-status connected"><span class="agent-dot"></span>已连通</span>
+  </div>
+</div>
+              <button class="agent-action refresh" data-action="refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                刷新
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="OpenClaw" data-state="connected">
+              <div class="agent-card-head">
+  <div class="agent-badge">O</div>
+  <div class="agent-card-info">
+    <span class="agent-name">OpenClaw</span>
+    <span class="agent-status connected"><span class="agent-dot"></span>已连通</span>
+  </div>
+</div>
+              <button class="agent-action refresh" data-action="refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                刷新
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Hermes Agent" data-state="connected">
+              <div class="agent-card-head">
+  <div class="agent-badge">H</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Hermes Agent</span>
+    <span class="agent-status connected"><span class="agent-dot"></span>已连通</span>
+  </div>
+</div>
+              <button class="agent-action refresh" data-action="refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                刷新
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Claude Code" data-state="connected">
+              <div class="agent-card-head">
+  <div class="agent-badge">C</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Claude Code</span>
+    <span class="agent-status connected"><span class="agent-dot"></span>已连通</span>
+  </div>
+</div>
+              <button class="agent-action refresh" data-action="refresh">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                刷新
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Codex" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">X</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Codex</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="OpenCode" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">O</div>
+  <div class="agent-card-info">
+    <span class="agent-name">OpenCode</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="CodeBuddy" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">C</div>
+  <div class="agent-card-info">
+    <span class="agent-name">CodeBuddy</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="WorkBuddy" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">W</div>
+  <div class="agent-card-info">
+    <span class="agent-name">WorkBuddy</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+          </div>
+
+          <div class="agent-grid hidden" data-panel="ccswitch">
+
+            <div class="agent-card" data-agent="Claude Code" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">C</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Claude Code</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Codex" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">X</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Codex</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="OpenClaw" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">O</div>
+  <div class="agent-card-info">
+    <span class="agent-name">OpenClaw</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Hermes Agent" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">H</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Hermes Agent</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="Gemini CLI" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">G</div>
+  <div class="agent-card-info">
+    <span class="agent-name">Gemini CLI</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+            <div class="agent-card" data-agent="OpenCode" data-state="disconnected">
+              <div class="agent-card-head">
+  <div class="agent-badge">O</div>
+  <div class="agent-card-info">
+    <span class="agent-name">OpenCode</span>
+  </div>
+</div><button class="agent-action config" data-action="config">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><polyline points="6 11 12 17 18 11"/><path d="M4 21h16"/></svg>
+                配置
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 2: WSL2 环境自动配置 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            </div>
+            <span class="section-title">WSL2 环境自动配置</span>
+            <span class="section-desc">自动检测 WSL 发行版并写入网关地址</span>
+          </div>
+          <div class="wsl-card">
+            <div class="wsl-info">
+              <div class="wsl-desc" id="wslDesc">
+                <span class="wsl-desc-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                </span>
+                <span class="wsl-desc-text">自动检测当前正在运行的 WSL 发行版与其中已安装的 Agent，并将 Token Router 网关地址写入 WSL 内可访问的配置（优先 <code>localhost</code>，必要时使用 Windows 主机 IP）</span>
               </div>
-              <div class="lrc-dropdown-item" data-model="hunyuan" data-active="false">
-                <span class="lrc-status-dot inactive"></span>
-                <span>混元MT27B翻译模型</span>
+              <div class="wsl-action">
+                <button class="agent-action config" id="wslRescan">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                  重新检测
+                </button>
               </div>
             </div>
           </div>
         </div>
+
+      </div>
+
+      <!-- Toast -->
+      <div class="gw-toast" id="gwToast">
+        <span class="gw-toast-dot"></span>
+        <span id="gwToastText">操作成功</span>
       </div>
     </div>
 
@@ -1116,48 +1247,104 @@
     });
   });
 
-  // Toggle switch — controls #laserFlowMount visibility
-  const routeToggle = document.getElementById('routeToggle');
-  const laserMount = document.getElementById('laserFlowMount');
-  laserMount.style.display = 'none';
-  routeToggle.addEventListener('click', () => {
-    routeToggle.classList.toggle('on');
-    laserMount.style.display = routeToggle.classList.contains('on') ? 'block' : 'none';
-  });
+  // Toast
+  let toastTimer = null;
+  function showToast(text) {
+    const toast = document.getElementById('gwToast');
+    document.getElementById('gwToastText').textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
 
-  // Dropdown
-  const dropdown = document.getElementById('modelDropdown');
-  const dropdownHeader = document.getElementById('dropdownHeader');
-  const dropdownList = document.getElementById('dropdownList');
-  const headerDot = document.getElementById('headerDot');
-  const headerText = document.getElementById('headerText');
+  // Button loading helpers
+  function setLoading(btn, text) {
+    btn.dataset.original = btn.innerHTML;
+    btn.classList.add('loading');
+    btn.innerHTML = '<span class="gw-spinner"></span>' + text;
+  }
 
-  dropdownHeader.addEventListener('click', (e) => {
-    e.stopPropagation();
-    dropdown.classList.toggle('open');
-  });
+  function clearLoading(btn) {
+    btn.classList.remove('loading');
+    btn.innerHTML = btn.dataset.original;
+  }
 
-  document.addEventListener('click', (e) => {
-    if (!dropdown.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
-  });
-
-  // Dropdown item selection
-  dropdownList.querySelectorAll('.lrc-dropdown-item').forEach(item => {
-    item.addEventListener('click', () => {
-      dropdownList.querySelectorAll('.lrc-dropdown-item').forEach(i => i.classList.remove('selected'));
-      item.classList.add('selected');
-
-      const isActive = item.dataset.active === 'true';
-      const dot = item.querySelector('.lrc-status-dot');
-      const text = item.querySelector('span:last-child').textContent;
-
-      headerText.textContent = text;
-      headerDot.className = 'lrc-status-dot ' + (isActive ? 'active' : 'inactive');
-
-      dropdown.classList.remove('open');
+  // 标签切换：Agent配置 / CC SWITCH
+  document.querySelectorAll('.agent-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.agent-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.agent-grid[data-panel]').forEach(grid => {
+        grid.classList.toggle('hidden', grid.dataset.panel !== target);
+      });
     });
+  });
+
+  // Agent 状态逻辑：未连接卡片显示【配置】（无状态与描述），配置后显示已连通并变为【刷新】
+  const refreshIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>';
+
+  document.querySelectorAll('.agent-card').forEach(card => {
+    const btn = card.querySelector('.agent-action');
+    btn.addEventListener('click', () => {
+      if (card.classList.contains('busy')) return;
+      const name = card.dataset.agent;
+      card.classList.add('busy');
+
+      if (card.dataset.state === 'connected') {
+        // 已连接：重新下发最新配置
+        setLoading(btn, '刷新中…');
+        setTimeout(() => {
+          clearLoading(btn);
+          card.classList.remove('busy');
+          showToast('已重新下发 ' + name + ' 的最新配置');
+        }, 900);
+      } else {
+        // 未连接：执行配置，成功后显示已连通状态
+        setLoading(btn, '配置中…');
+        setTimeout(() => {
+          clearLoading(btn);
+          card.classList.remove('busy');
+
+          card.dataset.state = 'connected';
+          const status = document.createElement('span');
+          status.className = 'agent-status connected';
+          status.innerHTML = '<span class="agent-dot"></span>已连通';
+          card.querySelector('.agent-card-info').appendChild(status);
+
+          btn.dataset.action = 'refresh';
+          btn.className = 'agent-action refresh';
+          btn.innerHTML = refreshIcon + '刷新';
+          showToast('已为 ' + name + ' 写入完整配置');
+        }, 1200);
+      }
+    });
+  });
+
+  // WSL2 环境自动配置
+  const wslRescan = document.getElementById('wslRescan');
+  const wslDesc = document.getElementById('wslDesc');
+
+  const descHTML =
+    '<span class="wsl-desc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>' +
+    '<span class="wsl-desc-text">自动检测当前正在运行的 WSL 发行版与其中已安装的 Agent，并将 Token Router 网关地址写入 WSL 内可访问的配置（优先 <code>localhost</code>，必要时使用 Windows 主机 IP）</span>';
+
+  const scanningHTML =
+    '<span class="gw-spinner"></span>' +
+    '<span class="wsl-scan-text">正在扫描运行中的 WSL 发行版与已安装的 Agent…</span>';
+
+  wslRescan.addEventListener('click', () => {
+    if (wslRescan.classList.contains('loading')) return;
+    setLoading(wslRescan, '检测中…');
+    wslDesc.className = 'wsl-desc scanning';
+    wslDesc.innerHTML = scanningHTML;
+
+    setTimeout(() => {
+      clearLoading(wslRescan);
+      wslDesc.className = 'wsl-desc';
+      wslDesc.innerHTML = descHTML;
+      showToast('WSL2 环境检测完成，已同步 3 个 Agent 网关配置');
+    }, 1600);
   });
 </script>
 

@@ -1,3 +1,4 @@
+<!-- PAGE_ID: meeting-summary -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -7,753 +8,82 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/meeting-common.css">
 <style>
-  :root {
-    --bg: #060606;
-    --panel: rgba(255,255,255,0.025);
-    --glass: rgba(255,255,255,0.035);
-    --glass-hover: rgba(255,255,255,0.055);
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.14);
-    --text: #ececec;
-    --text-dim: #9a9a9a;
-    --accent-glow: rgba(255,255,255,0.15);
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: #030303;
-    color: var(--text);
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    letter-spacing: 0.01em;
-  }
-
-  .app-window {
-    width: calc(100vw - 48px);
-    height: calc(100vh - 40px);
-    max-width: 1440px;
-    max-height: 900px;
-    background: #080808;
-    border: 1.5px solid rgba(255,255,255,0.22);
-    border-radius: 28px;
-    overflow: hidden;
-    display: flex;
-    box-shadow:
-      0 0 0 1px rgba(0,0,0,0.5),
-      0 24px 80px rgba(0,0,0,0.6),
-      inset 0 0 40px rgba(255,255,255,0.02);
-    position: relative;
-  }
-
-  .app-window::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 28px;
-    padding: 1.5px;
-    background: conic-gradient(
-      from 180deg at 50% 50%,
-      transparent 0deg,
-      rgba(200, 200, 215, 0.15) 30deg,
-      rgba(255, 255, 255, 0.35) 45deg,
-      rgba(200, 200, 215, 0.15) 60deg,
-      transparent 90deg,
-      transparent 180deg,
-      rgba(200, 200, 215, 0.12) 210deg,
-      rgba(255, 255, 255, 0.25) 225deg,
-      rgba(200, 200, 215, 0.12) 240deg,
-      transparent 270deg,
-      transparent 360deg
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 100;
-    mix-blend-mode: screen;
-  }
-
-  .app-window::after {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 30px;
-    background: radial-gradient(
-      ellipse 80% 40% at 50% 0%,
-      rgba(255, 255, 255, 0.08) 0%,
-      rgba(255, 255, 255, 0.03) 30%,
-      transparent 60%
-    );
-    pointer-events: none;
-    z-index: 99;
-    opacity: 0.6;
-  }
-
-  .window-controls {
-    position: absolute;
-    top: 8px;
-    right: 16px;
-    display: flex;
-    gap: 6px;
-    z-index: 20;
-  }
-
-  .win-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: rgba(255,255,255,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-  }
-
-  .win-btn:hover {
-    background: rgba(255,255,255,0.10);
-    color: rgba(255,255,255,0.85);
-  }
-
-  .win-btn.close:hover {
-    background: rgba(255,80,80,0.18);
-    color: rgba(255,120,120,0.9);
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: 68px;
-    height: 100%;
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 48px 0 20px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-    justify-content: center;
-  }
-
-  .sidebar-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-  }
-
-  .sidebar-group.top { margin-bottom: 0; }
-
-  .sidebar-group.bottom {
-    position: absolute;
-    bottom: 20px;
-    margin-top: 0;
-  }
-
-  .sidebar-logo {
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-    opacity: 0.85;
-  }
-
-  .s-item {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: var(--text-dim);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
-  }
-
-  .s-item:hover {
-    background: rgba(255,255,255,0.06);
-    color: var(--text);
-  }
-
-  .s-item.active {
-    color: var(--text);
-  }
-
-  .s-item.active::before {
-    content: '';
-    position: absolute;
-    left: -14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 20px;
-    background: #fff;
-    border-radius: 0 3px 3px 0;
-    opacity: 0.8;
-  }
-
-  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
-    transform: rotate(90deg);
-  }
-
-  /* Sidebar wrapper */
-  .sidebar-wrapper {
-    display: flex;
-    height: 100%;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-  }
-
-  .sidebar-wrapper.expanded .secondary-sidebar {
-    width: 240px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  /* Secondary sidebar */
-  .secondary-sidebar {
-    width: 0;
-    height: calc(100% - 60px);
-    margin: 48px 0 12px 0;
-    background: rgba(20, 20, 22, 0.45);
-    backdrop-filter: blur(40px) saturate(140%);
-    -webkit-backdrop-filter: blur(40px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-    box-shadow:
-      0 4px 12px rgba(0,0,0,0.5),
-      0 16px 48px rgba(0,0,0,0.45),
-      0 0 0 1px rgba(255,255,255,0.06) inset;
-    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-    position: relative;
-  }
-
-  .secondary-sidebar::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    padding: 1.5px;
-    background: radial-gradient(
-      ellipse 100% 60% at 80% 100%,
-      rgba(180, 180, 195, 0.5) 0%,
-      rgba(140, 140, 160, 0.2) 25%,
-      rgba(80, 80, 95, 0.06) 55%,
-      transparent 75%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .secondary-sidebar::after {
-    content: '';
-    position: absolute;
-    bottom: -80%;
-    right: -60%;
-    width: 300%;
-    height: 180%;
-    background: radial-gradient(
-      ellipse 140% 100% at 60% 90%,
-      rgba(120, 120, 135, 0.45) 0%,
-      rgba(95, 95, 110, 0.28) 18%,
-      rgba(65, 65, 78, 0.14) 38%,
-      rgba(35, 35, 48, 0.06) 58%,
-      rgba(20, 20, 30, 0.02) 75%,
-      transparent 90%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .sec-header {
-    padding: 14px 14px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .sec-title-header {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text);
-    padding: 4px 2px;
-    user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .sec-close {
-    width: 22px;
-    height: 22px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: rgba(255,255,255,0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-  }
-
-  .sec-close:hover {
-    background: rgba(255,255,255,0.08);
-    color: rgba(255,255,255,0.8);
-  }
-
-  .sec-action {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    border: none;
-    background: rgba(255,255,255,0.04);
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    width: 100%;
-    justify-content: flex-start;
-    box-sizing: border-box;
-  }
-
-  .sec-action:hover {
-    background: rgba(255,255,255,0.08);
-    color: var(--text);
-  }
-
-  .sec-list {
+/* Right - Summary */
+.mt-summary {
     flex: 1;
-    overflow-y: auto;
-    padding: 0 10px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .sec-list::-webkit-scrollbar { width: 4px; }
-  .sec-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
-
-  .sec-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-    position: relative;
-  }
-
-  .sec-item:hover { background: rgba(255,255,255,0.06); }
-  .sec-item.active { background: rgba(255,255,255,0.08); }
-
-  .sec-thumb {
-    width: 22px;
-    height: 22px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.62rem;
-    font-weight: 500;
-    color: #fff;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-
-  .sec-thumb.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
-  .sec-thumb.red { background: linear-gradient(135deg, #f87171, #ef4444); }
-  .sec-thumb.orange { background: linear-gradient(135deg, #fb923c, #f97316); }
-  .sec-thumb.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
-  .sec-thumb.purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
-  .sec-thumb.pink { background: linear-gradient(135deg, #f472b6, #ec4899); }
-  .sec-thumb.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
-
-  .sec-title {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.2s ease;
-  }
-
-  .sec-item:hover .sec-title,
-  .sec-item.active .sec-title { color: var(--text); }
-
-  /* Main */
-  .main {
-    flex: 1;
-    position: relative;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
+}
 
-  /* Meeting View - same layout as image-gen-view */
-  .meeting-view {
-    position: absolute;
-    top: 48px;
-    left: 0;
-    right: 0;
-    bottom: 12px;
-    display: flex;
-    padding: 0 12px 0 0;
-    gap: 12px;
-    overflow: hidden;
-  }
-
-  /* Cards - shared glassmorphism */
-  .mt-card {
-    background: rgba(30, 30, 34, 0.55);
-    backdrop-filter: blur(40px) saturate(140%);
-    -webkit-backdrop-filter: blur(40px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.18);
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow:
-      0 4px 12px rgba(0,0,0,0.5),
-      0 16px 48px rgba(0,0,0,0.45),
-      inset 0 0 40px rgba(255,255,255,0.02);
-    position: relative;
-  }
-
-  .mt-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 16px;
-    padding: 1.5px;
-    background: radial-gradient(
-      ellipse 100% 60% at 80% 100%,
-      rgba(180, 180, 195, 0.5) 0%,
-      rgba(140, 140, 160, 0.2) 25%,
-      rgba(80, 80, 95, 0.06) 55%,
-      transparent 75%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  .mt-card::after {
-    content: '';
-    position: absolute;
-    bottom: -80%;
-    right: -60%;
-    width: 300%;
-    height: 180%;
-    background: radial-gradient(
-      ellipse 140% 100% at 60% 90%,
-      rgba(120, 120, 135, 0.18) 0%,
-      rgba(95, 95, 110, 0.10) 18%,
-      rgba(65, 65, 78, 0.05) 38%,
-      rgba(35, 35, 48, 0.02) 58%,
-      transparent 75%
-    );
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.5;
-  }
-
-  /* Left - History */
-  .mt-history {
-    width: 220px;
-    flex-shrink: 0;
-  }
-
-  .mt-header {
-    padding: 14px 14px 10px;
+.mt-sum-header {
+    padding: 14px 18px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
     position: relative;
     z-index: 1;
-  }
+}
 
-  .mt-title {
+.mt-sum-title-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mt-sum-title {
     font-size: 0.92rem;
     font-weight: 600;
     color: var(--text);
-  }
+}
 
-  .mt-all-btn {
+.mt-sum-meta {
     display: flex;
+    gap: 14px;
     align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
+    font-size: 0.78rem;
     color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
+}
 
-  .mt-all-btn:hover {
-    background: rgba(255,255,255,0.06);
-    color: var(--text);
-  }
-
-  /* Skill buttons */
-  .mt-skills {
-    padding: 8px 10px 4px;
+.mt-sum-actions {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
+    gap: 6px;
+}
 
-  .mt-skill-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
+.mt-sum-action-btn {
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: left;
-    width: 100%;
-    text-decoration: none;
-  }
-
-  .mt-skill-btn:hover {
-    background: rgba(255,255,255,0.06);
-  }
-
-  .mt-skill-btn.active {
-    background: rgba(255,255,255,0.08);
-  }
-
-  .mt-skill-btn svg {
-    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
     color: var(--text-dim);
-  }
-
-  .mt-skill-btn.active svg {
-    color: var(--text);
-  }
-
-  .mt-divider {
-    height: 1px;
-    background: rgba(255,255,255,0.08);
-    margin: 8px 12px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mt-history-title {
-    padding: 6px 14px 4px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    color: var(--text-dim);
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* 新建会议按钮 - 毛玻璃风格 */
-  .mt-new-meeting-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    margin: 4px 14px 10px;
-    padding: 10px 0;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.18);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    z-index: 1;
-    flex-shrink: 0;
-    background: linear-gradient(180deg,
-      rgba(255,255,255,0.16) 0%,
-      rgba(255,255,255,0.08) 25%,
-      rgba(255,255,255,0.04) 50%,
-      rgba(255,255,255,0.06) 75%,
-      rgba(255,255,255,0.10) 100%
-    );
-    backdrop-filter: blur(24px) saturate(1.3);
-    -webkit-backdrop-filter: blur(24px) saturate(1.3);
-    box-shadow:
-      inset 0 1px 1px 0 rgba(255,255,255,0.22),
-      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
-      inset 1px 0 0 0 rgba(255,255,255,0.10),
-      inset -1px 0 0 0 rgba(255,255,255,0.10),
-      inset 0 0 20px 0 rgba(255,255,255,0.04),
-      0 4px 20px rgba(0,0,0,0.25),
-      0 0 24px rgba(255,255,255,0.05);
-    text-shadow: 0 0 6px rgba(255,255,255,0.12);
-  }
-
-  .mt-new-meeting-btn::before {
-    content: '';
-    position: absolute;
-    top: -12px;
-    left: 8%;
-    right: 8%;
-    height: 14px;
-    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
-    pointer-events: none;
-    filter: blur(2px);
-  }
-
-  .mt-new-meeting-btn::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 12%;
-    right: 12%;
-    height: 12px;
-    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
-    pointer-events: none;
-    filter: blur(3px);
-  }
-
-  .mt-new-meeting-btn:hover {
-    background: linear-gradient(180deg,
-      rgba(255,255,255,0.22) 0%,
-      rgba(255,255,255,0.12) 25%,
-      rgba(255,255,255,0.06) 50%,
-      rgba(255,255,255,0.08) 75%,
-      rgba(255,255,255,0.14) 100%
-    );
-    border-color: rgba(255,255,255,0.28);
-    box-shadow:
-      inset 0 1px 1px 0 rgba(255,255,255,0.30),
-      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
-      inset 1px 0 0 0 rgba(255,255,255,0.16),
-      inset -1px 0 0 0 rgba(255,255,255,0.16),
-      inset 0 0 24px 0 rgba(255,255,255,0.06),
-      0 6px 28px rgba(0,0,0,0.3),
-      0 0 32px rgba(255,255,255,0.08);
-    text-shadow: 0 0 10px rgba(255,255,255,0.20);
-  }
-
-  .mt-new-meeting-btn:hover::before {
-    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
-  }
-
-  .mt-new-meeting-btn:hover::after {
-    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
-  }
-
-  .mt-new-meeting-btn svg {
-    filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
-  }
-
-  .mt-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 10px 10px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mt-list::-webkit-scrollbar { width: 3px; }
-  .mt-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-
-  .mt-item {
-    padding: 8px 10px;
-    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
-    position: relative;
-    z-index: 1;
-  }
+}
 
-  .mt-item:hover { background: rgba(255,255,255,0.05); }
-  .mt-item.active { background: rgba(255,255,255,0.07); }
-
-  .mt-item-title {
-    font-size: 0.82rem;
-    font-weight: 500;
+.mt-sum-action-btn:hover {
+    background: rgba(255,255,255,0.08);
     color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+}
 
-  .mt-item-date {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
-
-  /* Center - Workbench (Participants & Notes) */
-  .mt-workbench {
-    width: 320px;
-    flex-shrink: 0;
-  }
-
-  /* Workbench tabs */
-  .mt-wb-tabs {
+/* Tabs */
+.mt-sum-tabs {
     display: flex;
-    padding: 0 14px 12px;
+    padding: 0 18px 10px;
     gap: 8px;
     flex-shrink: 0;
     position: relative;
     z-index: 1;
-  }
+}
 
-  .mt-wb-tab {
+.mt-sum-tab {
     flex: 1;
     padding: 7px 0;
     border-radius: 8px;
@@ -765,438 +95,189 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
-  }
+}
 
-  .mt-wb-tab:hover {
-    background: rgba(255,255,255,0.04);
-    color: var(--text);
-  }
+.mt-sum-tab:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.mt-sum-tab.active { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: var(--text); }
 
-  .mt-wb-tab.active {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: var(--text);
-  }
-
-  /* Participant list */
-  .mt-participants {
+/* Content body */
+.mt-sum-body {
     flex: 1;
     overflow-y: auto;
-    padding: 12px 14px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    padding: 0 18px 14px;
     position: relative;
     z-index: 1;
-  }
+}
 
-  .mt-participants::-webkit-scrollbar { width: 3px; }
-  .mt-participants::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+.mt-sum-body::-webkit-scrollbar { width: 3px; }
+.mt-sum-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
 
-  .mt-participant {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
-
-  .mt-participant:hover {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-  }
-
-  .mt-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #fff;
-    flex-shrink: 0;
-    line-height: 1;
-    background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06));
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15);
-  }
-
-  .mt-participant-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-
-  .mt-participant-name {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .mt-participant-role {
-    font-size: 0.74rem;
-    color: var(--text-dim);
-  }
-
-  /* Notes view - editable textarea */
-  .mt-notes {
-    flex: 1;
-    display: none;
-    flex-direction: column;
-    padding: 12px 14px 14px;
-    position: relative;
-    z-index: 1;
-    min-height: 0;
-  }
-
-  .mt-notes.show { display: flex; }
-  .mt-participants.hide { display: none; }
-
-  .mt-notes-textarea {
-    flex: 1;
-    width: 100%;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.82rem;
-    line-height: 1.8;
-    padding: 14px 16px;
-    resize: none;
-    outline: none;
-    overflow-y: auto;
-    transition: border-color 0.2s ease;
-  }
-
-  .mt-notes-textarea:focus {
-    border-color: rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.04);
-  }
-
-  .mt-notes-textarea::-webkit-scrollbar { width: 3px; }
-  .mt-notes-textarea::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-
-  .mt-notes-textarea::placeholder {
-    color: rgba(255,255,255,0.25);
-  }
-
-  .mt-notes-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 4px 0;
-    flex-shrink: 0;
-  }
-
-  .mt-notes-hint {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-  }
-
-  .mt-notes-count {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-  }
-
-  /* Right - Meeting Summary */
-  .mt-summary {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .mt-sum-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px 10px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mt-sum-title-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .mt-sum-back {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .mt-sum-back:hover {
-    background: rgba(255,255,255,0.08);
-    color: var(--text);
-  }
-
-  .mt-sum-title {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .mt-sum-edit {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-    flex-shrink: 0;
-  }
-
-  .mt-sum-edit:hover {
-    background: rgba(255,255,255,0.08);
-    color: var(--text);
-  }
-
-  /* Summary tabs */
-  .mt-sum-tabs {
-    display: flex;
-    padding: 0 16px;
-    gap: 4px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mt-sum-tab {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-dim);
-    font-family: inherit;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .mt-sum-tab:hover {
-    background: rgba(255,255,255,0.04);
-    color: var(--text);
-  }
-
-  .mt-sum-tab.active {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: var(--text);
-  }
-
-  /* Summary content scroll area */
-  .mt-sum-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .mt-sum-body::-webkit-scrollbar { width: 3px; }
-  .mt-sum-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
-
-  /* Meeting info card */
-  .mt-info-card {
+/* Info card */
+.mt-info-card {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
+    gap: 10px;
+    padding: 12px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 12px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
+    margin-bottom: 14px;
+}
 
-  .mt-info-item {
-    padding: 12px 14px;
+.mt-info-card.hide { display: none; }
+
+.mt-info-item {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    background: rgba(30, 30, 34, 0.4);
-  }
+    gap: 3px;
+}
 
-  .mt-info-label {
+.mt-info-label {
     font-size: 0.7rem;
     color: var(--text-dim);
-    font-weight: 500;
-  }
+}
 
-  .mt-info-value {
+.mt-info-value {
     font-size: 0.82rem;
-    color: var(--text);
     font-weight: 500;
-  }
+    color: var(--text);
+}
 
-  /* Discussion topics */
-  .mt-topics {
+/* Topics */
+.mt-topics-wrap { margin-bottom: 14px; }
+.mt-topics-wrap.hide { display: none; }
+
+.mt-topics {
     display: flex;
     flex-direction: column;
-    gap: 0;
-  }
+}
 
-  .mt-topic {
+.mt-topic {
     display: flex;
     gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    position: relative;
-  }
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 
-  .mt-topic:last-child {
-    border-bottom: none;
-  }
+.mt-topic:last-child { border-bottom: none; }
 
-  .mt-topic-marker {
+.mt-topic-marker {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex-shrink: 0;
-    padding-top: 2px;
-  }
+    padding-top: 4px;
+}
 
-  .mt-topic-dot {
+.mt-topic-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.8);
-    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+    background: #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.4);
     flex-shrink: 0;
-  }
+}
 
-  .mt-topic-line {
+.mt-topic-line {
     width: 1px;
     flex: 1;
-    background: rgba(255,255,255,0.06);
-    margin-top: 4px;
-  }
+    background: rgba(255,255,255,0.1);
+    margin-top: 6px;
+}
 
-  .mt-topic:last-child .mt-topic-line {
-    display: none;
-  }
+.mt-topic:last-child .mt-topic-line { display: none; }
 
-  .mt-topic-content {
-    flex: 1;
-    min-width: 0;
+.mt-topic-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-  }
+    gap: 4px;
+}
 
-  .mt-topic-header {
+.mt-topic-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-  }
+}
 
-  .mt-topic-title {
+.mt-topic-title {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text);
-  }
+}
 
-  .mt-topic-time {
+.mt-topic-time {
     font-size: 0.72rem;
     color: var(--text-dim);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
+}
 
-  .mt-topic-text {
+.mt-topic-text {
     font-size: 0.8rem;
     color: var(--text-dim);
     line-height: 1.6;
-  }
+}
 
-  /* Meeting original text view */
-  .mt-original {
+/* Original text */
+.mt-original {
     display: none;
     flex-direction: column;
-    gap: 10px;
-  }
+    gap: 8px;
+}
 
-  .mt-original.show { display: flex; }
-  .mt-topics-wrap.hide { display: none; }
-  .mt-info-card.hide { display: none; }
+.mt-original.show { display: flex; }
 
-  .mt-original-item {
-    padding: 12px 14px;
-    border-radius: 10px;
+.mt-original-item {
+    padding: 10px 14px;
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.06);
-  }
+    border-radius: 10px;
+}
 
-  .mt-original-header {
+.mt-original-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
     margin-bottom: 6px;
-  }
+}
 
-  .mt-original-time {
+.mt-original-time {
     font-size: 0.68rem;
     color: var(--text-dim);
-    flex-shrink: 0;
-  }
+}
 
-  .mt-original-text {
-    font-size: 0.8rem;
+.mt-original-speaker {
+    font-size: 0.72rem;
+    font-weight: 500;
     color: var(--text-dim);
-    line-height: 1.6;
-  }
+}
 
-  /* Audio player bar */
-  .mt-audio-bar {
+.mt-original-text {
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.7;
+}
+
+/* Audio bar */
+.mt-audio-bar {
     display: none;
+    padding: 12px 18px;
     align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
+    gap: 14px;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid rgba(255,255,255,0.06);
     flex-shrink: 0;
     position: relative;
-    z-index: 2;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    background: rgba(18, 18, 20, 0.5);
-    backdrop-filter: blur(20px) saturate(130%);
-    -webkit-backdrop-filter: blur(20px) saturate(130%);
-  }
+    z-index: 1;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
 
-  .mt-audio-bar.show { display: flex; }
+.mt-audio-bar.show { display: flex; }
 
-  .mt-play-btn {
+.mt-play-btn {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    border: none;
-    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
     color: var(--text);
     display: flex;
     align-items: center;
@@ -1204,210 +285,151 @@
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
-  }
+}
 
-  .mt-play-btn:hover {
-    background: rgba(255,255,255,0.22);
-  }
+.mt-play-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+}
 
-  .mt-play-btn:active {
-    transform: scale(0.92);
-  }
+.mt-play-btn:active { transform: scale(0.92); }
 
-  .mt-progress-wrap {
+.mt-progress-wrap {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    min-width: 0;
-  }
+    gap: 6px;
+}
 
-  .mt-progress-bar {
+.mt-progress-bar {
+    width: 100%;
     height: 4px;
-    border-radius: 2px;
     background: rgba(255,255,255,0.08);
+    border-radius: 2px;
     cursor: pointer;
     position: relative;
-  }
+}
 
-  .mt-progress-fill {
+.mt-progress-fill {
     height: 100%;
-    border-radius: 2px;
     background: rgba(255,255,255,0.55);
+    border-radius: 2px;
     width: 0%;
     position: relative;
     transition: width 0.1s linear;
-  }
+}
 
-  .mt-progress-handle {
-    position: absolute;
-    right: -5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 10px;
-    height: 10px;
+.mt-progress-handle {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: #fff;
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
     opacity: 0;
     transition: opacity 0.2s ease;
-    box-shadow: 0 0 6px rgba(255,255,255,0.3);
-  }
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
 
-  .mt-progress-bar:hover .mt-progress-handle,
-  .mt-progress-bar.dragging .mt-progress-handle {
+.mt-progress-bar:hover .mt-progress-handle,
+.mt-progress-bar.dragging .mt-progress-handle {
     opacity: 1;
-  }
+}
 
-  .mt-time-row {
+.mt-time-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.66rem;
+    font-size: 0.68rem;
     color: var(--text-dim);
     font-variant-numeric: tabular-nums;
-    user-select: none;
-  }
+}
 
-  .mt-volume-wrap {
+.mt-volume-wrap {
     display: flex;
     align-items: center;
     gap: 6px;
     flex-shrink: 0;
-  }
+}
 
-  .mt-volume-icon {
+.mt-volume-icon {
     color: var(--text-dim);
     cursor: pointer;
-    transition: color 0.2s ease;
     display: flex;
     align-items: center;
-  }
+    transition: color 0.2s ease;
+}
 
-  .mt-volume-icon:hover {
-    color: var(--text);
-  }
+.mt-volume-icon:hover { color: var(--text); }
 
-  .mt-volume-slider {
+.mt-volume-slider {
     width: 56px;
     height: 4px;
-    border-radius: 2px;
     background: rgba(255,255,255,0.08);
+    border-radius: 2px;
     cursor: pointer;
     position: relative;
-  }
+}
 
-  .mt-volume-fill {
+.mt-volume-fill {
     height: 100%;
+    background: rgba(255,255,255,0.55);
     border-radius: 2px;
-    background: rgba(255,255,255,0.45);
     width: 80%;
-  }
+}
 
-  .mt-speed-btn {
-    padding: 3px 8px;
-    border-radius: 5px;
-    border: none;
-    background: rgba(255,255,255,0.06);
+.mt-speed-btn {
+    padding: 0 8px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
     color: var(--text-dim);
     font-family: inherit;
-    font-size: 0.66rem;
+    font-size: 0.72rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    flex-shrink: 0;
     font-variant-numeric: tabular-nums;
-  }
+}
 
-  .mt-speed-btn:hover {
-    background: rgba(255,255,255,0.14);
-    color: var(--text);
-  }
+.mt-speed-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 </style>
 </head>
-<body>
-
+<body class="page-meeting-summary">
 <div class="app-window">
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"></line></svg>
     </button>
     <button class="win-btn maximize" title="全屏">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"></rect></svg>
     </button>
     <button class="win-btn close" title="关闭">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"></line><line x1="20" y1="4" x2="4" y2="20"></line></svg>
     </button>
   </div>
 
 <div class="sidebar-wrapper" id="sidebarWrapper">
   <div class="sidebar" id="primarySidebar">
     <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
-
     <div class="sidebar-group top">
       <a class="s-item" id="btnHome" href="index.html">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </a>
       <a class="s-item active" id="btnMeeting" href="meeting-home.html" title="工作台">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
       </a>
       <a class="s-item" href="model-store.html" title="模型管理">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
       </a>
-      <a class="s-item" href="route.html" title="路由管理">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <a class="s-item" href="Routing policy.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
       </a>
-      <div class="s-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-      </div>
-      <div class="s-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-      </div>
-      <div class="s-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-      </div>
     </div>
     <div class="sidebar-group bottom">
       <div class="s-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </div>
-    </div>
-  </div>
-
-  <div class="secondary-sidebar" id="secondarySidebar">
-    <div class="sec-header">
-      <div class="sec-title-header">
-        <span>历史会议</span>
-        <button class="sec-close" id="btnCloseSidebar" title="收起">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-        </button>
-      </div>
-      <button class="sec-action" id="btnNewMeeting">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-        新建会议
-      </button>
-    </div>
-    <div class="sec-list">
-      <div class="sec-item active">
-        <div class="sec-thumb blue">会</div>
-        <div class="sec-title">产品迭代周会 - 5月第2周</div>
-      </div>
-      <div class="sec-item">
-        <div class="sec-thumb green">技</div>
-        <div class="sec-title">技术架构评审会议</div>
-      </div>
-      <div class="sec-item">
-        <div class="sec-thumb orange">项</div>
-        <div class="sec-title">项目启动会 - Herdsman</div>
-      </div>
-      <div class="sec-item">
-        <div class="sec-thumb purple">设</div>
-        <div class="sec-title">UI设计评审会议</div>
-      </div>
-      <div class="sec-item">
-        <div class="sec-thumb pink">运</div>
-        <div class="sec-title">运维部署讨论会</div>
-      </div>
-      <div class="sec-item">
-        <div class="sec-thumb gray">周</div>
-        <div class="sec-title">周例会 - 5月第1周</div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
       </div>
     </div>
   </div>
@@ -1415,136 +437,70 @@
 
 <main class="main">
   <div class="meeting-view" id="meetingView">
-    <!-- 左侧：会议历史 -->
+    <!-- Left: Agent/History -->
     <div class="mt-card mt-history" id="mtHistory">
-      <div class="mt-header">
-        <span class="mt-title">智能体</span>
-      </div>
-
-      <!-- 技能入口 -->
+      <div class="mt-header"><span class="mt-title">智能体</span></div>
       <div class="mt-skills">
         <a class="mt-skill-btn" href="index.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           对话
         </a>
         <a class="mt-skill-btn" href="image-gen.html">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
           图片
         </a>
         <button class="mt-skill-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"></path><path d="M4 14l6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="M22 22l-5-10-5 10"></path><path d="M14 18h6"></path></svg>
           翻译
         </button>
         <button class="mt-skill-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           总结
         </button>
         <button class="mt-skill-btn active">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
           会议
         </button>
       </div>
-
-      <!-- 分隔线 -->
       <div class="mt-divider"></div>
-
-      <!-- 新建会议按钮 -->
       <button class="mt-new-meeting-btn" id="newMeetingBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
         新建会议
       </button>
-
-      <!-- 历史会议标题 -->
       <div class="mt-history-title">历史会议</div>
-
-      <!-- 历史记录列表 -->
       <div class="mt-list">
-        <div class="mt-item active">
-          <div class="mt-item-title">产品迭代周会 - 5月...</div>
-          <div class="mt-item-date">2025/05/13</div>
-        </div>
-        <div class="mt-item">
-          <div class="mt-item-title">技术架构评审会议</div>
-          <div class="mt-item-date">2025/05/10</div>
-        </div>
-        <div class="mt-item">
-          <div class="mt-item-title">项目启动会 - Herdsman</div>
-          <div class="mt-item-date">2025/05/08</div>
-        </div>
-        <div class="mt-item">
-          <div class="mt-item-title">UI设计评审会议</div>
-          <div class="mt-item-date">2025/05/06</div>
-        </div>
-        <div class="mt-item">
-          <div class="mt-item-title">运维部署讨论会</div>
-          <div class="mt-item-date">2025/05/03</div>
-        </div>
-        <div class="mt-item">
-          <div class="mt-item-title">周例会 - 5月第1周</div>
-          <div class="mt-item-date">2025/05/01</div>
-        </div>
+        <div class="mt-item active"><div class="mt-item-title">产品迭代周会 - 5月...</div><div class="mt-item-date">2025/05/13</div></div>
+        <div class="mt-item"><div class="mt-item-title">技术架构评审会议</div><div class="mt-item-date">2025/05/10</div></div>
+        <div class="mt-item"><div class="mt-item-title">项目启动会 - Herdsman</div><div class="mt-item-date">2025/05/08</div></div>
+        <div class="mt-item"><div class="mt-item-title">UI设计评审会议</div><div class="mt-item-date">2025/05/06</div></div>
+        <div class="mt-item"><div class="mt-item-title">运维部署讨论会</div><div class="mt-item-date">2025/05/03</div></div>
+        <div class="mt-item"><div class="mt-item-title">周例会 - 5月第1周</div><div class="mt-item-date">2025/05/01</div></div>
       </div>
     </div>
 
-    <!-- 中间：参会人员与笔记 -->
+    <!-- Center: Workbench -->
     <div class="mt-card mt-workbench" id="mtWorkbench">
-      <div class="mt-header">
-        <span class="mt-title">工作台</span>
-      </div>
-
-      <!-- 参会人员 / 笔记 标签切换 -->
+      <div class="mt-header"><span class="mt-title">工作台</span></div>
       <div class="mt-wb-tabs">
         <button class="mt-wb-tab active" id="tabParticipants">参会人员</button>
         <button class="mt-wb-tab" id="tabNotes">笔记</button>
       </div>
-
-      <!-- 参会人员列表 -->
-      <div class="mt-participants" id="participantsList">
-        <div class="mt-participant">
-          <div class="mt-avatar">张</div>
-          <div class="mt-participant-info">
-            <div class="mt-participant-name">张三</div>
-            <div class="mt-participant-role">产品经理</div>
-          </div>
-        </div>
-        <div class="mt-participant">
-          <div class="mt-avatar">李</div>
-          <div class="mt-participant-info">
-            <div class="mt-participant-name">李四</div>
-            <div class="mt-participant-role">技术负责人</div>
-          </div>
-        </div>
-        <div class="mt-participant">
-          <div class="mt-avatar">王</div>
-          <div class="mt-participant-info">
-            <div class="mt-participant-name">王五</div>
-            <div class="mt-participant-role">后端开发</div>
-          </div>
-        </div>
-        <div class="mt-participant">
-          <div class="mt-avatar">赵</div>
-          <div class="mt-participant-info">
-            <div class="mt-participant-name">赵六</div>
-            <div class="mt-participant-role">前端开发</div>
-          </div>
-        </div>
-        <div class="mt-participant">
-          <div class="mt-avatar">陈</div>
-          <div class="mt-participant-info">
-            <div class="mt-participant-name">陈七</div>
-            <div class="mt-participant-role">UI设计师</div>
-          </div>
-        </div>
+      <div class="mt-search-wrap" id="searchWrap">
+        <svg class="mt-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" class="mt-search-input" id="searchInput" placeholder="搜索参会人员" style="position: relative;">
+        <button class="mt-add-btn" id="addBtn" title="添加参会人">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
       </div>
-
-      <!-- 笔记列表 -->
+      <div class="mt-participants" id="participantsList">
+        <div class="mt-participant"><div class="mt-avatar">张</div><div class="mt-participant-info"><div class="mt-participant-name">张三</div><div class="mt-participant-role">产品经理</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">李</div><div class="mt-participant-info"><div class="mt-participant-name">李四</div><div class="mt-participant-role">技术负责人</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">王</div><div class="mt-participant-info"><div class="mt-participant-name">王五</div><div class="mt-participant-role">后端开发</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">赵</div><div class="mt-participant-info"><div class="mt-participant-name">赵六</div><div class="mt-participant-role">前端开发</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">陈</div><div class="mt-participant-info"><div class="mt-participant-name">陈七</div><div class="mt-participant-role">UI设计师</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+      </div>
       <div class="mt-notes" id="notesList">
-        <textarea class="mt-notes-textarea" id="notesTextarea" placeholder="在此输入会议笔记...">14:32 张三：本周需要完成会议纪要功能的上线，重点关注实时转录模块的稳定性测试。
-14:38 李四：AI摘要模块采用混合策略，需要协调算法团队配合联调，预计周五完成。
-14:45 王五：后端API已准备就绪，权限分级机制需要和安全团队确认细节后部署。
-14:52 赵六：前端页面适配已完成80%，剩余会议详情页的响应式布局需要两天时间。
-15:05 陈七：UI组件库已更新，新增了时间线和参会人员卡片的设计规范文档。
-15:12 张三：存储优化方案同意实施，下周一复盘时检查压缩效果和成本节省数据。</textarea>
+        <textarea class="mt-notes-textarea" id="notesTextarea" placeholder="在此输入会议笔记..."></textarea>
         <div class="mt-notes-footer">
           <span class="mt-notes-hint">可自由编辑笔记内容</span>
           <span class="mt-notes-count" id="notesCount">0 字</span>
@@ -1552,150 +508,87 @@
       </div>
     </div>
 
-    <!-- 右侧：会议总结 -->
+    <!-- Right: Summary -->
     <div class="mt-card mt-summary" id="mtSummary">
       <div class="mt-sum-header">
         <div class="mt-sum-title-row">
-          <span class="mt-sum-title">产品迭代周会 - 2025年5月第2周</span>
+          <span class="mt-sum-title">产品迭代周会</span>
+          <div class="mt-sum-meta">
+            <span>2025/05/13 14:00</span>
+            <span>|</span>
+            <span>45 分钟</span>
+          </div>
         </div>
-        <button class="mt-sum-edit" title="编辑">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>
+        <div class="mt-sum-actions">
+          <button class="mt-sum-action-btn" title="编辑">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button class="mt-sum-action-btn" title="下载">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          </button>
+        </div>
       </div>
 
-      <!-- 会议总结 / 会议原文 标签 -->
       <div class="mt-sum-tabs">
-        <button class="mt-sum-tab active" id="tabSummary">会议总结</button>
-        <button class="mt-sum-tab" id="tabOriginal">会议原文</button>
+        <button class="mt-sum-tab active" id="tabSummary">会议纪要</button>
+        <button class="mt-sum-tab" id="tabOriginal">原始文本</button>
       </div>
 
-      <!-- 内容区域 -->
-      <div class="mt-sum-body">
-        <!-- 会议信息卡片 -->
+      <div class="mt-sum-body" id="sumBody">
         <div class="mt-info-card" id="infoCard">
-          <div class="mt-info-item">
-            <span class="mt-info-label">会议主题</span>
-            <span class="mt-info-value">产品迭代周会 - 2025年5月第2周</span>
-          </div>
-          <div class="mt-info-item">
-            <span class="mt-info-label">会议时间</span>
-            <span class="mt-info-value">2025年5月13日 14:30 - 15:15</span>
-          </div>
-          <div class="mt-info-item">
-            <span class="mt-info-label">会议时长</span>
-            <span class="mt-info-value">45分钟</span>
-          </div>
+          <div class="mt-info-item"><span class="mt-info-label">会议主题</span><span class="mt-info-value">产品迭代周会</span></div>
+          <div class="mt-info-item"><span class="mt-info-label">参会人员</span><span class="mt-info-value">5 人</span></div>
+          <div class="mt-info-item"><span class="mt-info-label">会议时长</span><span class="mt-info-value">45 分钟</span></div>
         </div>
 
-        <!-- 讨论主题 -->
         <div class="mt-topics-wrap" id="topicsWrap">
           <div class="mt-topics">
             <div class="mt-topic">
-              <div class="mt-topic-marker">
-                <div class="mt-topic-dot"></div>
-                <div class="mt-topic-line"></div>
-              </div>
+              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
               <div class="mt-topic-content">
-                <div class="mt-topic-header">
-                  <span class="mt-topic-title">会议纪要功能开发进度 review</span>
-                </div>
-                <p class="mt-topic-text">开发团队汇报了会议纪要功能的当前进度，已完成实时转录模块的开发，正在进行AI总结生成模块的联调。预计本周五可以完成整体功能上线，目前整体进度符合预期计划。</p>
+                <div class="mt-topic-header"><span class="mt-topic-title">版本回顾</span><span class="mt-topic-time">00:00 - 08:30</span></div>
+                <div class="mt-topic-text">回顾上个版本的完成情况，整体进度符合预期。后端接口全部完成，正在进行联调测试。</div>
               </div>
             </div>
-
             <div class="mt-topic">
-              <div class="mt-topic-marker">
-                <div class="mt-topic-dot"></div>
-                <div class="mt-topic-line"></div>
-              </div>
+              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
               <div class="mt-topic-content">
-                <div class="mt-topic-header">
-                  <span class="mt-topic-title">AI生成摘要技术方案确认</span>
-                </div>
-                <p class="mt-topic-text">技术团队介绍了基于大语言模型的会议摘要生成方案，采用流式输出方式提升用户体验。经过讨论，确定了使用混合策略：关键信息提取 + 主题聚类 + 摘要生成，确保输出质量。</p>
+                <div class="mt-topic-header"><span class="mt-topic-title">前端优化</span><span class="mt-topic-time">08:30 - 18:00</span></div>
+                <div class="mt-topic-text">讨论前端响应式适配优化方案，UI设计稿已更新，新版本采用更简洁的风格。</div>
               </div>
             </div>
-
             <div class="mt-topic">
-              <div class="mt-topic-marker">
-                <div class="mt-topic-dot"></div>
-                <div class="mt-topic-line"></div>
-              </div>
+              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
               <div class="mt-topic-content">
-                <div class="mt-topic-header">
-                  <span class="mt-topic-title">用户权限与数据安全策略讨论</span>
-                </div>
-                <p class="mt-topic-text">安全团队提出了会议数据的访问控制方案，建议采用角色分级机制。普通成员只能查看自己参与的会议记录，管理员可查看团队全部会议，确保数据安全合规。</p>
+                <div class="mt-topic-header"><span class="mt-topic-title">性能优化</span><span class="mt-topic-time">18:00 - 32:00</span></div>
+                <div class="mt-topic-text">重点关注列表渲染效率，数据库索引优化可提升30%以上查询速度。</div>
               </div>
             </div>
-
             <div class="mt-topic">
-              <div class="mt-topic-marker">
-                <div class="mt-topic-dot"></div>
-                <div class="mt-topic-line"></div>
-              </div>
+              <div class="mt-topic-marker"><div class="mt-topic-dot"></div></div>
               <div class="mt-topic-content">
-                <div class="mt-topic-header">
-                  <span class="mt-topic-title">音频存储与压缩优化方案</span>
-                </div>
-                <p class="mt-topic-text">运维团队汇报了音频文件的存储成本分析，建议采用智能压缩算法。对于超过30天的会议录音，自动转存至冷存储，预计可节省60%的存储成本，同时保证音质。</p>
+                <div class="mt-topic-header"><span class="mt-topic-title">测试与交付</span><span class="mt-topic-time">32:00 - 45:00</span></div>
+                <div class="mt-topic-text">测试环境已准备就绪，明天开始回归测试。交付时间定在月底。</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 会议原文 -->
         <div class="mt-original" id="originalText">
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">14:30</span>
-            </div>
-            <p class="mt-original-text">大家好，今天的周会我们主要过一下四个议题。首先请开发团队汇报一下会议纪要功能的开发进度。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">14:35</span>
-            </div>
-            <p class="mt-original-text">好的，会议纪要功能目前实时转录模块已经开发完成，测试通过率98%。AI总结生成模块正在进行联调，我们采用的是流式输出方案，用户可以实时看到摘要生成过程。预计本周五能完成整体上线。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">14:50</span>
-            </div>
-            <p class="mt-original-text">我补充一下AI摘要的技术方案。我们使用的是混合策略：先做关键信息提取，再进行主题聚类，最后生成摘要。这样能保证输出既覆盖重点又结构清晰。流式输出用的是SSE方案，延迟控制在200ms以内。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">15:05</span>
-            </div>
-            <p class="mt-original-text">下一个议题，数据安全。安全团队来说一下权限方案的考虑。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">15:06</span>
-            </div>
-            <p class="mt-original-text">我们建议采用角色分级机制。普通成员只能查看自己参与的会议记录，管理员可以查看团队全部会议记录。所有访问日志都会记录，确保数据安全合规。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">15:20</span>
-            </div>
-            <p class="mt-original-text">关于音频存储成本，我做了分析。目前每月新增约500GB会议录音，建议对超过30天的录音自动转存至冷存储，配合智能压缩算法，预计可节省60%的存储成本，同时保证音质不受影响。</p>
-          </div>
-          <div class="mt-original-item">
-            <div class="mt-original-header">
-              <span class="mt-original-time">15:15</span>
-            </div>
-            <p class="mt-original-text">好的，今天四个议题都讨论完了。总结一下：功能周五上线，AI方案确认混合策略，权限分级机制下周实施，存储优化方案下周一复盘检查效果。散会。</p>
-          </div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">00:00</span></div><div class="mt-original-text">大家好，今天我们来讨论一下产品迭代的计划。首先回顾一下上个版本的完成情况，整体进度符合预期。</div></div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">02:15</span></div><div class="mt-original-text">后端接口已经全部完成，目前正在进行联调测试。前端页面的响应式适配还需要再优化一下。</div></div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">08:30</span></div><div class="mt-original-text">UI设计稿已经更新，新版本会采用更加简洁的风格。关于性能优化，我们需要重点关注列表渲染的效率。</div></div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">18:00</span></div><div class="mt-original-text">数据库的索引优化可以提升30%以上的查询速度。测试环境已经准备好了，明天开始回归测试。</div></div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">32:00</span></div><div class="mt-original-text">这次迭代的交付时间定在月底，大家注意把控进度。有没有其他问题需要讨论的？</div></div>
+          <div class="mt-original-item"><div class="mt-original-header"><span class="mt-original-time">42:00</span></div><div class="mt-original-text">好的，那今天的会议就到这里，谢谢大家。</div></div>
         </div>
       </div>
 
-      <!-- 音频播放器 -->
+      <!-- Audio bar -->
       <div class="mt-audio-bar" id="audioBar">
-        <button class="mt-play-btn" id="playBtn" title="播放/暂停">
-          <svg class="icon-play" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <svg class="icon-pause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+        <button class="mt-play-btn" id="playBtn">
+          <svg class="icon-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
         </button>
         <div class="mt-progress-wrap">
           <div class="mt-progress-bar" id="progressBar">
@@ -1704,13 +597,13 @@
             </div>
           </div>
           <div class="mt-time-row">
-            <span id="currentTime">00:00</span>
-            <span id="totalTime">45:00</span>
+            <span id="currentTimeEl">00:00</span>
+            <span id="totalTimeEl">45:00</span>
           </div>
         </div>
         <div class="mt-volume-wrap">
           <div class="mt-volume-icon" id="volumeIcon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
           </div>
           <div class="mt-volume-slider" id="volumeSlider">
             <div class="mt-volume-fill" id="volumeFill"></div>
@@ -1723,249 +616,228 @@
 </main>
 </div>
 
+<!-- Add Participant Modal -->
+<div class="mt-modal-overlay" id="addModal">
+  <div class="mt-modal">
+    <div class="mt-modal-header">
+      <span class="mt-modal-title">添加参会人</span>
+      <button class="mt-modal-close" id="modalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="mt-modal-body">
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">姓名</label>
+        <input type="text" class="mt-modal-input" id="modalName" placeholder="请输入姓名">
+      </div>
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">职位</label>
+        <input type="text" class="mt-modal-input" id="modalRole" placeholder="请输入职位">
+      </div>
+      <div class="mt-modal-actions">
+        <button class="mt-modal-btn" id="modalCancel">取消</button>
+        <button class="mt-modal-btn primary" id="modalConfirm">添加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/meeting-common.js"></script>
 <script>
-  // Secondary sidebar toggle
-  const sidebarWrapper = document.getElementById('sidebarWrapper');
-  const closeBtn = document.getElementById('btnCloseSidebar');
+// Summary page specific logic
+var mainEl = document.querySelector('.main');
+var tabSummary = document.getElementById('tabSummary');
+var tabOriginal = document.getElementById('tabOriginal');
+var infoCard = document.getElementById('infoCard');
+var topicsWrap = document.getElementById('topicsWrap');
+var originalText = document.getElementById('originalText');
+var audioBar = document.getElementById('audioBar');
+var playBtn = document.getElementById('playBtn');
+var progressBar = document.getElementById('progressBar');
+var progressFill = document.getElementById('progressFill');
+var currentTimeEl = document.getElementById('currentTimeEl');
+var totalTimeEl = document.getElementById('totalTimeEl');
+var volumeSlider = document.getElementById('volumeSlider');
+var volumeFill = document.getElementById('volumeFill');
+var volumeIcon = document.getElementById('volumeIcon');
+var speedBtn = document.getElementById('speedBtn');
 
-  function openSidebar() {
-    sidebarWrapper.classList.add('expanded');
-  }
+var totalSeconds = 45 * 60;
+var currentSeconds = 0;
+var isPlaying = false;
+var volume = 0.8;
+var isMuted = false;
+var prevVolume = 0.8;
+var speeds = [0.5, 1.0, 1.5, 2.0];
+var speedIndex = 1;
+var playTimer = null;
 
-  function closeSidebar() {
-    sidebarWrapper.classList.remove('expanded');
-  }
+function formatTime(sec) {
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+}
 
-  if (closeBtn) {
-    closeBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      closeSidebar();
-    });
-  }
+function updateProgress() {
+  var pct = totalSeconds > 0 ? (currentSeconds / totalSeconds) * 100 : 0;
+  progressFill.style.width = pct + '%';
+  currentTimeEl.textContent = formatTime(currentSeconds);
+  totalTimeEl.textContent = formatTime(totalSeconds);
+}
 
-  // 新建会议 - 跳转到会议首页
-  const btnNewMeeting = document.getElementById('btnNewMeeting');
-  if (btnNewMeeting) {
-    btnNewMeeting.addEventListener('click', function() {
-      window.location.href = 'meeting-home.html';
-    });
-  }
-
-  document.querySelector('.main').addEventListener('click', function() {
-    if (sidebarWrapper.classList.contains('expanded')) {
-      closeSidebar();
+function play() {
+  isPlaying = true;
+  var iconPlay = playBtn.querySelector('.icon-play');
+  var iconPause = playBtn.querySelector('.icon-pause');
+  if (iconPlay) iconPlay.style.display = 'none';
+  if (iconPause) iconPause.style.display = 'block';
+  playTimer = setInterval(function() {
+    if (currentSeconds < totalSeconds) {
+      currentSeconds++;
+      updateProgress();
+    } else {
+      pause();
     }
-  });
+  }, 1000 / speeds[speedIndex]);
+}
 
-  // 参会人员 / 笔记 标签切换
-  const tabParticipants = document.getElementById('tabParticipants');
-  const tabNotes = document.getElementById('tabNotes');
-  const participantsList = document.getElementById('participantsList');
-  const notesList = document.getElementById('notesList');
+function pause() {
+  isPlaying = false;
+  clearInterval(playTimer);
+  var iconPlay = playBtn.querySelector('.icon-play');
+  var iconPause = playBtn.querySelector('.icon-pause');
+  if (iconPlay) iconPlay.style.display = 'block';
+  if (iconPause) iconPause.style.display = 'none';
+}
 
-  tabParticipants.addEventListener('click', function() {
-    tabParticipants.classList.add('active');
-    tabNotes.classList.remove('active');
-    participantsList.classList.remove('hide');
-    notesList.classList.remove('show');
-  });
+function seekTo(clientX) {
+  var rect = progressBar.getBoundingClientRect();
+  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  currentSeconds = Math.floor(pct * totalSeconds);
+  updateProgress();
+}
 
-  tabNotes.addEventListener('click', function() {
-    tabNotes.classList.add('active');
-    tabParticipants.classList.remove('active');
-    participantsList.classList.add('hide');
-    notesList.classList.add('show');
-  });
+function setVolume(v) {
+  volume = Math.max(0, Math.min(1, v));
+  volumeFill.style.width = (volume * 100) + '%';
+}
 
-  // 笔记编辑器字数统计
-  const notesTextarea = document.getElementById('notesTextarea');
-  const notesCount = document.getElementById('notesCount');
+function seekVolume(clientX) {
+  var rect = volumeSlider.getBoundingClientRect();
+  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  setVolume(pct);
+}
 
-  function updateNotesCount() {
-    notesCount.textContent = notesTextarea.value.length + ' 字';
-  }
-
-  notesTextarea.addEventListener('input', updateNotesCount);
-  updateNotesCount();
-
-  // 会议总结 / 会议原文 标签切换
-  const tabSummary = document.getElementById('tabSummary');
-  const tabOriginal = document.getElementById('tabOriginal');
-  const infoCard = document.getElementById('infoCard');
-  const topicsWrap = document.getElementById('topicsWrap');
-  const originalText = document.getElementById('originalText');
-  const audioBar = document.getElementById('audioBar');
-
+// Tab switching
+if (tabSummary) {
   tabSummary.addEventListener('click', function() {
     tabSummary.classList.add('active');
     tabOriginal.classList.remove('active');
-    infoCard.classList.remove('hide');
-    topicsWrap.classList.remove('hide');
-    originalText.classList.remove('show');
-    audioBar.classList.remove('show');
+    if (infoCard) infoCard.classList.remove('hide');
+    if (topicsWrap) topicsWrap.classList.remove('hide');
+    if (originalText) originalText.classList.remove('show');
+    if (audioBar) audioBar.classList.remove('show');
   });
+}
 
+if (tabOriginal) {
   tabOriginal.addEventListener('click', function() {
     tabOriginal.classList.add('active');
     tabSummary.classList.remove('active');
-    infoCard.classList.add('hide');
-    topicsWrap.classList.add('hide');
-    originalText.classList.add('show');
-    audioBar.classList.add('show');
+    if (infoCard) infoCard.classList.add('hide');
+    if (topicsWrap) topicsWrap.classList.add('hide');
+    if (originalText) originalText.classList.add('show');
+    if (audioBar) audioBar.classList.add('show');
   });
+}
 
-  // 音频播放器
-  const playBtn = document.getElementById('playBtn');
-  const iconPlay = playBtn.querySelector('.icon-play');
-  const iconPause = playBtn.querySelector('.icon-pause');
-  const progressBar = document.getElementById('progressBar');
-  const progressFill = document.getElementById('progressFill');
-  const currentTimeEl = document.getElementById('currentTime');
-  const totalTimeEl = document.getElementById('totalTime');
-  const volumeIcon = document.getElementById('volumeIcon');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volumeFill = document.getElementById('volumeFill');
-  const speedBtn = document.getElementById('speedBtn');
-
-  var totalSeconds = 45 * 60;
-  var currentSeconds = 0;
-  var isPlaying = false;
-  var volume = 0.8;
-  var isMuted = false;
-  var prevVolume = 0.8;
-  var speeds = [0.5, 1.0, 1.5, 2.0];
-  var speedIndex = 1;
-  var playTimer = null;
-
-  function formatTime(sec) {
-    var m = Math.floor(sec / 60);
-    var s = Math.floor(sec % 60);
-    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-  }
-
-  function updateProgress() {
-    var pct = (currentSeconds / totalSeconds) * 100;
-    progressFill.style.width = pct + '%';
-    currentTimeEl.textContent = formatTime(currentSeconds);
-  }
-
-  totalTimeEl.textContent = formatTime(totalSeconds);
-  updateProgress();
-
-  function play() {
-    isPlaying = true;
-    iconPlay.style.display = 'none';
-    iconPause.style.display = 'block';
-    playTimer = setInterval(function() {
-      currentSeconds += speeds[speedIndex];
-      if (currentSeconds >= totalSeconds) {
-        currentSeconds = totalSeconds;
-        pause();
-      }
-      updateProgress();
-    }, 1000);
-  }
-
-  function pause() {
-    isPlaying = false;
-    iconPlay.style.display = 'block';
-    iconPause.style.display = 'none';
-    if (playTimer) {
-      clearInterval(playTimer);
-      playTimer = null;
-    }
-  }
-
+// Play/Pause
+if (playBtn) {
   playBtn.addEventListener('click', function() {
-    if (isPlaying) { pause(); } else { play(); }
+    if (isPlaying) pause(); else play();
   });
+}
 
-  // 进度条点击与拖拽
-  function seekTo(clientX) {
-    var rect = progressBar.getBoundingClientRect();
-    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    currentSeconds = pct * totalSeconds;
-    updateProgress();
-  }
-
+// Progress seek
+if (progressBar) {
   var isDraggingProgress = false;
-
   progressBar.addEventListener('mousedown', function(e) {
     isDraggingProgress = true;
     progressBar.classList.add('dragging');
     seekTo(e.clientX);
   });
-
   document.addEventListener('mousemove', function(e) {
-    if (isDraggingProgress) { seekTo(e.clientX); }
+    if (isDraggingProgress) seekTo(e.clientX);
   });
-
   document.addEventListener('mouseup', function() {
-    if (isDraggingProgress) {
-      isDraggingProgress = false;
-      progressBar.classList.remove('dragging');
-    }
+    isDraggingProgress = false;
+    progressBar.classList.remove('dragging');
   });
+}
 
-  // 音量滑块
-  function setVolume(v) {
-    volume = Math.max(0, Math.min(1, v));
-    volumeFill.style.width = (volume * 100) + '%';
-    isMuted = volume === 0;
-  }
-
-  function seekVolume(clientX) {
-    var rect = volumeSlider.getBoundingClientRect();
-    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    setVolume(pct);
-  }
-
+// Volume seek
+if (volumeSlider) {
   var isDraggingVolume = false;
-
   volumeSlider.addEventListener('mousedown', function(e) {
     isDraggingVolume = true;
     seekVolume(e.clientX);
   });
-
   document.addEventListener('mousemove', function(e) {
-    if (isDraggingVolume) { seekVolume(e.clientX); }
+    if (isDraggingVolume) seekVolume(e.clientX);
   });
-
   document.addEventListener('mouseup', function() {
     isDraggingVolume = false;
   });
+}
 
-  // 静音切换
+// Mute toggle
+if (volumeIcon) {
   volumeIcon.addEventListener('click', function() {
-    if (isMuted || volume === 0) {
-      setVolume(prevVolume || 0.8);
+    if (isMuted) {
+      isMuted = false;
+      setVolume(prevVolume);
     } else {
+      isMuted = true;
       prevVolume = volume;
       setVolume(0);
     }
   });
+}
 
-  setVolume(volume);
-
-  // 倍速切换
+// Speed toggle
+if (speedBtn) {
   speedBtn.addEventListener('click', function() {
     speedIndex = (speedIndex + 1) % speeds.length;
-    speedBtn.textContent = speeds[speedIndex].toFixed(1) + 'x';
+    speedBtn.textContent = speeds[speedIndex] + 'x';
+    if (isPlaying) {
+      clearInterval(playTimer);
+      playTimer = setInterval(function() {
+        if (currentSeconds < totalSeconds) {
+          currentSeconds++;
+          updateProgress();
+        } else {
+          pause();
+        }
+      }, 1000 / speeds[speedIndex]);
+    }
   });
+}
 
-  // 历史会议项点击
-  const mtItems = document.querySelectorAll('.mt-item');
-  mtItems.forEach(function(item) {
-    item.addEventListener('click', function() {
-      mtItems.forEach(function(i) { i.classList.remove('active'); });
-      item.classList.add('active');
-    });
+// Close sidebar on main click
+if (mainEl) {
+  mainEl.addEventListener('click', function(e) {
+    var sw = document.getElementById('sidebarWrapper');
+    if (sw && sw.classList.contains('expanded')) {
+      if (!sw.contains(e.target) && !e.target.closest('.s-item')) {
+        sw.classList.remove('expanded');
+      }
+    }
   });
+}
 
-  // 新建会议按钮 - 跳转到 meeting-home 页面
-  document.getElementById('newMeetingBtn').addEventListener('click', function() {
-    window.location.href = 'meeting-home.html';
-  });
+// Init
+setVolume(volume);
+updateProgress();
 </script>
 </body>
 </html>

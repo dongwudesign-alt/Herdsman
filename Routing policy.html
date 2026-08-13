@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>路由策略 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="laser-flow.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Route View */
+  .route-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .ms-nav-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ms-nav-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ms-nav-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--text);
+  }
+
+  /* Main Area - 与左侧 ms-card 导航卡一比一复刻背景与描边 */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+  }
+
+  .ms-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 20px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+    border-radius: 3px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.22);
+  }
+
+  .ms-content-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+
+  /* Section */
+  .config-section {
+    margin-bottom: 16px;
+  }
+
+  .config-section:last-child {
+    margin-bottom: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  /* Strategy Cards - 突出重点 */
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .strategy-card {
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 118px;
+  }
+
+  .strategy-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.12) 0%,
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .strategy-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-2px);
+  }
+
+  .strategy-card:hover::before {
+    opacity: 1;
+  }
+
+  .strategy-card.active {
+    border-color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 40px rgba(255,255,255,0.06);
+  }
+
+  .strategy-card.active::before {
+    opacity: 1;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(255, 255, 255, 0.2) 0%,
+      rgba(200, 200, 215, 0.1) 30%,
+      transparent 60%
+    );
+  }
+
+  .strategy-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .strategy-card.active .strategy-card-icon {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .strategy-card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .strategy-card-code {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .strategy-card-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .strategy-card.active .strategy-card-desc {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .strategy-card-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .strategy-card.active .strategy-card-check {
+    opacity: 1;
+    transform: scale(1);
+    background: #fff;
+    border-color: #fff;
+    color: #0a0a0a;
+  }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,255,255,0.06) 20%,
+      rgba(255,255,255,0.06) 80%,
+      transparent 100%
+    );
+    margin: 12px 0;
+  }
+
+  /* ========== 路由策略 · 翡翠主题（与「路由配置」页做视觉区分） ========== */
+  :root {
+    --accent: #ffffff;
+    --accent-deep: #ffffff;
+    --accent-soft: rgba(255, 255, 255, 0.14);
+    --accent-bg: rgba(255, 255, 255, 0.08);
+    --accent-border: rgba(255, 255, 255, 0.45);
+    --accent-glow: rgba(255, 255, 255, 0.32);
+  }
+
+  /* 导航标题旁的翡翠状态点 */
+  .ms-nav-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ms-nav-title::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: policyPulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes policyPulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(255,255,255,0.25); }
+    50% { box-shadow: 0 0 14px var(--accent-glow); }
+  }
+
+  /* 激活导航项 */
+  .ms-nav-item.active {
+    background: var(--accent-soft);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--accent);
+  }
+
+  /* 页面标题翡翠竖条 */
+  .ms-page-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ms-page-title::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  /* 策略卡片激活态 */
+  .strategy-card.active {
+    border-color: var(--accent-border);
+    background: var(--accent-bg);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.15),
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 40px var(--accent-glow);
+  }
+
+  .strategy-card.active::before {
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(255,255,255,0.24) 0%,
+      rgba(255,255,255,0.10) 30%,
+      transparent 60%
+    );
+  }
+
+  .strategy-card.active .strategy-card-icon {
+    background: var(--accent-soft);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .strategy-card.active .strategy-card-check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0b1220;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  .strategy-card.active .strategy-card-desc {
+    color: rgba(255, 255, 255, 0.74);
+  }
+
+  /* ========== 模型面板 ========== */
+  .model-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .model-panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    height: 100%;
+    min-height: 0;
+    transition: border-color .35s ease, background .35s ease, box-shadow .35s ease, opacity .35s ease;
+  }
+
+  .model-panel.active {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: var(--accent-bg);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .model-panel.disabled {
+    opacity: 0.42;
+    filter: saturate(0.3);
+    pointer-events: none;
+  }
+
+  .model-panel.disabled::after {
+    content: '当前策略下不可用';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(8, 20, 14, 0.6);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .model-panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .model-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .model-panel-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+    color: var(--accent);
+  }
+
+  .model-panel-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(238, 247, 242, 0.95);
+    white-space: nowrap;
+  }
+
+  .model-panel-tag {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .model-current {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .model-current-label {
+    display: block;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.38);
+  }
+
+  .model-current-name {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ========== 高级设置弹窗内容 ========== */
+  .adv-section {
+    margin-bottom: 20px;
+  }
+
+  .adv-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .adv-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .adv-section-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  .adv-endpoint-field {
+    display: flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+  }
+
+  .adv-endpoint-url {
+    font-size: 0.8rem;
+    font-family: 'Cascadia Code', Consolas, 'Courier New', monospace;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adv-param {
+    margin-bottom: 14px;
+  }
+
+  .adv-param:last-child {
+    margin-bottom: 0;
+  }
+
+  .adv-param-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .adv-param-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .adv-param-value {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .adv-param-desc {
+    margin-top: 2px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .adv-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: opacity .25s ease;
+  }
+
+  .adv-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.15);
+    transition: box-shadow .15s ease;
+  }
+
+  .adv-slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5), 0 0 0 5px rgba(255, 255, 255, 0.25);
+  }
+
+  .adv-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.15);
+  }
+
+  .adv-slider:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .adv-slider:disabled::-webkit-slider-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .adv-slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  /* 开关（配额模块） */
+  .ms-switch {
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    cursor: pointer;
+    transition: background .25s ease, border-color .25s ease;
+  }
+
+  .ms-switch .ms-switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    transition: transform .25s cubic-bezier(.4, 0, .2, 1), background .25s ease, box-shadow .25s ease;
+  }
+
+  .ms-switch.on {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .ms-switch.on .ms-switch-knob {
+    transform: translateX(16px);
+    background: #fff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+  }
+
+  .adv-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 16px;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .adv-btn {
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all .2s ease;
+    white-space: nowrap;
+  }
+
+  .adv-btn-cancel {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-dim);
+    flex: 1;
+  }
+
+  .adv-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+  }
+
+  .adv-btn-default {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    flex: 1;
+  }
+
+  .adv-btn-default:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .adv-btn-done {
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.08) 25%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.06) 75%,
+      rgba(255, 255, 255, 0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 1px 0 rgba(255, 255, 255, 0.06),
+      inset 1px 0 0 0 rgba(255, 255, 255, 0.10),
+      inset -1px 0 0 0 rgba(255, 255, 255, 0.10),
+      inset 0 0 20px 0 rgba(255, 255, 255, 0.04),
+      0 4px 20px rgba(0, 0, 0, 0.25),
+      0 0 24px rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.12);
+    overflow: visible;
+    flex: 1;
+  }
+
+  .adv-btn-done:hover {
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.12) 25%,
+      rgba(255, 255, 255, 0.07) 50%,
+      rgba(255, 255, 255, 0.10) 75%,
+      rgba(255, 255, 255, 0.15) 100%
+    );
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.30),
+      inset 0 -1px 1px 0 rgba(255, 255, 255, 0.08),
+      inset 1px 0 0 0 rgba(255, 255, 255, 0.14),
+      inset -1px 0 0 0 rgba(255, 255, 255, 0.14),
+      inset 0 0 24px 0 rgba(255, 255, 255, 0.06),
+      0 4px 24px rgba(0, 0, 0, 0.30),
+      0 0 32px rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .model-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .model-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .model-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+  }
+
+  .model-group-label {
+    margin: 8px 4px 4px;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.32);
+  }
+
+  .model-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+  }
+
+  .model-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .model-item.active {
+    background: var(--accent-soft);
+    border-color: var(--accent-border);
+  }
+
+  .model-item-name {
+    font-size: 0.8rem;
+    color: rgba(240, 250, 245, 0.82);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .model-item.active .model-item-name {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .model-item-ctx {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    font-family: 'Cascadia Code', Consolas, monospace;
+    color: rgba(255, 255, 255, 0.38);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 3px 7px;
+    border-radius: 5px;
+  }
+
+  .model-item.active .model-item-ctx {
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-border);
+  }
+
+  @media (max-width: 1120px) {
+    .model-panel-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .model-list {
+      max-height: 320px;
+    }
+  }
+
+  /* ========== 高级设置（弹窗入口） ========== */
+  .adv-trigger {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(240, 250, 245, 0.9);
+    font: inherit;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+  }
+
+  .adv-trigger:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+
+  .adv-trigger-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .adv-trigger-text {
+    font-size: 11.5px;
+    font-weight: 600;
+  }
+
+  .adv-trigger-hint {
+    margin-left: auto;
+    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.38);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .adv-trigger-arrow {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.5);
+    transition: transform .25s ease;
+  }
+
+  .adv-trigger:hover .adv-trigger-arrow {
+    transform: translateY(2px);
+  }
+
+  /* 高级设置弹窗 */
+  .adv-modal-mask {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s ease, visibility .3s ease;
+  }
+
+  .adv-modal-mask.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .adv-modal {
+    width: 420px;
+    max-width: 90vw;
+    max-height: 600px;
+    height: auto;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+    transition: transform .35s cubic-bezier(.4, 0, .2, 1), opacity .3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  @media (max-height: 750px) {
+    .adv-modal {
+      max-height: 80vh;
+    }
+  }
+
+  .adv-modal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .adv-modal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .adv-modal::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+  }
+
+  .adv-modal::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .adv-modal-mask.open .adv-modal {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .adv-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .adv-modal-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .adv-modal-close {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0;
+    transition: all .15s ease;
+  }
+
+  .adv-modal-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+  }
+
+  .adv-modal-body {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item active" href="Routing policy.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+      </div>
+    <div class="sidebar-group bottom">
+      <div class="s-item" title="用户">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route View -->
+  <div class="route-view" id="routeView">
+
+    <!-- Left: Navigation Card (220px) -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">路由策略</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item active" href="Routing policy.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+          路由策略
+        </a>
+        <a class="ms-nav-item" href="Routing configuration.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="11"/><line x1="9" y1="18" x2="15" y2="13"/></svg>
+          路由配置
+        </a>
+        <a class="ms-nav-item" href="route.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          网关连接
+        </a>
+        <a class="ms-nav-item" href="route.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          全局统计
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Main Area -->
+    <div class="ms-main">
+      <div class="ms-main-header">
+        <div class="ms-page-title">路由策略</div>
+        <div class="ms-page-subtitle">编排模型调度的策略规则与运行参数</div>
+      </div>
+
+      <div class="ms-content-scroll">
+
+        <!-- Section 1: 策略（调度总开关）- 最醒目 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+            <span class="section-title">策略 · 调度总开关</span>
+            <span class="section-desc">选择请求调度的核心模式</span>
+          </div>
+          <div class="strategy-grid">
+            <div class="strategy-card active" data-strategy="auto">
+              <div class="strategy-card-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="strategy-card-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <div class="strategy-card-title">智能路由 <span class="strategy-card-code">auto</span></div>
+              <div class="strategy-card-desc">自动调度端侧 / 云端模型，根据配置智能选择最优路径</div>
+            </div>
+            <div class="strategy-card" data-strategy="edge">
+              <div class="strategy-card-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="strategy-card-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+              </div>
+              <div class="strategy-card-title">全部端侧 <span class="strategy-card-code">edge</span></div>
+              <div class="strategy-card-desc">强制所有请求使用本地端侧模型，完全离线运行</div>
+            </div>
+            <div class="strategy-card" data-strategy="cloud">
+              <div class="strategy-card-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="strategy-card-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+              </div>
+              <div class="strategy-card-title">全部云端 <span class="strategy-card-code">cloud</span></div>
+              <div class="strategy-card-desc">强制所有请求调用云端大模型，追求最强能力</div>
+            </div>
+            <div class="strategy-card" data-strategy="cascade">
+              <div class="strategy-card-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="strategy-card-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 17 2 12 7 7"/><polyline points="17 7 22 12 17 17"/><line x1="14" y1="4" x2="10" y2="20"/></svg>
+              </div>
+              <div class="strategy-card-title">先端后云 <span class="strategy-card-code">cascade</span></div>
+              <div class="strategy-card-desc">优先本地模型处理，失败时自动降级到云端</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Section 2: 模型面板 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            <span class="section-title">模型面板</span>
+            <span class="section-desc">端侧与云端模型选择，随调度策略联动</span>
+          </div>
+
+          <div class="model-panel-grid">
+
+            <!-- Herdsman 本地模型面板 -->
+            <div class="model-panel" id="localPanel">
+              <div class="model-panel-header">
+                <div class="model-panel-title">
+                  <div class="model-panel-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                  </div>
+                  <div>
+                    <div class="model-panel-name">Herdsman 本地模型</div>
+                    <div class="model-panel-tag">端侧 · 完全离线</div>
+                  </div>
+                </div>
+                <div class="model-current">
+                  <span class="model-current-label">当前模型</span>
+                  <span class="model-current-name" id="localCurrentModel">Qwen3.5-Edge-14B</span>
+                </div>
+              </div>
+
+              <div class="model-list" id="localModelList">
+                <div class="model-item active" data-model="Qwen3.5-Edge-14B"><span class="model-item-name">Qwen3.5-Edge-14B</span><span class="model-item-ctx">32K</span></div>
+                <div class="model-item" data-model="Llama-4-Falcon-8B"><span class="model-item-name">Llama-4-Falcon-8B</span><span class="model-item-ctx">128K</span></div>
+                <div class="model-item" data-model="DeepSeek-V4-R1-14B"><span class="model-item-name">DeepSeek-V4-R1-14B</span><span class="model-item-ctx">64K</span></div>
+                <div class="model-item" data-model="GLM-5-Edge-6B"><span class="model-item-name">GLM-5-Edge-6B</span><span class="model-item-ctx">32K</span></div>
+                <div class="model-item" data-model="Mistral-Edge-7B"><span class="model-item-name">Mistral-Edge-7B</span><span class="model-item-ctx">128K</span></div>
+                <div class="model-item" data-model="Phi-4.5-Mini"><span class="model-item-name">Phi-4.5-Mini</span><span class="model-item-ctx">32K</span></div>
+              </div>
+
+              <!-- 添加模型（弹窗入口） -->
+              <button class="adv-trigger" id="addModelBtn" type="button">
+                <span class="adv-trigger-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <span class="adv-trigger-text">添加模型</span>
+                <span class="adv-trigger-hint">导入本地 / 端侧模型</span>
+                <svg class="adv-trigger-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+
+            <!-- Flowy 云端模型面板 -->
+            <div class="model-panel" id="cloudPanel">
+              <div class="model-panel-header">
+                <div class="model-panel-title">
+                  <div class="model-panel-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+                  </div>
+                  <div>
+                    <div class="model-panel-name">Flowy 云端模型</div>
+                    <div class="model-panel-tag">多厂商 · 统一接口</div>
+                  </div>
+                </div>
+                <div class="model-current">
+                  <span class="model-current-label">当前模型</span>
+                  <span class="model-current-name" id="cloudCurrentModel">Auto（自动调度）</span>
+                </div>
+              </div>
+
+              <div class="model-list" id="cloudModelList">
+                <div class="model-item active" data-model="Auto（自动调度）"><span class="model-item-name">Auto（自动调度）</span><span class="model-item-ctx">-</span></div>
+                <div class="model-group-label">Anthropic</div>
+                <div class="model-item" data-model="claude-fable-5.0"><span class="model-item-name">claude-fable-5.0</span><span class="model-item-ctx">1M</span></div>
+                <div class="model-item" data-model="claude-opus-4.7"><span class="model-item-name">claude-opus-4.7</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-item" data-model="claude-opus-4.8"><span class="model-item-name">claude-opus-4.8</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-item" data-model="claude-opus-5.0"><span class="model-item-name">claude-opus-5.0</span><span class="model-item-ctx">1M</span></div>
+                <div class="model-group-label">OpenAI</div>
+                <div class="model-item" data-model="GPT5.5"><span class="model-item-name">GPT5.5</span><span class="model-item-ctx">205K</span></div>
+                <div class="model-item" data-model="GPT5.6-Luna"><span class="model-item-name">GPT5.6-Luna</span><span class="model-item-ctx">205K</span></div>
+                <div class="model-item" data-model="GPT5.6-Sol"><span class="model-item-name">GPT5.6-Sol</span><span class="model-item-ctx">205K</span></div>
+                <div class="model-item" data-model="GPT5.6-Terra"><span class="model-item-name">GPT5.6-Terra</span><span class="model-item-ctx">205K</span></div>
+                <div class="model-group-label">DeepSeek</div>
+                <div class="model-item" data-model="Deepseek-v4-flash"><span class="model-item-name">Deepseek-v4-flash</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-item" data-model="Deepseek-v4-pro"><span class="model-item-name">Deepseek-v4-pro</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-group-label">Google</div>
+                <div class="model-item" data-model="gemini-3.5-flash"><span class="model-item-name">gemini-3.5-flash</span><span class="model-item-ctx">1M</span></div>
+                <div class="model-group-label">智谱 AI</div>
+                <div class="model-item" data-model="GLM-5"><span class="model-item-name">GLM-5</span><span class="model-item-ctx">203K</span></div>
+                <div class="model-item" data-model="GLM-5.2"><span class="model-item-name">GLM-5.2</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-group-label">Moonshot</div>
+                <div class="model-item" data-model="Kimi-K2.5"><span class="model-item-name">Kimi-K2.5</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-item" data-model="Kimi-K2.6"><span class="model-item-name">Kimi-K2.6</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-group-label">MiniMax</div>
+                <div class="model-item" data-model="Minimax-M2.7"><span class="model-item-name">Minimax-M2.7</span><span class="model-item-ctx">205K</span></div>
+                <div class="model-item" data-model="Minimax-M3"><span class="model-item-name">Minimax-M3</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-group-label">阿里云</div>
+                <div class="model-item" data-model="Qwen3.7-max"><span class="model-item-name">Qwen3.7-max</span><span class="model-item-ctx">262K</span></div>
+                <div class="model-item" data-model="Qwen3.7-plus"><span class="model-item-name">Qwen3.7-plus</span><span class="model-item-ctx">205K</span></div>
+              </div>
+
+              <!-- 高级设置（弹窗入口） -->
+              <button class="adv-trigger" id="advTrigger" type="button">
+                <span class="adv-trigger-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                </span>
+                <span class="adv-trigger-text">高级设置</span>
+                <span class="adv-trigger-hint">统一接口 / Token 配额</span>
+                <svg class="adv-trigger-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+
+              <!-- 高级设置弹窗 -->
+              <div class="adv-modal-mask" id="advMask">
+                <div class="adv-modal">
+                  <div class="adv-modal-header">
+                    <div class="adv-modal-title">高级设置</div>
+                    <button class="adv-modal-close" id="advClose" type="button">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+                    </button>
+                  </div>
+                  <div class="adv-modal-body">
+                    <!-- 统一接口 -->
+                    <div class="adv-section">
+                      <div class="adv-section-header">
+                        <span class="adv-section-label">统一接口</span>
+                      </div>
+                      <div class="adv-endpoint-field">
+                        <span class="adv-endpoint-url">https://server.flowyaipc.cn/claw/v1</span>
+                      </div>
+                    </div>
+
+                    <!-- Token 配额 -->
+                    <div class="adv-section">
+                      <div class="adv-section-header">
+                        <span class="adv-section-label">Token 配额</span>
+                      </div>
+                      <div class="adv-param">
+                        <div class="adv-param-header">
+                          <div>
+                            <span class="adv-param-label">启用云端 Token 配额</span>
+                            <div class="adv-param-desc" id="quotaState">云端 Token 不限量</div>
+                          </div>
+                          <button class="ms-switch" id="quotaSwitch" type="button">
+                            <span class="ms-switch-knob"></span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="adv-param">
+                        <div class="adv-param-header">
+                          <span class="adv-param-label">Token 预算</span>
+                          <span class="adv-param-value" id="quotaValue">100B</span>
+                        </div>
+                        <input type="range" class="adv-slider" id="quotaSlider" min="4" max="12" step="0.1" value="11" disabled>
+                        <div class="adv-slider-labels">
+                          <span>10B</span>
+                          <span>1T</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 底部操作按钮 -->
+                  <div class="adv-footer">
+                    <button class="adv-btn adv-btn-cancel" id="advCancel" type="button">取消</button>
+                    <button class="adv-btn adv-btn-default" id="advReset" type="button">恢复默认</button>
+                    <button class="adv-btn adv-btn-done" id="advDone" type="button">完成</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Nav item switching
+  document.querySelectorAll('.ms-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.ms-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // ========== 策略选择（调度总开关） ==========
+  const strategyCards = document.querySelectorAll('.strategy-card');
+
+  strategyCards.forEach(card => {
+    card.addEventListener('click', () => {
+      strategyCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      syncModelPanels(card.dataset.strategy);
+    });
+  });
+
+  // ========== 模型面板与策略联动 ==========
+  const localPanel = document.getElementById('localPanel');
+  const cloudPanel = document.getElementById('cloudPanel');
+
+  function syncModelPanels(strategy) {
+    localPanel.classList.remove('active', 'disabled');
+    cloudPanel.classList.remove('active', 'disabled');
+    if (strategy === 'edge') {
+      // 全部端侧：本地高亮，云端不可用
+      localPanel.classList.add('active');
+      cloudPanel.classList.add('disabled');
+    } else if (strategy === 'cloud') {
+      // 全部云端：云端高亮，本地不可用
+      cloudPanel.classList.add('active');
+      localPanel.classList.add('disabled');
+    } else {
+      // 智能路由 / 先端后云：双面板高亮
+      localPanel.classList.add('active');
+      cloudPanel.classList.add('active');
+    }
+  }
+
+  // 页面加载时按当前选中策略初始化
+  const activeStrategy = document.querySelector('.strategy-card.active');
+  if (activeStrategy) syncModelPanels(activeStrategy.dataset.strategy);
+
+  // ========== 模型选择 ==========
+  document.querySelectorAll('.model-list').forEach(list => {
+    list.querySelectorAll('.model-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const panel = item.closest('.model-panel');
+        if (!panel || panel.classList.contains('disabled')) return;
+        list.querySelectorAll('.model-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const current = panel.querySelector('.model-current-name');
+        if (current) current.textContent = item.dataset.model;
+      });
+    });
+  });
+
+  // ========== 云端 Token 配额 ==========
+  const quotaSwitch = document.getElementById('quotaSwitch');
+  const quotaState = document.getElementById('quotaState');
+  const quotaSlider = document.getElementById('quotaSlider');
+  const quotaValue = document.getElementById('quotaValue');
+
+  function formatTokens(v) {
+    const units = [
+      { d: 1e12, s: 'T' },
+      { d: 1e9, s: 'B' },
+      { d: 1e6, s: 'M' },
+      { d: 1e3, s: 'K' }
+    ];
+    for (const u of units) {
+      if (v >= u.d) {
+        const n = v / u.d;
+        return (n >= 100 ? Math.round(n) : Math.round(n * 10) / 10) + u.s;
+      }
+    }
+    return String(Math.round(v));
+  }
+
+  quotaSwitch.addEventListener('click', () => {
+    quotaSwitch.classList.toggle('on');
+    const enabled = quotaSwitch.classList.contains('on');
+    quotaSlider.disabled = !enabled;
+    quotaState.textContent = enabled
+      ? '启用 5 小时滑动窗口限额'
+      : '云端 Token 不限量';
+  });
+
+  quotaSlider.addEventListener('input', () => {
+    const v = Math.round(Math.pow(10, parseFloat(quotaSlider.value)));
+    quotaValue.textContent = formatTokens(v);
+  });
+
+  // ========== 高级设置 弹窗 ==========
+  const advTrigger = document.getElementById('advTrigger');
+  const advMask = document.getElementById('advMask');
+  const advClose = document.getElementById('advClose');
+  const advCancel = document.getElementById('advCancel');
+  const advReset = document.getElementById('advReset');
+  const advDone = document.getElementById('advDone');
+
+  function openAdvModal() {
+    advMask.classList.add('open');
+  }
+
+  function closeAdvModal() {
+    advMask.classList.remove('open');
+  }
+
+  advTrigger.addEventListener('click', openAdvModal);
+  advClose.addEventListener('click', closeAdvModal);
+  advCancel.addEventListener('click', closeAdvModal);
+  advDone.addEventListener('click', closeAdvModal);
+  advReset.addEventListener('click', () => {
+    quotaSwitch.classList.remove('on');
+    quotaSlider.disabled = true;
+    quotaSlider.value = 11;
+    quotaState.textContent = '云端 Token 不限量';
+    quotaValue.textContent = formatTokens(Math.pow(10, 11));
+  });
+  advMask.addEventListener('click', (e) => {
+    if (e.target === advMask) closeAdvModal();
+  });
+</script>
+
+</body>
+</html>
