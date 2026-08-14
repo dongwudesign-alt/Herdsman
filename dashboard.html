@@ -852,6 +852,139 @@
     margin-right: 2px;
   }
 
+  /* ===== 5. 级联 & 延迟 / 贝叶斯分类器 指标卡片 ===== */
+  .metric-grid {
+    display: grid;
+    gap: 10px;
+    padding: 2px 0 0;
+  }
+  .metric-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .metric-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+  .metric-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 9px;
+    padding: 12px 14px 10px;
+  }
+
+  .metric-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric-value .unit {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-left: 3px;
+  }
+
+  /* ===== 6. 参数表格 ===== */
+  .param-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    margin-top: 10px;
+  }
+
+  .param-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+  .param-table th:last-child { text-align: right; }
+
+  .param-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+  .param-table td:last-child {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+  }
+
+  .param-table tr:last-child td { border-bottom: none; }
+  .param-table tbody tr { transition: background 0.15s ease; }
+  .param-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  .param-status {
+    color: var(--accent-green);
+    font-weight: 600;
+  }
+
+  .param-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(167,139,250,0.15);
+    color: var(--accent-purple);
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  /* ===== 7. 升云特征表格 ===== */
+  .feature-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    margin-top: 10px;
+  }
+
+  .feature-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+  .feature-table th:not(:first-child) { text-align: center; }
+
+  .feature-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+  .feature-table td:not(:first-child) {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .feature-table td:last-child {
+    font-weight: 600;
+    color: var(--accent-orange);
+  }
+
+  .feature-name {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+  }
+
+  .feature-table tr:last-child td { border-bottom: none; }
+  .feature-table tbody tr { transition: background 0.15s ease; }
+  .feature-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
   /* Scrollbar for model table wrapper */
   .table-wrapper {
     max-height: 175px;
@@ -1441,6 +1574,217 @@
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4: 级联 & 延迟 + 自适应路由 -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 17 2 12 7 7"></polyline><line x1="11" y1="18" x2="21" y2="6"></line></svg>
+                </span>
+                级联 & 延迟
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="metric-grid cols-4">
+                <div class="metric-card">
+                  <div class="metric-label">级联路由</div>
+                  <div class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">级联端侧成功</div>
+                  <div class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">级联回退</div>
+                  <div class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">平均请求耗时</div>
+                  <div class="metric-value">4560<span class="unit">毫秒</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 5: 自适应路由（运行时） -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"></path></svg>
+                </span>
+                自适应路由（运行时）
+              </div>
+            </div>
+            <div class="card-body">
+              <table class="param-table">
+                <thead>
+                  <tr>
+                    <th>指标</th>
+                    <th>数值</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>已启用</td>
+                    <td><span class="param-status">是</span></td>
+                  </tr>
+                  <tr>
+                    <td>Work 校验抽样率</td>
+                    <td>0.1</td>
+                  </tr>
+                  <tr>
+                    <td>θ 端侧阈值</td>
+                    <td>0.35</td>
+                  </tr>
+                  <tr>
+                    <td>θ 云端阈值</td>
+                    <td>0.55</td>
+                  </tr>
+                  <tr>
+                    <td>基准校验抽样率</td>
+                    <td>0.1</td>
+                  </tr>
+                  <tr>
+                    <td>基准 θ 端侧</td>
+                    <td>0.35</td>
+                  </tr>
+                  <tr>
+                    <td>基准 θ 云端</td>
+                    <td>0.55</td>
+                  </tr>
+                  <tr>
+                    <td>调整原因</td>
+                    <td><span class="param-tag">ADAPTIVE_ON</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 6: 贝叶斯分类器 + 升云特征 TOP -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+                </span>
+                贝叶斯分类器
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="metric-grid cols-6">
+                <div class="metric-card">
+                  <div class="metric-label">已启用</div>
+                  <div class="metric-value">是</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">总样本</div>
+                  <div class="metric-value">30</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">标注更新</div>
+                  <div class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">先验 P(端侧)</div>
+                  <div class="metric-value">80%</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">预热阈值</div>
+                  <div class="metric-value">100</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">衰减代数</div>
+                  <div class="metric-value">2</div>
+                </div>
+              </div>
+              <div class="metric-grid cols-6" style="margin-top: 10px;">
+                <div class="metric-card">
+                  <div class="metric-label">Laplace α</div>
+                  <div class="metric-value">1</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">半衰期 (h)</div>
+                  <div class="metric-value">168</div>
+                </div>
+              </div>
+
+              <div class="card-title" style="margin-top: 16px; font-size: 0.82rem;">
+                <span class="card-title-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                </span>
+                升云特征 TOP
+              </div>
+              <table class="feature-table">
+                <thead>
+                  <tr>
+                    <th>特征</th>
+                    <th>端侧 OK</th>
+                    <th>升云</th>
+                    <th>升云率</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="feature-name">assistant_failed_recent</span></td>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>75%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">ctx:high</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">multimodal</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">risky_tool_hard</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">risky_tool_soft</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">hard</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">plan</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                  <tr>
+                    <td><span class="feature-name">最终回复</span></td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>67%</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
