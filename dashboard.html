@@ -985,6 +985,39 @@
   .feature-table tbody tr { transition: background 0.15s ease; }
   .feature-table tbody tr:hover { background: rgba(255,255,255,0.02); }
 
+  /* ===== 8. 折叠卡片 ===== */
+  .ms-card.collapsible .card-header {
+    cursor: pointer;
+    user-select: none;
+  }
+  .ms-card.collapsible .card-header:hover {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .collapse-arrow {
+    margin-left: auto;
+    transition: transform 0.25s ease;
+    color: var(--text-dim);
+  }
+  .ms-card.collapsed .collapse-arrow {
+    transform: rotate(-90deg);
+  }
+
+  .ms-card .card-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+  }
+  .ms-card.collapsed .card-body {
+    max-height: 0 !important;
+    opacity: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .ms-card:not(.collapsed) .card-body {
+    max-height: 2000px;
+    opacity: 1;
+  }
+
   /* Scrollbar for model table wrapper */
   .table-wrapper {
     max-height: 175px;
@@ -1580,14 +1613,15 @@
 
         <!-- Row 4: 级联 & 延迟 + 自适应路由 -->
         <div class="dash-row">
-          <div class="ms-card">
-            <div class="card-header">
+          <div class="ms-card collapsible collapsed">
+            <div class="card-header" onclick="toggleCollapse(this)">
               <div class="card-title">
                 <span class="card-title-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 17 2 12 7 7"></polyline><line x1="11" y1="18" x2="21" y2="6"></line></svg>
                 </span>
                 级联 & 延迟
               </div>
+              <svg class="collapse-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="card-body">
               <div class="metric-grid cols-4">
@@ -1614,14 +1648,15 @@
 
         <!-- Row 5: 自适应路由（运行时） -->
         <div class="dash-row">
-          <div class="ms-card">
-            <div class="card-header">
+          <div class="ms-card collapsible collapsed">
+            <div class="card-header" onclick="toggleCollapse(this)">
               <div class="card-title">
                 <span class="card-title-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"></path></svg>
                 </span>
                 自适应路由（运行时）
               </div>
+              <svg class="collapse-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="card-body">
               <table class="param-table">
@@ -1672,14 +1707,15 @@
 
         <!-- Row 6: 贝叶斯分类器 + 升云特征 TOP -->
         <div class="dash-row">
-          <div class="ms-card">
-            <div class="card-header">
+          <div class="ms-card collapsible collapsed">
+            <div class="card-header" onclick="toggleCollapse(this)">
               <div class="card-title">
                 <span class="card-title-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
                 </span>
                 贝叶斯分类器
               </div>
+              <svg class="collapse-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="card-body">
               <div class="metric-grid cols-6">
@@ -1795,6 +1831,12 @@
 </div>
 
 <script>
+  // Toggle collapse for cards
+  function toggleCollapse(header) {
+    const card = header.closest('.ms-card');
+    card.classList.toggle('collapsed');
+  }
+
   // Trend tab switching
   document.querySelectorAll('.trend-tab').forEach(tab => {
     tab.addEventListener('click', function() {
