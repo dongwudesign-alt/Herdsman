@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全局统计 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="laser-flow.css">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --accent-blue: #5b8def;
+    --accent-purple: #a78bfa;
+    --accent-green: #4ade80;
+    --accent-orange: #fb923c;
+    --accent-pink: #f472b6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .win-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .win-btn.close:hover { background: rgba(255,80,80,0.3); color: #fff; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar {
+    justify-content: center;
+    position: relative;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+  .s-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Route View */
+  .route-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar { width: 4px; }
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .ms-nav-item:hover { background: rgba(255,255,255,0.06); }
+  .ms-nav-item.active { background: rgba(255,255,255,0.08); }
+  .ms-nav-item svg { flex-shrink: 0; color: var(--text-dim); }
+  .ms-nav-item.active svg { color: var(--text); }
+
+  /* Main Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+  }
+
+  .ms-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar { width: 4px; }
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  /* ===== Dashboard Layout ===== */
+  .dash-row {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dash-row:last-child { margin-bottom: 0; }
+
+  .dash-row.row-1 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Card header */
+  .card-header {
+    padding: 12px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .card-title-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+  }
+
+  .card-body {
+    padding: 0 14px 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== 1. Route Distribution Card ===== */
+  .route-dist-chart {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 4px 0 2px;
+  }
+
+  .donut-chart {
+    width: 112px;
+    height: 112px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .donut-chart svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+  .donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .donut-center-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .donut-center-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .route-legend {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .legend-dot.end { background: var(--accent-blue); box-shadow: 0 0 6px rgba(91,141,239,0.5); }
+  .legend-dot.cloud { background: var(--accent-purple); box-shadow: 0 0 6px rgba(167,139,250,0.5); }
+  .legend-dot.cascade { background: var(--accent-green); box-shadow: 0 0 6px rgba(74,222,128,0.5); }
+
+  .legend-text { flex: 1; }
+  .legend-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .legend-value {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 1px;
+  }
+  .legend-bar {
+    width: 50px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .legend-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+
+  /* ===== 2. Mixed Stats Card ===== */
+  .mixed-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 2px 0 0;
+  }
+
+  .stat-item {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 9px;
+    padding: 10px 12px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stat-item:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.72rem;
+  }
+  .stat-icon.save { background: rgba(74,222,128,0.15); color: var(--accent-green); }
+  .stat-icon.total-in { background: rgba(91,141,239,0.15); color: var(--accent-blue); }
+  .stat-icon.total-out { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+  .stat-icon.end-in { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
+  .stat-icon.end-out { background: rgba(244,114,182,0.15); color: var(--accent-pink); }
+  .stat-icon.cloud-in { background: rgba(91,141,239,0.15); color: var(--accent-blue); }
+  .stat-icon.cloud-out { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+
+  .stat-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .stat-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ===== 3. Token Trend Card ===== */
+  .trend-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .trend-tab {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+  .trend-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .trend-tab.active {
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .refresh-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .refresh-btn:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.16);
+  }
+  .refresh-btn.spin svg { animation: spin 0.8s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .trend-chart-area {
+    height: 140px;
+    margin: 10px 0 8px;
+    position: relative;
+  }
+
+  .trend-chart-area svg { width: 100%; height: 100%; }
+
+  .chart-tooltip {
+    position: absolute;
+    padding: 6px 10px;
+    background: rgba(15,15,20,0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    color: var(--text);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+  }
+  .chart-tooltip.show { opacity: 1; }
+  .chart-tooltip .tt-date { color: var(--text-dim); font-size: 0.65rem; margin-bottom: 4px; }
+  .chart-tooltip .tt-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .chart-tooltip .tt-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Model table */
+  .model-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+  }
+
+  .model-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+
+  .model-table td {
+    padding: 9px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .model-table tr:last-child td { border-bottom: none; }
+  .model-table tbody tr { transition: background 0.15s ease; }
+  .model-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  .model-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .model-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .model-badge.cloud { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+  .model-badge.end { background: rgba(91,141,239,0.15); color: var(--accent-blue); }
+  .model-badge.auto { background: rgba(74,222,128,0.15); color: var(--accent-green); }
+
+  .model-info { display: flex; flex-direction: column; }
+  .model-name-text { font-weight: 500; color: var(--text); }
+  .model-type {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .token-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .cache-num {
+    color: var(--accent-green);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .last-used {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+
+  /* ===== 4. AUTH KEY 统计 ===== */
+  .auth-key-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .auth-key-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(91,141,239,0.15);
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .auth-key-badge.primary { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+  .auth-key-badge.secondary { background: rgba(74,222,128,0.15); color: var(--accent-green); }
+  .auth-key-badge.warn { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
+
+  .auth-key-info { display: flex; flex-direction: column; min-width: 0; }
+  .auth-key-string {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .auth-key-name {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .route-ratio {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 110px;
+  }
+  .ratio-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+  }
+  .ratio-label {
+    color: var(--text-dim);
+    width: 42px;
+    flex-shrink: 0;
+  }
+  .ratio-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .ratio-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .ratio-bar-fill.end { background: var(--accent-blue); }
+  .ratio-bar-fill.cloud { background: var(--accent-purple); }
+  .ratio-value {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+  }
+
+  .stat-num {
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  .time-stat {
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.78rem;
+  }
+  .time-stat strong {
+    color: var(--text);
+    font-weight: 600;
+    margin-right: 2px;
+  }
+
+  /* Scrollbar for model table wrapper */
+  .table-wrapper {
+    max-height: 175px;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+  .table-wrapper::-webkit-scrollbar { width: 4px; }
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .route-view { left: 0; top: 36px; }
+    .ms-nav { display: none; }
+    .dash-row.row-1 { grid-template-columns: 1fr; }
+    .mixed-stats { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item active" href="Routing policy.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+      </div>
+    <div class="sidebar-group bottom">
+      <div class="s-item" title="用户">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route View -->
+  <div class="route-view" id="routeView">
+
+    <!-- Left: Navigation Card -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">网关连接</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item" href="Routing policy.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+          路由策略
+        </a>
+        <a class="ms-nav-item" href="Routing configuration.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="11"/><line x1="9" y1="18" x2="15" y2="13"/></svg>
+          路由配置
+        </a>
+        <a class="ms-nav-item" href="route.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          网关连接
+        </a>
+        <div class="ms-nav-item active" data-page="stats">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          全局统计
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Main Area -->
+    <div class="ms-main">
+      <div class="ms-main-header">
+        <div class="ms-page-title">全局统计</div>
+        <div class="ms-page-subtitle">端云混合调度监控面板，实时追踪路由分布与 Token 消耗趋势</div>
+      </div>
+
+      <div class="ms-content-scroll">
+
+        <!-- Row 1: 路由分发统计 + 混合统计 -->
+        <div class="dash-row row-1">
+
+          <!-- Card 1: 请求路由分发统计 -->
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                </span>
+                请求路由分发统计
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="route-dist-chart">
+                <div class="donut-chart">
+                  <svg viewBox="0 0 42 42">
+                    <!-- Background ring -->
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="4"/>
+                    <!-- Cloud - 45% -->
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(167,139,250,0.85)" stroke-width="4"
+                            stroke-dasharray="45 55" stroke-dashoffset="25" stroke-linecap="round"/>
+                    <!-- End - 35% -->
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(91,141,239,0.85)" stroke-width="4"
+                            stroke-dasharray="35 65" stroke-dashoffset="-20" stroke-linecap="round"/>
+                    <!-- Cascade - 20% -->
+                    <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(74,222,128,0.85)" stroke-width="4"
+                            stroke-dasharray="20 80" stroke-dashoffset="-55" stroke-linecap="round"/>
+                  </svg>
+                  <div class="donut-center">
+                    <div class="donut-center-value">12.8K</div>
+                    <div class="donut-center-label">总请求数</div>
+                  </div>
+                </div>
+                <div class="route-legend">
+                  <div class="legend-item">
+                    <div class="legend-dot cloud"></div>
+                    <div class="legend-text">
+                      <div class="legend-label">云端路由</div>
+                      <div class="legend-value">5,760 · 45%</div>
+                    </div>
+                    <div class="legend-bar"><div class="legend-bar-fill" style="width:45%;background:var(--accent-purple);"></div></div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-dot end"></div>
+                    <div class="legend-text">
+                      <div class="legend-label">端侧路由</div>
+                      <div class="legend-value">4,480 · 35%</div>
+                    </div>
+                    <div class="legend-bar"><div class="legend-bar-fill" style="width:35%;background:var(--accent-blue);"></div></div>
+                  </div>
+                  <div class="legend-item">
+                    <div class="legend-dot cascade"></div>
+                    <div class="legend-text">
+                      <div class="legend-label">级联路由</div>
+                      <div class="legend-value">2,560 · 20%</div>
+                    </div>
+                    <div class="legend-bar"><div class="legend-bar-fill" style="width:20%;background:var(--accent-green);"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: 混合其他统计 -->
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </span>
+                混合其他统计
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="mixed-stats">
+                <div class="stat-item">
+                  <div class="stat-icon save">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">284,650</div>
+                    <div class="stat-label">累计节省积分</div>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-icon total-in">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M21 7H9"/><path d="M7 21l-4-4 4-4"/><path d="M3 17h12"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">8.2M</div>
+                    <div class="stat-label">总输入 Token</div>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-icon end-in">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">3.4M</div>
+                    <div class="stat-label">端侧输入 Token</div>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-icon cloud-in">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0 0-9h-1.8A7 7 0 1 0 9 19h8.5z"/></svg>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">4.8M</div>
+                    <div class="stat-label">云端输入 Token</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Row 2: TOKEN 趋势面板 -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </span>
+                TOKEN 趋势面板
+              </div>
+              <div class="trend-controls">
+                <div class="trend-tab active" data-range="24h">24小时</div>
+                <div class="trend-tab" data-range="7d">7天</div>
+                <div class="trend-tab" data-range="30d">30天</div>
+                <button class="refresh-btn" id="refreshTrend" title="刷新">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Trend Chart -->
+              <div class="trend-chart-area" id="trendChart">
+                <svg viewBox="0 0 800 160" preserveAspectRatio="none">
+                  <!-- Grid lines -->
+                  <line x1="0" y1="40" x2="800" y2="40" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <line x1="0" y1="80" x2="800" y2="80" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <line x1="0" y1="120" x2="800" y2="120" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+                  <!-- Input Token area -->
+                  <defs>
+                    <linearGradient id="gradInput" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style="stop-color:rgba(91,141,239,0.3)"/>
+                      <stop offset="100%" style="stop-color:rgba(91,141,239,0)"/>
+                    </linearGradient>
+                    <linearGradient id="gradOutput" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" style="stop-color:rgba(167,139,250,0.25)"/>
+                      <stop offset="100%" style="stop-color:rgba(167,139,250,0)"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Input area -->
+                  <path d="M0,110 L50,95 L100,100 L150,80 L200,85 L250,70 L300,75 L350,60 L400,65 L450,55 L500,50 L550,60 L600,45 L650,55 L700,40 L750,50 L800,42 L800,160 L0,160 Z"
+                        fill="url(#gradInput)"/>
+                  <!-- Input line -->
+                  <path d="M0,110 L50,95 L100,100 L150,80 L200,85 L250,70 L300,75 L350,60 L400,65 L450,55 L500,50 L550,60 L600,45 L650,55 L700,40 L750,50 L800,42"
+                        fill="none" stroke="rgba(91,141,239,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+                  <!-- Output area -->
+                  <path d="M0,135 L50,130 L100,128 L150,120 L200,122 L250,115 L300,118 L350,110 L400,112 L450,108 L500,105 L550,110 L600,100 L650,105 L700,95 L750,100 L800,98 L800,160 L0,160 Z"
+                        fill="url(#gradOutput)"/>
+                  <!-- Output line -->
+                  <path d="M0,135 L50,130 L100,128 L150,120 L200,122 L250,115 L300,118 L350,110 L400,112 L450,108 L500,105 L550,110 L600,100 L650,105 L700,95 L750,100 L800,98"
+                        fill="none" stroke="rgba(167,139,250,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+                  <!-- Time labels -->
+                  <text x="10" y="155" fill="rgba(154,154,154,0.7)" font-size="10" font-family="Outfit, sans-serif">00:00</text>
+                  <text x="200" y="155" fill="rgba(154,154,154,0.7)" font-size="10" font-family="Outfit, sans-serif">06:00</text>
+                  <text x="400" y="155" fill="rgba(154,154,154,0.7)" font-size="10" font-family="Outfit, sans-serif">12:00</text>
+                  <text x="600" y="155" fill="rgba(154,154,154,0.7)" font-size="10" font-family="Outfit, sans-serif">18:00</text>
+                  <text x="760" y="155" fill="rgba(154,154,154,0.7)" font-size="10" font-family="Outfit, sans-serif">24:00</text>
+
+                  <!-- Hover dots -->
+                  <circle cx="400" cy="65" r="4" fill="rgba(91,141,239,1)" stroke="#080808" stroke-width="2"/>
+                  <circle cx="400" cy="112" r="4" fill="rgba(167,139,250,1)" stroke="#080808" stroke-width="2"/>
+                </svg>
+                <div class="chart-tooltip" id="chartTooltip">
+                  <div class="tt-date">12:00</div>
+                  <div class="tt-row"><span class="tt-dot" style="background:var(--accent-blue);"></span>输入: 342K</div>
+                  <div class="tt-row"><span class="tt-dot" style="background:var(--accent-purple);"></span>输出: 68K</div>
+                </div>
+              </div>
+
+              <!-- Model Stats Table -->
+              <div class="table-wrapper">
+                <table class="model-table">
+                  <thead>
+                    <tr>
+                      <th style="width:30%;">模型标识</th>
+                      <th>输入 TOKEN</th>
+                      <th>输出 TOKEN</th>
+                      <th>缓存命中 TOKEN</th>
+                      <th>最近使用</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge auto">A</div>
+                          <div class="model-info">
+                            <span class="model-name-text">auto-router</span>
+                            <span class="model-type">智能路由</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">2,840,520</td>
+                      <td class="token-num">512,340</td>
+                      <td class="cache-num">+486,200</td>
+                      <td class="last-used">2 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge cloud">G</div>
+                          <div class="model-info">
+                            <span class="model-name-text">gpt-4o</span>
+                            <span class="model-type">云端 · OpenAI</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">1,620,800</td>
+                      <td class="token-num">328,560</td>
+                      <td class="cache-num">+210,400</td>
+                      <td class="last-used">5 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge cloud">C</div>
+                          <div class="model-info">
+                            <span class="model-name-text">claude-3.5-sonnet</span>
+                            <span class="model-type">云端 · Anthropic</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">980,450</td>
+                      <td class="token-num">186,200</td>
+                      <td class="cache-num">+156,800</td>
+                      <td class="last-used">12 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge end">L</div>
+                          <div class="model-info">
+                            <span class="model-name-text">llama-3.1-8B</span>
+                            <span class="model-type">端侧 · Ollama</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">1,840,200</td>
+                      <td class="token-num">380,120</td>
+                      <td class="cache-num">+82,600</td>
+                      <td class="last-used">1 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge end">Q</div>
+                          <div class="model-info">
+                            <span class="model-name-text">qwen2.5-7B</span>
+                            <span class="model-type">端侧 · Ollama</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">920,100</td>
+                      <td class="token-num">195,800</td>
+                      <td class="cache-num">+36,200</td>
+                      <td class="last-used">8 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="model-name-cell">
+                          <div class="model-badge cloud">D</div>
+                          <div class="model-info">
+                            <span class="model-name-text">deepseek-v3</span>
+                            <span class="model-type">云端 · DeepSeek</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="token-num">420,650</td>
+                      <td class="token-num">92,400</td>
+                      <td class="cache-num">+48,100</td>
+                      <td class="last-used">25 分钟前</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: AUTH KEY 统计 -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </span>
+                AUTH KEY 统计
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="model-table">
+                  <thead>
+                    <tr>
+                      <th style="width:22%;">KEY / 名称</th>
+                      <th>总请求</th>
+                      <th>TOKENS</th>
+                      <th>平均请求耗时</th>
+                      <th>平均 TPS</th>
+                      <th>路由分布</th>
+                      <th>最近调用</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="auth-key-cell">
+                          <div class="auth-key-badge primary">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          </div>
+                          <div class="auth-key-info">
+                            <span class="auth-key-string">sk-****x9f2</span>
+                            <span class="auth-key-name">Default</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-num">5,840</td>
+                      <td class="stat-num">3.42M</td>
+                      <td class="time-stat"><strong>1.2</strong>s</td>
+                      <td class="stat-num">12.5</td>
+                      <td>
+                        <div class="route-ratio">
+                          <div class="ratio-row">
+                            <span class="ratio-label">端侧</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill end" style="width:40%;"></div></div>
+                            <span class="ratio-value">40%</span>
+                          </div>
+                          <div class="ratio-row">
+                            <span class="ratio-label">云端</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill cloud" style="width:60%;"></div></div>
+                            <span class="ratio-value">60%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="last-used">30 秒前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="auth-key-cell">
+                          <div class="auth-key-badge secondary">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          </div>
+                          <div class="auth-key-info">
+                            <span class="auth-key-string">sk-****k7m1</span>
+                            <span class="auth-key-name">Dev Team</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-num">3,210</td>
+                      <td class="stat-num">2.18M</td>
+                      <td class="time-stat"><strong>0.8</strong>s</td>
+                      <td class="stat-num">8.3</td>
+                      <td>
+                        <div class="route-ratio">
+                          <div class="ratio-row">
+                            <span class="ratio-label">端侧</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill end" style="width:55%;"></div></div>
+                            <span class="ratio-value">55%</span>
+                          </div>
+                          <div class="ratio-row">
+                            <span class="ratio-label">云端</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill cloud" style="width:45%;"></div></div>
+                            <span class="ratio-value">45%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="last-used">2 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="auth-key-cell">
+                          <div class="auth-key-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          </div>
+                          <div class="auth-key-info">
+                            <span class="auth-key-string">sk-****p3z8</span>
+                            <span class="auth-key-name">CI / CD</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-num">2,680</td>
+                      <td class="stat-num">1.56M</td>
+                      <td class="time-stat"><strong>1.5</strong>s</td>
+                      <td class="stat-num">6.7</td>
+                      <td>
+                        <div class="route-ratio">
+                          <div class="ratio-row">
+                            <span class="ratio-label">端侧</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill end" style="width:25%;"></div></div>
+                            <span class="ratio-value">25%</span>
+                          </div>
+                          <div class="ratio-row">
+                            <span class="ratio-label">云端</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill cloud" style="width:75%;"></div></div>
+                            <span class="ratio-value">75%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="last-used">5 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="auth-key-cell">
+                          <div class="auth-key-badge warn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          </div>
+                          <div class="auth-key-info">
+                            <span class="auth-key-string">sk-****v2q5</span>
+                            <span class="auth-key-name">Testing</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-num">1,070</td>
+                      <td class="stat-num">680K</td>
+                      <td class="time-stat"><strong>0.6</strong>s</td>
+                      <td class="stat-num">4.2</td>
+                      <td>
+                        <div class="route-ratio">
+                          <div class="ratio-row">
+                            <span class="ratio-label">端侧</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill end" style="width:70%;"></div></div>
+                            <span class="ratio-value">70%</span>
+                          </div>
+                          <div class="ratio-row">
+                            <span class="ratio-label">云端</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill cloud" style="width:30%;"></div></div>
+                            <span class="ratio-value">30%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="last-used">15 分钟前</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="auth-key-cell">
+                          <div class="auth-key-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          </div>
+                          <div class="auth-key-info">
+                            <span class="auth-key-string">sk-****h8n4</span>
+                            <span class="auth-key-name">Backup</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-num">0</td>
+                      <td class="stat-num">0</td>
+                      <td class="time-stat">—</td>
+                      <td class="stat-num">0</td>
+                      <td>
+                        <div class="route-ratio">
+                          <div class="ratio-row">
+                            <span class="ratio-label">端侧</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill end" style="width:0%;"></div></div>
+                            <span class="ratio-value">0%</span>
+                          </div>
+                          <div class="ratio-row">
+                            <span class="ratio-label">云端</span>
+                            <div class="ratio-bar"><div class="ratio-bar-fill cloud" style="width:0%;"></div></div>
+                            <span class="ratio-value">0%</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="last-used">未使用</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Trend tab switching
+  document.querySelectorAll('.trend-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.trend-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Refresh button spin animation
+  document.getElementById('refreshTrend').addEventListener('click', function() {
+    this.classList.remove('spin');
+    void this.offsetWidth; // trigger reflow
+    this.classList.add('spin');
+    setTimeout(() => this.classList.remove('spin'), 800);
+  });
+
+  // Chart tooltip follow
+  const chartArea = document.getElementById('trendChart');
+  const tooltip = document.getElementById('chartTooltip');
+  if (chartArea && tooltip) {
+    chartArea.addEventListener('mousemove', function(e) {
+      const rect = chartArea.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      tooltip.style.left = (x + 12) + 'px';
+      tooltip.style.top = (y - 40) + 'px';
+      tooltip.classList.add('show');
+    });
+    chartArea.addEventListener('mouseleave', function() {
+      tooltip.classList.remove('show');
+    });
+  }
+</script>
+</body>
+</html>
