@@ -1,0 +1,4447 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识库 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 20;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar {
+    justify-content: center;
+    position: relative;
+  }
+
+  .sidebar-group.top {
+    margin-bottom: 0;
+  }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Sidebar wrapper */
+  .sidebar-wrapper {
+    display: flex;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-wrapper.expanded .secondary-sidebar {
+    width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Secondary sidebar */
+  .secondary-sidebar {
+    width: 0;
+    height: calc(100% - 60px);
+    margin: 48px 0 12px 0;
+    background: rgba(20, 20, 22, 0.45);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    position: relative;
+  }
+
+  .secondary-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .secondary-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.45) 0%,
+      rgba(95, 95, 110, 0.28) 18%,
+      rgba(65, 65, 78, 0.14) 38%,
+      rgba(35, 35, 48, 0.06) 58%,
+      rgba(20, 20, 30, 0.02) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sec-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-title-header {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 4px 2px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sec-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .sec-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .sec-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+
+  .sec-action:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .sec-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sec-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .sec-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sec-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .sec-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .sec-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .sec-thumb.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+  .sec-thumb.red { background: linear-gradient(135deg, #f87171, #ef4444); }
+  .sec-thumb.orange { background: linear-gradient(135deg, #fb923c, #f97316); }
+  .sec-thumb.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  .sec-thumb.purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+  .sec-thumb.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+  .sec-thumb.dark { background: linear-gradient(135deg, #4b5563, #374151); }
+  .sec-thumb.pink { background: linear-gradient(135deg, #f472b6, #ec4899); }
+  .sec-thumb.teal { background: linear-gradient(135deg, #2dd4bf, #14b8a6); }
+  .sec-thumb.gold { background: linear-gradient(135deg, #facc15, #eab308); }
+  .sec-thumb.cyan { background: linear-gradient(135deg, #67e8f9, #06b6d4); }
+  .sec-thumb.slate { background: linear-gradient(135deg, #94a3b8, #64748b); }
+  .sec-thumb.navy { background: linear-gradient(135deg, #818cf8, #6366f1); }
+  .sec-thumb.rose { background: linear-gradient(135deg, #fda4af, #f43f5e); }
+  .sec-thumb.indigo { background: linear-gradient(135deg, #a5b4fc, #818cf8); }
+
+  .sec-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+  }
+
+  .sec-item:hover .sec-title,
+  .sec-item.active .sec-title {
+    color: var(--text);
+  }
+
+  .sec-more {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: auto;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  .sec-item:hover .sec-more {
+    opacity: 1;
+  }
+
+  .sec-more:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .sec-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    transform: none;
+    background: rgba(25, 25, 28, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    min-width: 80px;
+  }
+
+  .sec-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sec-menu-item {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sec-menu-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .sec-menu-item.delete:hover {
+    background: rgba(255, 60, 60, 0.12);
+    color: rgba(255, 120, 120, 0.9);
+  }
+
+  /* Asset Panel */
+  .asset-panel {
+    position: absolute;
+    top: 48px;
+    right: 20px;
+    width: 0;
+    height: calc(100% - 60px);
+    background: rgba(20, 20, 22, 0.45);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    z-index: 20;
+  }
+
+  .asset-panel.show {
+    width: 260px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .asset-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .asset-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.45) 0%,
+      rgba(95, 95, 110, 0.28) 18%,
+      rgba(65, 65, 78, 0.14) 38%,
+      rgba(35, 35, 48, 0.06) 58%,
+      rgba(20, 20, 30, 0.02) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .asset-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .asset-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .asset-tabs {
+    display: flex;
+    padding: 0 14px;
+    gap: 4px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-tab {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .asset-tab:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .asset-tab.active {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .asset-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .asset-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .asset-section {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .asset-section-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .asset-section-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-card {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .asset-card-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .asset-file-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .asset-file-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .asset-file-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .asset-file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .asset-file-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .asset-file-meta {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .asset-empty {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 4px 0;
+  }
+
+  /* Image Generation View */
+  .image-gen-view {
+    position: absolute;
+    top: 48px;
+    left: 0px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .image-gen-view.show {
+    display: flex;
+  }
+
+  .ig-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ig-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ig-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left - History */
+  .ig-history {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ig-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-all-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin: 0 12px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-search svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .ig-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .ig-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  /* 技能入口区域 */
+  .ig-skills {
+    padding: 8px 10px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-skill-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .ig-skill-btn:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ig-skill-btn.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ig-skill-btn svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ig-skill-btn.active svg {
+    color: var(--text);
+  }
+
+  /* 分隔线 */
+  .ig-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 8px 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 历史区域标题 */
+  .ig-history-title {
+    padding: 6px 14px 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-item {
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .ig-item.active {
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ig-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Center - Settings */
+  .ig-settings {
+    width: 320px;
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  .ig-tabs {
+    display: flex;
+    padding: 12px 14px 0;
+    gap: 6px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-tab:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .ig-tab.active {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .ig-tab svg {
+    flex-shrink: 0;
+  }
+
+  .ig-section {
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .ig-textarea-wrap {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ig-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 10px 12px;
+    resize: none;
+    line-height: 1.5;
+  }
+
+  .ig-textarea::placeholder {
+    color: var(--text-dim);
+  }
+
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .ig-char-count {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .ig-size-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .ig-size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-size-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .ig-size-btn.active {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  .ig-size-icon {
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  /* Custom Size Picker */
+  .ig-size-custom {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-size-custom.show {
+    display: flex;
+  }
+
+  .ig-size-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 34px;
+    gap: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .ig-size-field:focus-within {
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .ig-size-field-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .ig-size-field input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: right;
+    min-width: 0;
+  }
+
+  .ig-size-field input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  .ig-size-field input::-webkit-outer-spin-button,
+  .ig-size-field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ig-size-field input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .ig-size-lock {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .ig-size-lock:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-size-lock.locked {
+    color: rgba(140, 180, 255, 0.7);
+  }
+
+  .ig-size-unit {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+    letter-spacing: 0.02em;
+  }
+
+  .ig-advanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-advanced:hover {
+    color: var(--text);
+  }
+
+  .ig-adv-arrow {
+    font-size: 0.75rem;
+  }
+
+  .ig-generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: auto 14px 14px;
+    padding: 12px 0;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1;
+    /* 毛玻璃基底 */
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    /* 玻璃内部漫反射 */
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+  }
+
+  /* 顶部强光晕 */
+  .ig-generate-btn::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 8%;
+    right: 8%;
+    height: 16px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  /* 底部柔和漫反射光晕 */
+  .ig-generate-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 12%;
+    right: 12%;
+    height: 14px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+  }
+
+  .ig-generate-btn:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
+      inset 1px 0 0 0 rgba(255,255,255,0.16),
+      inset -1px 0 0 0 rgba(255,255,255,0.16),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 6px 28px rgba(0,0,0,0.3),
+      0 0 32px rgba(255,255,255,0.08);
+    text-shadow: 0 0 10px rgba(255,255,255,0.20);
+  }
+
+  .ig-generate-btn:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
+  }
+
+  .ig-generate-btn:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
+  .ig-generate-btn svg {
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
+  }
+
+  .ig-generate-btn:hover svg {
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+  }
+
+  /* Right - Results */
+  .ig-res-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-res-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-res-grid-toggle {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-res-grid-toggle:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .ig-result {
+    flex: 1;
+    min-width: 0;
+    container-type: inline-size;
+    container-name: result-panel;
+  }
+
+  .ig-res-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+    columns: 1;
+    column-gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  @container result-panel (min-width: 200px) {
+    .ig-res-grid { columns: 2; }
+  }
+
+  @container result-panel (min-width: 400px) {
+    .ig-res-grid { columns: 3; }
+  }
+
+  @container result-panel (min-width: 600px) {
+    .ig-res-grid { columns: 4; }
+  }
+
+  @container result-panel (min-width: 800px) {
+    .ig-res-grid { columns: 5; }
+  }
+
+  .ig-res-grid::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-res-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-res-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .ig-res-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ig-res-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .ig-res-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ig-res-item:hover .ig-res-overlay {
+    opacity: 1;
+  }
+
+  .ig-res-date {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+
+  .ig-res-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ig-res-actions button {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-res-actions button:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  .main {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .image-gen-view {
+    display: flex;
+  }
+
+  /* Dictionary button */
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .ig-dict-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ig-dict-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .ig-dict-btn svg {
+    color: rgba(255, 200, 100, 0.7);
+  }
+
+  /* Inspiration Modal */
+  .ig-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .ig-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ig-modal {
+    width: 720px;
+    max-height: 560px;
+    background: rgba(28, 28, 32, 0.96);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ig-modal-overlay.show .ig-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .ig-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-modal-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .ig-modal-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 22px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 22px 10px;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+
+  .ig-modal-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ig-modal-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tab:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-modal-tab.active {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .ig-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 22px 18px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ig-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .ig-modal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-modal-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .ig-modal-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .ig-modal-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ig-modal-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ig-modal-item-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ===== Knowledge Base (kb) Styles ===== */
+  .kb-side-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px 4px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .kb-side-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .kb-icon-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .kb-icon-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .kb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .kb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.15s ease;
+    font-size: 0.78rem;
+  }
+
+  .kb-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .kb-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .kb-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .kb-item.active svg {
+    color: var(--text);
+  }
+
+  .kb-item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kb-item-count {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 1px 6px;
+    flex-shrink: 0;
+  }
+
+  /* Library header */
+  .kb-lib-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .kb-lib-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .kb-lib-title-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .kb-lib-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+
+  .kb-lib-count {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    opacity: 0.8;
+    line-height: 1.2;
+  }
+
+  .kb-edit-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .kb-edit-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  /* File toolbar */
+  .kb-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 14px 10px;
+    flex-shrink: 0;
+  }
+
+  .kb-tool-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .kb-tool-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .kb-file-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .kb-file-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .kb-file-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .kb-file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+
+  .kb-file:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .kb-file.selected {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .kb-file-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .kb-file-icon.word,
+  .kb-file-icon.md,
+  .kb-file-icon.pdf,
+  .kb-file-icon.ppt,
+  .kb-file-icon.xls {
+    background: rgba(255,255,255,0.08);
+    color: #e9e9ee;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .kb-file-info {
+    flex: 1;
+    min-width: 0;
+    padding-right: 22px;
+  }
+
+  .kb-file-name {
+    font-size: 0.78rem;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kb-file-meta {
+    font-size: 0.66rem;
+    color: var(--text-dim);
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  /* 悬浮更多按钮 */
+  .kb-file-more {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.18s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .kb-file:hover .kb-file-more,
+  .kb-file-more:focus {
+    opacity: 1;
+  }
+
+  .kb-file-more:hover {
+    background: rgba(255,255,255,0.14);
+    color: var(--text);
+  }
+
+  .kb-file.selected .kb-file-more {
+    opacity: 1;
+  }
+
+  /* 文件操作下拉菜单（挂载 body） */
+  .kb-file-menu {
+    position: fixed;
+    min-width: 118px;
+    background: rgba(20,20,22,0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 4px;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .kb-file-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .kb-file-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+  }
+
+  .kb-file-menu-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .kb-file-menu-item.danger {
+    color: #f08a8a;
+  }
+
+  .kb-file-menu-item.danger:hover {
+    background: rgba(240,138,138,0.12);
+    color: #fca5a5;
+  }
+
+  /* 重命名浮层（挂载 body） */
+  .kb-rename-pop {
+    position: fixed;
+    width: 230px;
+    background: rgba(22,22,25,0.95);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .kb-rename-pop.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .kb-rename-title {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .kb-rename-pop input {
+    width: 100%;
+    height: 32px;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    padding: 0 10px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .kb-rename-pop input:focus {
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  .kb-rename-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .kb-rename-actions button {
+    padding: 5px 13px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.75rem;
+    transition: all 0.15s ease;
+  }
+
+  .kb-rename-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+  }
+
+  .kb-rename-cancel:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .kb-rename-ok {
+    background: rgba(255,255,255,0.16);
+    color: var(--text);
+  }
+
+  .kb-rename-ok:hover {
+    background: rgba(255,255,255,0.24);
+  }
+
+  /* Result tools (history / new chat) */
+  .kb-res-tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .kb-res-tool {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .kb-res-tool:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  /* Chat window (right card) */
+  .kb-chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .kb-chat::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .kb-chat::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  /* 问答区居中标语（模仿首页 h1 样式） */
+  .kb-welcome {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    animation: welcomeFade 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes welcomeFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kb-welcome-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text-dim);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .kb-slogan {
+    font-size: 1.45rem;
+    font-weight: 400;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    text-align: center;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .kb-slogan-sub {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    opacity: 0.8;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .kb-msg {
+    display: flex;
+    gap: 8px;
+    max-width: 92%;
+  }
+
+  .kb-msg-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .kb-msg-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(96, 165, 250, 0.15);
+    color: #7fb3f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    font-weight: 600;
+  }
+
+  .kb-msg-avatar.user {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .kb-msg-bubble {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .kb-msg-user .kb-msg-bubble {
+    background: rgba(96, 165, 250, 0.14);
+    border-color: rgba(96, 165, 250, 0.2);
+    border-radius: 12px;
+    border-top-right-radius: 4px;
+  }
+
+  .kb-msg-meta {
+    font-size: 0.66rem;
+    color: var(--text-dim);
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  .kb-msg-typing .kb-msg-bubble {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* Input bar（首页对话框样式适配，宽度高度随卡片自适应） */
+  .kb-input-bar {
+    flex-shrink: 0;
+    padding: 8px 12px 12px;
+  }
+
+  .kb-glass-input {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--glass);
+    backdrop-filter: blur(32px) saturate(150%);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 12px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .kb-glass-input::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .kb-glass-input:hover,
+  .kb-glass-input:focus-within {
+    background: var(--glass-hover);
+    border-color: var(--border-hover);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  .kb-glass-input .kb-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    width: 100%;
+    min-height: 40px;
+    max-height: 160px;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .kb-glass-input .kb-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.8;
+  }
+
+  /* 文件附件区域（首页样式） */
+  .file-attachment {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    margin-bottom: 2px;
+    animation: fileSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 100%;
+  }
+
+  @keyframes fileSlideIn {
+    from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .file-attachment-icon {
+    flex-shrink: 0;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 9px;
+  }
+
+  .file-attachment-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-attachment-name {
+    font-size: 0.82rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  .file-attachment-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  .file-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-top-color: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .file-attachment-close {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .file-attachment-close:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  /* 底部工具行（首页样式） */
+  .input-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .btn-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .icon-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .icon-btn.send {
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+    overflow: visible;
+  }
+
+  .icon-btn.send::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 15%;
+    right: 15%;
+    height: 10px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+    z-index: -1;
+  }
+
+  /* 模型下拉浮层（挂载到 body） */
+  .model-dropdown {
+    position: fixed;
+    width: 240px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .model-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .model-dropdown-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .model-dropdown-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+    padding: 2px 4px;
+  }
+
+  .model-mode-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .model-mode-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .model-mode-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .model-mode-item.active {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  .model-dropdown-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 8px 0;
+  }
+
+  .model-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .model-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .model-list-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .model-list-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .model-indicator {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .model-indicator.green {
+    background: #4ade80;
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  }
+
+  .model-indicator.gray {
+    background: #6b7280;
+    box-shadow: 0 0 4px rgba(107, 114, 128, 0.3);
+  }
+
+  .model-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 上传下拉浮层（挂载到 body） */
+  .upload-dropdown {
+    position: fixed;
+    width: 180px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .upload-dropdown.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .upload-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .upload-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .upload-item svg {
+    flex-shrink: 0;
+  }
+
+  .upload-item span {
+    white-space: nowrap;
+  }
+
+  /* KB modal (create / edit knowledge base) */
+  .kb-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .kb-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .kb-modal {
+    width: 420px;
+    max-width: 90vw;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .kb-modal-overlay.show .kb-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .kb-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .kb-modal-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .kb-modal-close {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .kb-modal-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .kb-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .kb-modal-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .kb-modal-input {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+  }
+
+  .kb-modal-input:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .kb-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: 4px;
+  }
+
+  .kb-modal-footer .kb-modal-btn-cancel {
+    margin-left: auto;
+  }
+
+  .kb-modal-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+
+  .kb-modal-btn-delete {
+    height: 32px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #f08a8a;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .kb-modal-btn-delete:hover {
+    background: rgba(240,138,138,0.12);
+    color: #fca5a5;
+  }
+
+  .kb-modal-btn-delete-confirm {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(180deg, #ef5350, #c62828);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(198, 40, 40, 0.35);
+  }
+
+  .kb-modal-btn-delete-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(198, 40, 40, 0.45);
+  }
+
+  .kb-delete-confirm-text {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.7;
+    padding: 4px 0 2px;
+  }
+
+  .kb-delete-confirm-text-warn {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.75;
+  }
+
+  .kb-modal-btn-cancel {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kb-modal-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .kb-modal-btn-confirm {
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kb-modal-btn-confirm:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.1));
+    transform: translateY(-1px);
+  }
+
+  /* KB toast */
+  .kb-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(28, 28, 32, 0.98);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 10002;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .kb-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .kb-toast.success {
+    border-color: rgba(74, 222, 128, 0.25);
+  }
+
+  .kb-toast.success .kb-toast-icon {
+    color: #4ade80;
+  }
+
+  .kb-toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+<div class="sidebar-wrapper" id="sidebarWrapper">
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" id="btnHome" href="index.html">
+        <!-- logo icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item active" id="btnImageGen" href="index.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="Routing policy.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <div class="s-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="secondary-sidebar" id="secondarySidebar">
+    <div class="sec-header">
+      <div class="sec-title-header">
+        <span>历史对话</span>
+        <button class="sec-close" id="btnCloseSidebar" title="收起">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <button class="sec-action" id="btnNewChat">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        新对话
+      </button>
+    </div>
+    <div class="sec-list">
+      <div class="sec-item active">
+        <div class="sec-title">背景改左上角渐浅蓝色系...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">去除文字背景框</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四种风格行业去向分布图...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">企业微信图标3D风格设计</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">AgestraAI文字logo设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">保留UI格中英文英文</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">拒绝中文及英文请求</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">图片清晰扩展至2K</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">插画式3D立体风格</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四角宽亮渐金色</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">删文字图片卡片居中</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">2024-08-05/06-25 1...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">他信国放展台片设计绝佳...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">现代抽象几何未来风格设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">炫风格展台片并排同</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="image-gen-view" id="imageGenView">
+    <!-- 左侧：图片历史 -->
+    <div class="ig-card ig-history" id="igHistory">
+      <div class="ig-header">
+        <span class="ig-title">智能体</span>
+      </div>
+
+      <!-- 技能入口 -->
+      <div class="ig-skills">
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          对话
+        </button>
+        <a class="ig-skill-btn" href="image-gen.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          图片
+        </a>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+          翻译
+        </button>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          总结
+        </button>
+        <a class="ig-skill-btn" href="meeting-home.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          会议
+        </a>
+        <button class="ig-skill-btn active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          知识库
+        </button>
+      </div>
+
+      <!-- 分隔线 -->
+      <div class="ig-divider"></div>
+
+      <!-- 知识库区域标题 + 操作 -->
+      <div class="kb-side-header">
+        <span class="ig-history-title" style="padding:0;">知识库</span>
+        <div class="kb-side-actions">
+          <button class="kb-icon-btn" id="btnKbSearch" title="搜索知识库">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+          <button class="kb-icon-btn" id="btnCreateKb" title="创建知识库">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 知识库列表 -->
+      <div class="ig-list kb-list">
+        <div class="kb-item active" data-kb="产品迭代" onclick="selectKb(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="kb-item-name">产品迭代</span>
+          <span class="kb-item-count">24</span>
+        </div>
+        <div class="kb-item" data-kb="项目启动" onclick="selectKb(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="kb-item-name">项目启动</span>
+          <span class="kb-item-count">12</span>
+        </div>
+        <div class="kb-item" data-kb="UI设计评审" onclick="selectKb(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="kb-item-name">UI设计评审</span>
+          <span class="kb-item-count">18</span>
+        </div>
+        <div class="kb-item" data-kb="运维部署" onclick="selectKb(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="kb-item-name">运维部署</span>
+          <span class="kb-item-count">9</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中间：知识库文件列表 -->
+    <div class="ig-card ig-settings" id="igSettings">
+      <!-- 知识库头部 -->
+      <div class="ig-header">
+        <div class="kb-lib-head">
+          <span class="kb-lib-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </span>
+          <div class="kb-lib-title-wrap">
+            <div class="kb-lib-name" id="kbLibName">产品迭代</div>
+            <div class="kb-lib-count" id="kbFileCount">24 个文件</div>
+          </div>
+          <button class="kb-edit-btn" id="btnEditKb" title="修改知识库">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 文件操作工具栏 -->
+      <div class="kb-toolbar">
+        <button class="kb-tool-btn" title="筛选库内文档" id="btnFileSearch">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="kb-tool-btn" title="切换文件排序方式" id="btnFileSort">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10"/><path d="M11 9h7"/><path d="M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 18V4"/></svg>
+        </button>
+        <button class="kb-tool-btn" title="刷新文件列表" id="btnFileRefresh">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
+        </button>
+        <button class="kb-tool-btn" title="上传文档到知识库" id="btnFileUpload">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+
+      <!-- 文件列表 -->
+      <div class="kb-file-list" id="kbFileList">
+        <div class="kb-file" data-file="产品需求文档.docx" onclick="selectFile(this)">
+          <div class="kb-file-icon word">W</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">产品需求文档.docx</div>
+            <div class="kb-file-meta">2.4 MB · 2026/08/10</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="迭代规划.md" onclick="selectFile(this)">
+          <div class="kb-file-icon md">M</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">迭代规划.md</div>
+            <div class="kb-file-meta">86 KB · 2026/08/09</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="竞品分析报告.pdf" onclick="selectFile(this)">
+          <div class="kb-file-icon pdf">P</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">竞品分析报告.pdf</div>
+            <div class="kb-file-meta">5.1 MB · 2026/08/08</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="季度复盘.pptx" onclick="selectFile(this)">
+          <div class="kb-file-icon ppt">P</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">季度复盘.pptx</div>
+            <div class="kb-file-meta">12.8 MB · 2026/08/06</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="设计规范.docx" onclick="selectFile(this)">
+          <div class="kb-file-icon word">W</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">设计规范.docx</div>
+            <div class="kb-file-meta">1.1 MB · 2026/08/05</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="用户访谈记录.md" onclick="selectFile(this)">
+          <div class="kb-file-icon md">M</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">用户访谈记录.md</div>
+            <div class="kb-file-meta">45 KB · 2026/08/03</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="技术架构.pdf" onclick="selectFile(this)">
+          <div class="kb-file-icon pdf">P</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">技术架构.pdf</div>
+            <div class="kb-file-meta">3.7 MB · 2026/07/28</div>
+          </div>
+        </div>
+        <div class="kb-file" data-file="市场调研汇总.xlsx" onclick="selectFile(this)">
+          <div class="kb-file-icon xls">X</div>
+          <div class="kb-file-info">
+            <div class="kb-file-name">市场调研汇总.xlsx</div>
+            <div class="kb-file-meta">2.9 MB · 2026/07/25</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：知识库问答 -->
+    <div class="ig-card ig-result" id="igResult">
+      <div class="ig-res-header">
+        <span class="ig-res-title" id="kbChatTitle">产品迭代 · 知识库问答</span>
+        <div class="kb-res-tools">
+          <button class="kb-res-tool" id="btnKbHistory" title="历史对话">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </button>
+          <button class="kb-res-tool" id="btnNewChat" title="新建对话">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 会话窗口 -->
+      <div class="kb-chat" id="kbChat">
+        <div class="kb-welcome" id="kbWelcome">
+          <div class="kb-welcome-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <h2 class="kb-slogan" id="kbSlogan">今天我能帮你什么？</h2>
+          <p class="kb-slogan-sub" id="kbSloganSub">我会结合「产品迭代」知识库中的文档回答你的问题</p>
+        </div>
+      </div>
+
+      <!-- 底部输入区（首页对话框样式，宽度高度随卡片自适应） -->
+      <div class="kb-input-bar">
+        <div class="glass-input kb-glass-input">
+          <!-- 文件附件区域 -->
+          <div class="file-attachment" id="kbFileAttachment" style="display:none;">
+            <div class="file-attachment-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            </div>
+            <div class="file-attachment-info">
+              <div class="file-attachment-name" id="kbFileAttachmentName">2026-07-01.pdf</div>
+              <div class="file-attachment-status" id="kbFileAttachmentStatus">
+                <span class="file-spinner"></span>
+                <span class="file-status-text">转换中</span>
+              </div>
+            </div>
+            <button class="file-attachment-close" id="kbFileAttachmentClose" title="移除">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+            </button>
+          </div>
+          <textarea class="kb-input" id="kbInput" rows="1" placeholder="基于知识库提问，我将结合库内文档回答..."></textarea>
+          <div class="input-footer">
+            <button class="btn" id="kbModelSelectBtn" title="选择模型">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span id="kbSelectedModelName">Gemma4 12B 指令版</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="btn-group">
+              <button class="icon-btn" id="kbAddFileBtn" title="添加">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <button class="icon-btn send" id="btnKbSend" title="发送">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 资产库卡片 -->
+  <div class="asset-panel" id="assetPanel">
+    <div class="asset-header">
+      <span class="asset-title">任务检查器</span>
+      <button class="asset-close" id="btnCloseAsset" title="收起">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+    <div class="asset-tabs">
+      <button class="asset-tab">轨迹</button>
+      <button class="asset-tab active">上下文 (1)</button>
+      <button class="asset-tab">产物</button>
+    </div>
+    <div class="asset-body">
+      <div class="asset-section">
+        <div class="asset-section-label">WORKSPACE</div>
+        <div class="asset-section-title">本地文件系统</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-card-label">本地文档</div>
+        <div class="asset-file-card">
+          <div class="asset-file-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="asset-file-info">
+            <div class="asset-file-name">提示词.md</div>
+            <div class="asset-file-meta">缓存命中 · 975 chars</div>
+          </div>
+        </div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-card-label">图片</div>
+        <div class="asset-empty">未附加图片</div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<!-- 创建 / 编辑知识库弹窗 -->
+<div class="kb-modal-overlay" id="kbModalOverlay">
+  <div class="kb-modal">
+    <div class="kb-modal-header">
+      <h3 class="kb-modal-title" id="kbModalTitle">创建知识库</h3>
+      <button class="kb-modal-close" id="btnCloseKbModal" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="kb-modal-field">
+      <label class="kb-modal-label" for="kbModalName">知识库名称</label>
+      <input class="kb-modal-input" id="kbModalName" placeholder="请输入知识库名称" maxlength="20" />
+    </div>
+    <div class="kb-modal-footer">
+      <button class="kb-modal-btn-delete" id="btnDeleteKb" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        删除知识库
+      </button>
+      <div class="kb-modal-footer-right">
+        <button class="kb-modal-btn-cancel" id="btnCancelKbModal">取消</button>
+        <button class="kb-modal-btn-confirm" id="kbModalConfirmBtn">创建</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 删除知识库二次确认弹窗 -->
+<div class="kb-modal-overlay" id="kbDeleteConfirmOverlay">
+  <div class="kb-modal">
+    <div class="kb-modal-header">
+      <h3 class="kb-modal-title">删除知识库</h3>
+      <button class="kb-modal-close" id="btnCloseDeleteConfirm" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="kb-delete-confirm-text" id="kbDeleteConfirmText">确定要删除该知识库吗？</div>
+    <span class="kb-delete-confirm-text-warn">删除后该知识库及其中的所有文件将不可恢复</span>
+    <div class="kb-modal-footer">
+      <div></div>
+      <div class="kb-modal-footer-right">
+        <button class="kb-modal-btn-cancel" id="btnCancelDeleteConfirm">取消</button>
+        <button class="kb-modal-btn-delete-confirm" id="btnConfirmDelete">确认删除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 全局提示 -->
+<div class="kb-toast" id="kbToast">
+  <span class="kb-toast-icon">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </span>
+  <span id="kbToastText">操作成功</span>
+</div>
+
+<script>
+  const sidebarWrapper = document.getElementById('sidebarWrapper');
+  const expandBtn = document.querySelector('.toolbar-btn:first-child');
+  const closeBtn = document.getElementById('btnCloseSidebar');
+
+  function openSidebar() {
+    sidebarWrapper.classList.add('expanded');
+    if (expandBtn) {
+      expandBtn.style.opacity = '0';
+      expandBtn.style.pointerEvents = 'none';
+    }
+  }
+
+  function closeSidebar() {
+    sidebarWrapper.classList.remove('expanded');
+    if (expandBtn) {
+      expandBtn.style.opacity = '';
+      expandBtn.style.pointerEvents = '';
+    }
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openSidebar();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeSidebar();
+    });
+  }
+
+  document.querySelector('.main').addEventListener('click', function() {
+    if (sidebarWrapper.classList.contains('expanded')) {
+      closeSidebar();
+    }
+  });
+
+  // 历史记录更多菜单
+  const moreBtns = document.querySelectorAll('.sec-more');
+  let activeMenu = null;
+
+  moreBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var menu = btn.nextElementSibling;
+      if (activeMenu && activeMenu !== menu) {
+        activeMenu.classList.remove('show');
+      }
+      menu.classList.toggle('show');
+      activeMenu = menu.classList.contains('show') ? menu : null;
+    });
+  });
+
+  document.addEventListener('click', function() {
+    if (activeMenu) {
+      activeMenu.classList.remove('show');
+      activeMenu = null;
+    }
+  });
+
+  // 菜单项点击
+  const menuItems = document.querySelectorAll('.sec-menu-item');
+  menuItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.textContent.trim();
+      var secItem = item.closest('.sec-item');
+      if (action === '置顶') {
+        var list = document.querySelector('.sec-list');
+        list.insertBefore(secItem, list.firstChild);
+      } else if (action === '删除') {
+        secItem.remove();
+      }
+      if (activeMenu) {
+        activeMenu.classList.remove('show');
+        activeMenu = null;
+      }
+    });
+  });
+
+  // 资产库卡片交互
+  const assetBtn = document.querySelector('.toolbar-btn:last-child');
+  const assetPanel = document.getElementById('assetPanel');
+  const assetCloseBtn = document.getElementById('btnCloseAsset');
+  const contentArea = document.querySelector('.content');
+
+  if (assetBtn && assetPanel) {
+    assetBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      assetPanel.classList.toggle('show');
+      if (contentArea) {
+        contentArea.classList.toggle('shift-left', assetPanel.classList.contains('show'));
+      }
+    });
+  }
+
+  if (assetCloseBtn && assetPanel) {
+    assetCloseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      assetPanel.classList.remove('show');
+      if (contentArea) {
+        contentArea.classList.remove('shift-left');
+      }
+    });
+  }
+
+  // 标签页切换
+  const assetTabs = document.querySelectorAll('.asset-tab');
+  assetTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      assetTabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
+  });
+
+/* ============ 知识库交互逻辑 ============ */
+
+  // ---- 知识库数据模型：名称 -> { 描述, 总数量, 文件列表(样例) } ----
+  const kbData = {
+    '产品迭代': {
+      desc: '产品迭代相关的需求、规划与复盘文档',
+      count: 24,
+      files: [
+        { name: '产品需求文档.docx', size: '2.4 MB', date: '2026/08/10' },
+        { name: '迭代规划.md', size: '86 KB', date: '2026/08/09' },
+        { name: '竞品分析报告.pdf', size: '5.1 MB', date: '2026/08/08' },
+        { name: '季度复盘.pptx', size: '12.8 MB', date: '2026/08/06' },
+        { name: '设计规范.docx', size: '1.1 MB', date: '2026/08/05' },
+        { name: '用户访谈记录.md', size: '45 KB', date: '2026/08/03' },
+        { name: '技术架构.pdf', size: '3.7 MB', date: '2026/07/28' },
+        { name: '市场调研汇总.xlsx', size: '2.9 MB', date: '2026/07/25' }
+      ]
+    },
+    '项目启动': {
+      desc: '项目立项、目标拆解与干系人管理文档',
+      count: 12,
+      files: [
+        { name: '项目立项书.docx', size: '1.8 MB', date: '2026/08/12' },
+        { name: '目标拆解.md', size: '62 KB', date: '2026/08/11' },
+        { name: '干系人清单.xlsx', size: '38 KB', date: '2026/08/10' },
+        { name: '风险评估.pdf', size: '2.2 MB', date: '2026/08/07' },
+        { name: '里程碑计划.pptx', size: '8.6 MB', date: '2026/08/04' },
+        { name: '启动会纪要.md', size: '28 KB', date: '2026/08/02' },
+        { name: '预算明细.xlsx', size: '96 KB', date: '2026/07/30' },
+        { name: '章程草案.docx', size: '420 KB', date: '2026/07/26' }
+      ]
+    },
+    'UI设计评审': {
+      desc: '界面规范、视觉走查与交互评审资料',
+      count: 18,
+      files: [
+        { name: '组件库清单.md', size: '74 KB', date: '2026/08/13' },
+        { name: '视觉走查.pdf', size: '9.3 MB', date: '2026/08/11' },
+        { name: '交互原型.pptx', size: '15.2 MB', date: '2026/08/09' },
+        { name: '设计规范.docx', size: '1.1 MB', date: '2026/08/08' },
+        { name: '字号色板.xlsx', size: '52 KB', date: '2026/08/05' },
+        { name: '无障碍检查清单.md', size: '21 KB', date: '2026/08/03' },
+        { name: '高保真稿.pdf', size: '12.6 MB', date: '2026/07/31' },
+        { name: '评审会议纪要.md', size: '33 KB', date: '2026/07/29' }
+      ]
+    },
+    '运维部署': {
+      desc: '部署手册、监控告警与容量规划文档',
+      count: 9,
+      files: [
+        { name: '部署手册.pdf', size: '6.2 MB', date: '2026/08/14' },
+        { name: '监控告警配置.md', size: '58 KB', date: '2026/08/12' },
+        { name: '容量规划.xlsx', size: '1.4 MB', date: '2026/08/10' },
+        { name: '灾备方案.docx', size: '980 KB', date: '2026/08/06' },
+        { name: '上线检查清单.md', size: '18 KB', date: '2026/08/04' },
+        { name: '故障复盘报告.pdf', size: '3.1 MB', date: '2026/07/30' },
+        { name: '安全加固指南.md', size: '44 KB', date: '2026/07/27' },
+        { name: '密钥轮换流程.docx', size: '260 KB', date: '2026/07/22' }
+      ]
+    }
+  };
+
+  // ---- 当前状态 ----
+  let currentKb = '产品迭代';
+  let fileSortMode = 'time';          // time | name
+  let editingKb = null;               // 正在编辑的知识库名（null 表示创建模式）
+
+  // ---- 元素引用 ----
+  const kbChat = document.getElementById('kbChat');
+  const kbWelcome = document.getElementById('kbWelcome');
+  const kbSloganSub = document.getElementById('kbSloganSub');
+  const kbInput = document.getElementById('kbInput');
+  const kbLibName = document.getElementById('kbLibName');
+  const kbChatTitle = document.getElementById('kbChatTitle');
+  const kbFileCount = document.getElementById('kbFileCount');
+  const kbFileList = document.getElementById('kbFileList');
+  const kbList = document.querySelector('.kb-list');
+  const kbModelSelectBtn = document.getElementById('kbModelSelectBtn');
+  const kbSelectedModelName = document.getElementById('kbSelectedModelName');
+  const kbAddFileBtn = document.getElementById('kbAddFileBtn');
+
+  // ---- Toast 提示 ----
+  const kbToastEl = document.getElementById('kbToast');
+  const kbToastText = document.getElementById('kbToastText');
+  let kbToastTimer = null;
+
+  function kbToast(msg, success) {
+    kbToastText.textContent = msg;
+    kbToastEl.classList.toggle('success', !!success);
+    kbToastEl.classList.add('show');
+    clearTimeout(kbToastTimer);
+    kbToastTimer = setTimeout(function () {
+      kbToastEl.classList.remove('show');
+    }, 2200);
+  }
+
+  // ---- 工具函数 ----
+  function escHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function typeInfo(name) {
+    if (/\.(docx?)$/i.test(name)) return { label: 'W', cls: 'word' };
+    if (/\.md$/i.test(name)) return { label: 'M', cls: 'md' };
+    if (/\.pdf$/i.test(name)) return { label: 'P', cls: 'pdf' };
+    if (/\.(pptx?)$/i.test(name)) return { label: 'P', cls: 'ppt' };
+    if (/\.(xlsx?|csv)$/i.test(name)) return { label: 'X', cls: 'xls' };
+    return { label: 'F', cls: 'md' };
+  }
+
+  // ---- 知识库切换 ----
+  function selectKb(el) {
+    if (!el || el.getAttribute('data-kb') === currentKb) return;
+    document.querySelectorAll('.kb-item').forEach(function (i) { i.classList.remove('active'); });
+    el.classList.add('active');
+    currentKb = el.getAttribute('data-kb');
+    kbLibName.textContent = currentKb;
+    kbChatTitle.textContent = currentKb + ' · 知识库问答';
+    renderFiles();
+    resetChat();
+  }
+
+  // ---- 文件列表渲染 ----
+  function renderFiles() {
+    const kb = kbData[currentKb];
+    const files = kb ? kb.files.slice() : [];
+    if (fileSortMode === 'name') {
+      files.sort(function (a, b) { return a.name.localeCompare(b.name, 'zh'); });
+    } else {
+      files.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    }
+    kbFileCount.textContent = (kb ? kb.count : files.length) + ' 个文件';
+    kbFileList.innerHTML = '';
+
+    if (!files.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:26px 0;text-align:center;color:var(--text-dim);font-size:0.78rem;opacity:.7;';
+      empty.textContent = '暂无文档，可上传文件到该知识库';
+      kbFileList.appendChild(empty);
+      return;
+    }
+
+    files.forEach(function (f) {
+      const t = typeInfo(f.name);
+      const el = document.createElement('div');
+      el.className = 'kb-file';
+      el.setAttribute('data-file', f.name);
+      el.innerHTML =
+        '<div class="kb-file-icon ' + t.cls + '">' + t.label + '</div>' +
+        '<div class="kb-file-info">' +
+        '<div class="kb-file-name">' + escHtml(f.name) + '</div>' +
+        '<div class="kb-file-meta">' + f.size + ' · ' + f.date + '</div>' +
+        '</div>' +
+        '<button type="button" class="kb-file-more" title="更多">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>' +
+        '</button>';
+      el.addEventListener('click', function () { selectFile(el); });
+      const moreBtn = el.querySelector('.kb-file-more');
+      moreBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        selectFile(el);
+        showKbFileMenu(moreBtn, f.name);
+      });
+      kbFileList.appendChild(el);
+    });
+  }
+
+  function selectFile(el) {
+    document.querySelectorAll('.kb-file').forEach(function (f) { f.classList.remove('selected'); });
+    el.classList.add('selected');
+  }
+
+  // ---- 文件操作菜单（重命名 / 删除，浮层挂载 body） ----
+  const kbFileMenu = document.createElement('div');
+  kbFileMenu.className = 'kb-file-menu';
+  kbFileMenu.innerHTML =
+    '<button class="kb-file-menu-item" id="kbMenuRename">' +
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>重命名</button>' +
+    '<button class="kb-file-menu-item danger" id="kbMenuDelete">' +
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>删除</button>';
+  document.body.appendChild(kbFileMenu);
+
+  const kbRenamePop = document.createElement('div');
+  kbRenamePop.className = 'kb-rename-pop';
+  kbRenamePop.innerHTML =
+    '<div class="kb-rename-title">重命名文档</div>' +
+    '<input id="kbRenameInput" spellcheck="false" />' +
+    '<div class="kb-rename-actions">' +
+    '<button class="kb-rename-cancel" id="kbRenameCancel">取消</button>' +
+    '<button class="kb-rename-ok" id="kbRenameOk">确定</button>' +
+    '</div>';
+  document.body.appendChild(kbRenamePop);
+
+  let kbMenuFile = null;
+
+  function closeKbFileMenu() {
+    kbFileMenu.classList.remove('show');
+    kbRenamePop.classList.remove('show');
+  }
+
+  function showKbFileMenu(btn, name) {
+    kbMenuFile = name;
+    kbRenamePop.classList.remove('show');
+    const rect = btn.getBoundingClientRect();
+    const mh = 88;
+    let top = rect.bottom + 4;
+    let left = rect.right - 118;
+    if (top + mh > window.innerHeight) top = rect.top - mh - 4;
+    if (left < 8) left = 8;
+    kbFileMenu.style.top = top + 'px';
+    kbFileMenu.style.left = left + 'px';
+    kbFileMenu.classList.add('show');
+  }
+
+  function openKbRename(name) {
+    kbFileMenu.classList.remove('show');
+    kbMenuFile = name;
+    const kb = kbData[currentKb];
+    const f = kb.files.find(function (x) { return x.name === name; });
+    const input = document.getElementById('kbRenameInput');
+    input.value = f ? f.name : name;
+    const dot = input.value.lastIndexOf('.');
+    if (dot > 0) {
+      input.setSelectionRange(0, dot);
+    } else {
+      input.select();
+    }
+    kbRenamePop.style.top = Math.min(140, window.innerHeight - 150) + 'px';
+    kbRenamePop.style.left = Math.max(8, window.innerWidth / 2 - 115) + 'px';
+    kbRenamePop.classList.add('show');
+    input.focus();
+  }
+
+  document.getElementById('kbMenuRename').addEventListener('click', function () {
+    if (kbMenuFile) openKbRename(kbMenuFile);
+  });
+
+  document.getElementById('kbMenuDelete').addEventListener('click', function () {
+    if (!kbMenuFile) return;
+    const kb = kbData[currentKb];
+    const idx = kb.files.findIndex(function (x) { return x.name === kbMenuFile; });
+    const deleted = kbMenuFile;
+    if (idx > -1) {
+      kb.files.splice(idx, 1);
+      kb.count = Math.max(0, kb.count - 1);
+    }
+    closeKbFileMenu();
+    renderFiles();
+    kbToast('已删除：' + deleted, true);
+  });
+
+  document.getElementById('kbRenameCancel').addEventListener('click', closeKbFileMenu);
+
+  document.getElementById('kbRenameOk').addEventListener('click', function () {
+    const input = document.getElementById('kbRenameInput');
+    const newName = input.value.trim();
+    if (!newName) {
+      kbToast('文件名不能为空', false);
+      return;
+    }
+    const kb = kbData[currentKb];
+    if (kb.files.some(function (x) { return x.name === newName; })) {
+      kbToast('已存在同名文档', false);
+      return;
+    }
+    const f = kb.files.find(function (x) { return x.name === kbMenuFile; });
+    if (f) f.name = newName;
+    closeKbFileMenu();
+    renderFiles();
+    kbToast('已重命名', true);
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.kb-file-menu') && !e.target.closest('.kb-rename-pop') && !e.target.closest('.kb-file-more')) {
+      closeKbFileMenu();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeKbFileMenu();
+  });
+
+  // ---- 对话渲染 ----
+  function appendMsg(kind, textHtml, meta) {
+    kbWelcome.style.display = 'none';
+    const wrap = document.createElement('div');
+    wrap.className = 'kb-msg kb-msg-' + kind;
+    if (kind === 'user') {
+      wrap.innerHTML =
+        '<div class="kb-msg-avatar user">我</div>' +
+        '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div></div>';
+    } else {
+      wrap.innerHTML =
+        '<div class="kb-msg-avatar">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+        '</div>' +
+        '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div>' +
+        (meta ? '<div class="kb-msg-meta">' + meta + '</div>' : '') + '</div>';
+    }
+    kbChat.appendChild(wrap);
+    kbChat.scrollTop = kbChat.scrollHeight;
+  }
+
+  function appendTyping() {
+    const wrap = document.createElement('div');
+    wrap.className = 'kb-msg kb-msg-assistant kb-msg-typing';
+    wrap.innerHTML =
+      '<div class="kb-msg-avatar">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+      '</div>' +
+      '<div class="kb-msg-bubble"><div class="kb-msg-text">正在检索知识库文档...</div></div>';
+    kbChat.appendChild(wrap);
+    kbChat.scrollTop = kbChat.scrollHeight;
+    return wrap;
+  }
+
+  function resetChat() {
+    kbChat.querySelectorAll('.kb-msg').forEach(function (m) { m.remove(); });
+    if (!currentKb) {
+      kbSloganSub.textContent = '请先创建或选择知识库，再开始提问';
+      kbWelcome.style.display = 'flex';
+      return;
+    }
+    const kb = kbData[currentKb];
+    const cnt = kb ? kb.count : 0;
+    kbSloganSub.textContent = '我会结合「' + currentKb + '」知识库中的 ' + cnt + ' 个文档回答你的问题';
+    kbWelcome.style.display = 'flex';
+  }
+
+  // ---- 发送消息 ----
+  function sendKbMessage() {
+    const text = kbInput.value.trim();
+    if (!text) return;
+    appendMsg('user', escHtml(text));
+    kbInput.value = '';
+    kbInput.style.height = 'auto';
+    const typing = appendTyping();
+
+    setTimeout(function () {
+      typing.remove();
+      const kb = kbData[currentKb];
+      const files = kb ? kb.files.slice() : [];
+      const docs = files.map(function (f) { return f.name; });
+      let answer;
+      if (/总结|核心|重点/.test(text)) {
+        answer = '根据「' + escHtml(currentKb) + '」库内的 ' + (files.length ? escHtml(docs.slice(0, 3).join('、')) : '已有文档') + '，核心要点如下：' +
+          '<br>1. 明确业务目标与验收标准，各阶段可量化追踪；' +
+          '<br>2. 关键流程已有书面规范，含责任人与时间节点；' +
+          '<br>3. 风险项已登记并配置了对应的应对预案。' +
+          '<br>如需逐条展开，可继续追问具体章节。';
+      } else if (/对比|区别/.test(text)) {
+        answer = '对比结论：两者定位不同。库内文档显示，前者侧重流程覆盖与稳定性，后者更关注效率与体验细节。' +
+          '<br>建议结合具体业务场景选择，详细维度对比可见相关分析文档。';
+      } else if (/删除|清理/.test(text)) {
+        answer = '已找到相关操作说明：删除文档前请先归档备份，确认无下游引用后再移除，并在变更记录中登记。';
+      } else {
+        answer = '我已在「' + escHtml(currentKb) + '」知识库中检索到相关内容：' +
+          '<br>该问题与 ' + escHtml(docs[0] || '库内文档') + ' 及 ' + escHtml(docs[1] || '关联记录') + ' 相关，' +
+          '核心信息已整理如上，建议先核对原始文档的上下文后再做决策。';
+      }
+      const used = Math.min(2, Math.max(1, files.length));
+      appendMsg('assistant', answer, '刚刚 · 引用 ' + used + ' 个文档');
+    }, 900);
+  }
+
+  // ---- 创建 / 编辑知识库弹窗 ----
+  const kbModalOverlay = document.getElementById('kbModalOverlay');
+  const kbModalTitle = document.getElementById('kbModalTitle');
+  const kbModalName = document.getElementById('kbModalName');
+  const kbModalConfirmBtn = document.getElementById('kbModalConfirmBtn');
+
+  function openKbModal(mode, name) {
+    editingKb = mode === 'edit' ? name : null;
+    kbModalTitle.textContent = editingKb ? '修改知识库' : '创建知识库';
+    kbModalName.value = editingKb || '';
+    kbModalConfirmBtn.textContent = editingKb ? '保存' : '创建';
+    btnDeleteKb.style.display = editingKb ? 'inline-flex' : 'none';
+    kbModalOverlay.classList.add('show');
+    setTimeout(function () { kbModalName.focus(); }, 60);
+  }
+
+  function closeKbModal() {
+    kbModalOverlay.classList.remove('show');
+  }
+
+  function confirmKbModal() {
+    const name = kbModalName.value.trim();
+    if (!name) {
+      kbToast('请输入知识库名称', false);
+      return;
+    }
+    if (editingKb) {
+      if (name !== editingKb && kbData[name]) {
+        kbToast('已存在同名知识库', false);
+        return;
+      }
+      kbData[name] = kbData[editingKb];
+      if (name !== editingKb) delete kbData[editingKb];
+      const item = document.querySelector('.kb-item[data-kb="' + editingKb + '"]');
+      if (item) {
+        item.setAttribute('data-kb', name);
+        item.querySelector('.kb-item-name').textContent = name;
+      }
+      if (currentKb === editingKb) currentKb = name;
+      kbLibName.textContent = currentKb;
+      kbChatTitle.textContent = currentKb + ' · 知识库问答';
+      closeKbModal();
+      kbToast('知识库已更新', true);
+    } else {
+      if (kbData[name]) {
+        kbToast('已存在同名知识库', false);
+        return;
+      }
+      kbData[name] = { desc: '', count: 0, files: [] };
+      const item = document.createElement('div');
+      item.className = 'kb-item';
+      item.setAttribute('data-kb', name);
+      item.innerHTML =
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+        '<span class="kb-item-name">' + escHtml(name) + '</span>' +
+        '<span class="kb-item-count">0</span>';
+      item.addEventListener('click', function () { selectKb(item); });
+      kbList.insertBefore(item, kbList.firstChild);
+      closeKbModal();
+      kbToast('知识库创建成功', true);
+      selectKb(item);
+    }
+  }
+
+  // ---- 事件绑定 ----
+  const btnDeleteKb = document.getElementById('btnDeleteKb');
+
+  document.getElementById('btnCreateKb').addEventListener('click', function () {
+    openKbModal('create');
+  });
+
+  document.getElementById('btnEditKb').addEventListener('click', function () {
+    openKbModal('edit', currentKb);
+  });
+
+  document.getElementById('btnCloseKbModal').addEventListener('click', closeKbModal);
+  document.getElementById('btnCancelKbModal').addEventListener('click', closeKbModal);
+  kbModalConfirmBtn.addEventListener('click', confirmKbModal);
+
+  kbModalOverlay.addEventListener('click', function (e) {
+    if (e.target === kbModalOverlay) closeKbModal();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && kbModalOverlay.classList.contains('show')) {
+      closeKbModal();
+    }
+  });
+
+  // ---- 删除知识库（二次确认） ----
+  const kbDeleteConfirmOverlay = document.getElementById('kbDeleteConfirmOverlay');
+  const kbDeleteConfirmText = document.getElementById('kbDeleteConfirmText');
+  let kbDeleteTarget = null;
+
+  function closeKbDeleteConfirm() {
+    kbDeleteConfirmOverlay.classList.remove('show');
+  }
+
+  btnDeleteKb.addEventListener('click', function () {
+    if (!editingKb) return;
+    kbDeleteTarget = editingKb;
+    kbDeleteConfirmText.textContent = '确定要删除知识库「' + editingKb + '」及其中的所有 ' + (kbData[editingKb] ? kbData[editingKb].count : 0) + ' 个文件吗？';
+    closeKbModal();
+    kbDeleteConfirmOverlay.classList.add('show');
+  });
+
+  document.getElementById('btnCloseDeleteConfirm').addEventListener('click', closeKbDeleteConfirm);
+  document.getElementById('btnCancelDeleteConfirm').addEventListener('click', closeKbDeleteConfirm);
+
+  kbDeleteConfirmOverlay.addEventListener('click', function (e) {
+    if (e.target === kbDeleteConfirmOverlay) closeKbDeleteConfirm();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && kbDeleteConfirmOverlay.classList.contains('show')) {
+      closeKbDeleteConfirm();
+    }
+  });
+
+  document.getElementById('btnConfirmDelete').addEventListener('click', function () {
+    if (!kbDeleteTarget) return;
+    const deletedName = kbDeleteTarget;
+    const deletedCurrent = (currentKb === deletedName);
+    delete kbData[deletedName];
+    const item = kbList.querySelector('.kb-item[data-kb="' + deletedName + '"]');
+    if (item) item.remove();
+    const keys = Object.keys(kbData);
+    if (keys.length === 0) {
+      currentKb = '';
+      kbLibName.textContent = '无知识库';
+      kbChatTitle.textContent = '知识库问答';
+      renderFiles();
+      resetChat();
+    } else if (deletedCurrent) {
+      const firstItem = kbList.querySelector('.kb-item');
+      if (firstItem) {
+        selectKb(firstItem);
+      } else {
+        currentKb = keys[0];
+        kbLibName.textContent = currentKb;
+        kbChatTitle.textContent = currentKb + ' · 知识库问答';
+        renderFiles();
+        resetChat();
+      }
+    }
+    closeKbDeleteConfirm();
+    kbDeleteTarget = null;
+    kbToast('知识库「' + deletedName + '」已删除', true);
+  });
+
+  // 知识库搜索（左栏）
+  const btnKbSearch = document.getElementById('btnKbSearch');
+  btnKbSearch.addEventListener('click', function () {
+    let box = document.getElementById('kbSearchBox');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'kbSearchBox';
+      box.style.cssText = 'padding:8px 10px 2px;display:none;';
+      const input = document.createElement('input');
+      input.id = 'kbSearchInput';
+      input.placeholder = '搜索知识库名称...';
+      input.style.cssText = 'width:100%;height:30px;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.75rem;padding:0 10px;outline:none;';
+      input.addEventListener('input', function () {
+        const q = this.value.trim();
+        document.querySelectorAll('.kb-item').forEach(function (item) {
+          item.style.display = item.getAttribute('data-kb').indexOf(q) > -1 ? '' : 'none';
+        });
+      });
+      box.appendChild(input);
+      document.querySelector('.kb-side-header').after(box);
+    }
+    const showing = box.style.display !== 'none';
+    box.style.display = showing ? 'none' : 'block';
+    if (!showing) box.querySelector('input').focus();
+  });
+
+  // 文件搜索（中栏）
+  document.getElementById('btnFileSearch').addEventListener('click', function () {
+    let box = document.getElementById('kbFileSearchBox');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'kbFileSearchBox';
+      box.style.cssText = 'padding:0 10px 8px;display:none;';
+      const input = document.createElement('input');
+      input.id = 'kbFileSearchInput';
+      input.placeholder = '搜索文件名...';
+      input.style.cssText = 'width:100%;height:30px;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.75rem;padding:0 10px;outline:none;';
+      input.addEventListener('input', function () {
+        const q = this.value.trim();
+        document.querySelectorAll('#kbFileList .kb-file').forEach(function (f) {
+          f.style.display = f.getAttribute('data-file').indexOf(q) > -1 ? '' : 'none';
+        });
+      });
+      box.appendChild(input);
+      document.querySelector('.kb-toolbar').after(box);
+    }
+    const showing = box.style.display !== 'none';
+    box.style.display = showing ? 'none' : 'block';
+    if (!showing) box.querySelector('input').focus();
+  });
+
+  // 排序切换
+  document.getElementById('btnFileSort').addEventListener('click', function () {
+    fileSortMode = fileSortMode === 'time' ? 'name' : 'time';
+    renderFiles();
+    kbToast(fileSortMode === 'time' ? '已按时间排序' : '已按名称排序', true);
+  });
+
+  // 刷新
+  document.getElementById('btnFileRefresh').addEventListener('click', function () {
+    renderFiles();
+    kbToast('文件列表已刷新', true);
+  });
+
+  // 工具栏：上传文档到当前知识库
+  const kbToolFileInput = document.createElement('input');
+  kbToolFileInput.type = 'file';
+  kbToolFileInput.style.display = 'none';
+  document.body.appendChild(kbToolFileInput);
+
+  document.getElementById('btnFileUpload').addEventListener('click', function () {
+    kbToolFileInput.click();
+  });
+
+  kbToolFileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const now = new Date();
+    const pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    const kb = kbData[currentKb];
+    kb.files.unshift({
+      name: file.name,
+      size: kbFormatFileSize(file.size),
+      date: now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate())
+    });
+    kb.count += 1;
+    renderFiles();
+    kbToast('已上传：' + file.name, true);
+    kbToolFileInput.value = '';
+  });
+
+  // 发送
+  document.getElementById('btnKbSend').addEventListener('click', sendKbMessage);
+  kbInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendKbMessage();
+    }
+  });
+  kbInput.addEventListener('input', function () {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+  });
+
+  // 历史对话 / 新建对话
+  document.getElementById('btnKbHistory').addEventListener('click', function () {
+    resetChat();
+    kbToast('已加载最近一次对话', true);
+  });
+  document.getElementById('btnNewChat').addEventListener('click', function () {
+    resetChat();
+    kbToast('已开启新对话', true);
+  });
+
+  // ===== 模型选择下拉（参照首页，浮层挂载到 body 避免被卡片裁剪） =====
+  const kbModelDropdown = document.createElement('div');
+  kbModelDropdown.className = 'model-dropdown';
+  kbModelDropdown.innerHTML =
+    '<div class="model-dropdown-section">' +
+    '<div class="model-dropdown-label">推理模式</div>' +
+    '<div class="model-mode-group">' +
+    '<button class="model-mode-item active" data-mode="speed">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>速度</button>' +
+    '<button class="model-mode-item" data-mode="balance">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>平衡</button>' +
+    '<button class="model-mode-item" data-mode="quality">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3l1 10"/><path d="M2 9h20"/><path d="M13 3l-2 6"/><path d="M11 3l2 6"/></svg>质量</button>' +
+    '</div>' +
+    '</div>' +
+    '<div class="model-dropdown-divider"></div>' +
+    '<div class="model-dropdown-section">' +
+    '<div class="model-dropdown-label">选择模型</div>' +
+    '<div class="model-list">' +
+    '<button class="model-list-item active" data-model="gemma-4-12b" data-name="Gemma4 12B 指令版"><span class="model-indicator green"></span><span class="model-name">Gemma4 12B 指令版</span></button>' +
+    '<button class="model-list-item" data-model="llama4-70b" data-name="Llama4 70B 对话版"><span class="model-indicator gray"></span><span class="model-name">Llama4 70B 对话版</span></button>' +
+    '<button class="model-list-item" data-model="qwen3-32b" data-name="Qwen3 32B 工具版"><span class="model-indicator gray"></span><span class="model-name">Qwen3 32B 工具版</span></button>' +
+    '</div>' +
+    '</div>';
+  document.body.appendChild(kbModelDropdown);
+
+  // 上传文件下拉（参照首页）
+  const kbUploadDropdown = document.createElement('div');
+  kbUploadDropdown.className = 'upload-dropdown';
+  kbUploadDropdown.innerHTML =
+    '<button class="upload-item" id="kbBtnUploadImage">' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+    '<span>上传图片</span></button>' +
+    '<button class="upload-item" id="kbBtnUploadFile">' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>' +
+    '<span>上传文件</span></button>';
+  document.body.appendChild(kbUploadDropdown);
+
+  // 定位浮层（fixed 相对视口）
+  function positionKbDropdown(trigger, menu, width) {
+    const rect = trigger.getBoundingClientRect();
+    const h = menu.offsetHeight || 200;
+    let top = rect.top - h - 8;
+    let left = rect.left;
+    if (top < 8) top = rect.bottom + 8;
+    if (left + width > window.innerWidth) left = window.innerWidth - width - 16;
+    menu.style.top = top + 'px';
+    menu.style.left = left + 'px';
+  }
+
+  // 模型下拉交互
+  kbModelSelectBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    kbUploadDropdown.classList.remove('show');
+    const showing = kbModelDropdown.classList.contains('show');
+    if (!showing) positionKbDropdown(kbModelSelectBtn, kbModelDropdown, 240);
+    kbModelDropdown.classList.toggle('show');
+  });
+
+  kbModelDropdown.querySelectorAll('.model-mode-item').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.stopPropagation();
+      kbModelDropdown.querySelectorAll('.model-mode-item').forEach(function (i) { i.classList.remove('active'); });
+      item.classList.add('active');
+    });
+  });
+
+  kbModelDropdown.querySelectorAll('.model-list-item').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.stopPropagation();
+      kbModelDropdown.querySelectorAll('.model-list-item').forEach(function (i) { i.classList.remove('active'); });
+      item.classList.add('active');
+      const name = item.getAttribute('data-name');
+      kbSelectedModelName.textContent = name;
+      kbModelDropdown.classList.remove('show');
+      kbToast('已切换模型：' + name, true);
+    });
+  });
+
+  // 上传下拉交互
+  kbAddFileBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    kbModelDropdown.classList.remove('show');
+    const showing = kbUploadDropdown.classList.contains('show');
+    if (!showing) positionKbDropdown(kbAddFileBtn, kbUploadDropdown, 180);
+    kbUploadDropdown.classList.toggle('show');
+  });
+
+  kbUploadDropdown.querySelectorAll('.upload-item').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.stopPropagation();
+      kbUploadDropdown.classList.remove('show');
+    });
+  });
+
+  // 点击外部关闭下拉
+  document.addEventListener('click', function () {
+    kbModelDropdown.classList.remove('show');
+    kbUploadDropdown.classList.remove('show');
+  });
+
+  // 文件上传与附件展示（参照首页）
+  const kbFileInput = document.createElement('input');
+  kbFileInput.type = 'file';
+  kbFileInput.style.display = 'none';
+  document.body.appendChild(kbFileInput);
+
+  const kbFileAttachment = document.getElementById('kbFileAttachment');
+  const kbFileAttachmentName = document.getElementById('kbFileAttachmentName');
+  const kbFileAttachmentStatus = document.getElementById('kbFileAttachmentStatus');
+  const kbFileAttachmentClose = document.getElementById('kbFileAttachmentClose');
+
+  document.getElementById('kbBtnUploadFile').addEventListener('click', function (e) {
+    e.stopPropagation();
+    kbFileInput.click();
+  });
+  document.getElementById('kbBtnUploadImage').addEventListener('click', function (e) {
+    e.stopPropagation();
+    kbFileInput.click();
+  });
+
+  kbFileInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    kbFileAttachment.style.display = 'flex';
+    kbFileAttachmentName.textContent = file.name;
+    kbFileAttachmentStatus.innerHTML = '<span class="file-spinner"></span><span class="file-status-text">转换中</span>';
+    setTimeout(function () {
+      kbFileAttachmentStatus.innerHTML = '<span class="file-status-text">已就绪 · ' + kbFormatFileSize(file.size) + '</span>';
+    }, 3000);
+  });
+
+  if (kbFileAttachmentClose) {
+    kbFileAttachmentClose.addEventListener('click', function (e) {
+      e.stopPropagation();
+      kbFileAttachment.style.display = 'none';
+      kbFileInput.value = '';
+    });
+  }
+
+  function kbFormatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // ---- 初始化 ----
+  renderFiles();
+  resetChat();
+</script>
+
+</body>
+</html>

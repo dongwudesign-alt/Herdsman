@@ -423,6 +423,98 @@
     color: var(--text-dim);
   }
 
+  /* Import Model Button */
+  .import-model-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 18px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: visible;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+
+  .import-model-btn::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 10%;
+    right: 10%;
+    height: 12px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  .import-model-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 12%;
+    right: 12%;
+    height: 10px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+  }
+
+  .import-model-btn:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
+      inset 1px 0 0 0 rgba(255,255,255,0.16),
+      inset -1px 0 0 0 rgba(255,255,255,0.16),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 6px 28px rgba(0,0,0,0.3),
+      0 0 32px rgba(255,255,255,0.08);
+    text-shadow: 0 0 10px rgba(255,255,255,0.20);
+    transform: translateY(-1px);
+  }
+
+  .import-model-btn:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
+  }
+
+  .import-model-btn:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
   /* Category Tabs */
   .ms-categories {
     display: flex;
@@ -458,6 +550,85 @@
     background: rgba(255,255,255,0.08);
     border-color: rgba(255,255,255,0.14);
     color: var(--text);
+  }
+
+  /* Status Tabs (higher-level filter above category tabs) */
+  .ms-status-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: fit-content;
+    padding: 4px;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .ms-status-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ms-status-tab:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .ms-status-tab.active {
+    background: rgba(255,255,255,0.10);
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.06);
+  }
+
+  .ms-status-tab .count {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text-dim);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+
+  .ms-status-tab:hover .count {
+    background: rgba(255,255,255,0.13);
+    color: var(--text);
+  }
+
+  .ms-status-tab.active .count {
+    background: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  /* Green tint when filtering installed models */
+  .ms-status-tab[data-status="installed"].active .count {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+  }
+
+  /* Blue tint when filtering running models */
+  .ms-status-tab[data-status="running"].active .count {
+    background: rgba(96, 165, 250, 0.2);
+    color: #60a5fa;
   }
 
   /* Model Grid */
@@ -1156,6 +1327,741 @@
     font-size: 0.68rem;
     color: var(--text-dim);
   }
+
+  /* ===== Loading Overlay ===== */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .loading-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .loading-modal {
+    width: 320px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .loading-overlay.show .loading-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .loading-spinner-ring {
+    position: relative;
+    width: 72px;
+    height: 72px;
+  }
+
+  .loading-spinner-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+
+  .loading-spinner-progress {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #fff;
+    border-right-color: rgba(255,255,255,0.4);
+    animation: spinnerRotate 1s linear infinite;
+  }
+
+  @keyframes spinnerRotate {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-spinner-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    animation: corePulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes corePulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.8); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .loading-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .loading-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 1.2em;
+    transition: opacity 0.3s ease;
+  }
+
+  .loading-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .loading-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.6), #fff);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+    width: 0%;
+  }
+
+  .loading-percent {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+  }
+
+  /* ===== Import Model Modal ===== */
+  .import-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .import-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .import-modal {
+    width: 480px;
+    max-width: 90vw;
+    max-height: 85vh;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  @media (max-height: 750px) {
+    .import-modal {
+      max-height: 80vh;
+    }
+  }
+
+  .import-overlay.show .import-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  /* Scrollable body between tabs and footer */
+  .import-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0 -2px 0 0;
+  }
+
+  .import-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .import-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
+    border-radius: 3px;
+  }
+
+  .import-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .import-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+  }
+
+  .import-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .import-close:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  /* Tab Switcher */
+  .import-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+
+  .import-tab {
+    flex: 1;
+    padding: 8px 0;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .import-tab:hover {
+    color: var(--text);
+  }
+
+  .import-tab.active {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  /* Form Fields */
+  .import-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .import-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .import-field-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .import-field-row .import-field {
+    flex: 1;
+  }
+
+  .import-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .import-input,
+  .import-select {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .import-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+
+  .import-input:focus,
+  .import-select:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* Custom Select Dropdown */
+  .custom-select {
+    position: relative;
+  }
+
+  .custom-select-trigger {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+
+  .custom-select-trigger:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .custom-select.open .custom-select-trigger {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .custom-select-text {
+    flex: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .custom-select-arrow {
+    flex-shrink: 0;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+    color: var(--text-dim);
+  }
+
+  .custom-select.open .custom-select-arrow {
+    transform: rotate(180deg);
+  }
+
+  .custom-select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .custom-select.open .custom-select-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .custom-select-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+  }
+
+  .custom-select-option:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .custom-select-option.active {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  /* File Selector */
+  .file-selector {
+    display: flex;
+    gap: 8px;
+  }
+
+  .file-selector .import-input {
+    flex: 1;
+  }
+
+  .file-browse-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-browse-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  /* Tab Content */
+  .import-tab-content {
+    display: none;
+  }
+
+  .import-tab-content.active {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Footer */
+  .import-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 20px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .import-btn-cancel {
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .import-btn-cancel:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .import-btn-confirm {
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      0 4px 20px rgba(0,0,0,0.25);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+  }
+
+  .import-btn-confirm:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    transform: translateY(-1px);
+  }
+
+  /* Import number input */
+  .import-num-input {
+    width: 100%;
+    height: 34px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 0 12px;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .import-num-input:focus {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .import-num-input::-webkit-inner-spin-button,
+  .import-num-input::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
+
+  /* Field hint */
+  .import-field-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* Field error */
+  .import-field-error {
+    font-size: 0.72rem;
+    color: #f87171;
+    margin-top: 2px;
+    display: none;
+  }
+
+  .import-field-error.show {
+    display: block;
+  }
+
+  .import-input.error,
+  .import-select.error {
+    border-color: rgba(248, 113, 113, 0.5) !important;
+    background: rgba(248, 113, 113, 0.05);
+  }
+
+  /* Test connection button */
+  .test-connection-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .test-connection-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .test-connection-btn.testing {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .test-connection-btn.success {
+    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(74, 222, 128, 0.08);
+    color: #4ade80;
+  }
+
+  .test-connection-btn.fail {
+    border-color: rgba(248, 113, 113, 0.3);
+    background: rgba(248, 113, 113, 0.08);
+    color: #f87171;
+  }
+
+  .test-spinner {
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+
+  .test-connection-btn.testing .test-spinner {
+    display: block;
+  }
+
+  .test-connection-btn.testing .test-icon-default {
+    display: none;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* URL with test button row */
+  .url-with-test {
+    display: flex;
+    gap: 8px;
+  }
+
+  .url-with-test .import-input {
+    flex: 1;
+  }
+
+  /* Connection status */
+  .connection-status {
+    font-size: 0.72rem;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .connection-status.show {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .connection-status.success {
+    color: #4ade80;
+  }
+
+  .connection-status.fail {
+    color: #f87171;
+  }
+
+  /* Toast notification */
+  .toast-notification {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(28, 28, 32, 0.98);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 12px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 10002;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    font-weight: 500;
+  }
+
+  .toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast-notification.success {
+    border-color: rgba(74, 222, 128, 0.25);
+  }
+
+  .toast-notification.success .toast-icon {
+    color: #4ade80;
+  }
+
+  .toast-notification.error {
+    border-color: rgba(248, 113, 113, 0.25);
+  }
+
+  .toast-notification.error .toast-icon {
+    color: #f87171;
+  }
+
+  .toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .import-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+    margin: 4px 0;
+  }
 </style>
 </head>
 <body>
@@ -1231,10 +2137,21 @@
       <div class="ms-main-header">
         <div class="ms-main-top">
           <span class="ms-page-title">模型商店</span>
-          <div class="ms-search">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="searchInput" placeholder="搜索模型名称、描述、标签...">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="ms-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="searchInput" placeholder="搜索模型名称、描述、标签...">
+            </div>
+            <button class="import-model-btn" id="btnImportModel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              导入模型
+            </button>
           </div>
+        </div>
+        <div class="ms-status-tabs" id="statusTabs">
+          <button class="ms-status-tab active" data-status="all">全部模型<span class="count" id="countAll">0</span></button>
+          <button class="ms-status-tab" data-status="installed">已安装<span class="count" id="countInstalled">0</span></button>
+          <button class="ms-status-tab" data-status="running">运行中<span class="count" id="countRunning">0</span></button>
         </div>
         <div class="ms-categories" id="categoryTabs">
           <button class="ms-cat-tab active" data-cat="all">全部</button>
@@ -1289,6 +2206,190 @@
     <div class="detail-body" id="detailBody"></div>
     <div class="detail-footer" id="detailFooter"></div>
   </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-modal" id="loadingModal">
+    <div class="loading-spinner-ring">
+      <div class="loading-spinner-track"></div>
+      <div class="loading-spinner-progress" id="loadingSpinnerProgress"></div>
+      <div class="loading-spinner-core"></div>
+    </div>
+    <div class="loading-title">正在启动模型</div>
+    <div class="loading-subtitle" id="loadingSubtitle">初始化上下文引擎...</div>
+    <div class="loading-progress-bar">
+      <div class="loading-progress-fill" id="loadingProgressFill"></div>
+    </div>
+    <div class="loading-percent" id="loadingPercent">0%</div>
+  </div>
+</div>
+
+<!-- Import Model Modal -->
+<div class="import-overlay" id="importOverlay">
+  <div class="import-modal" id="importModal">
+    <div class="import-header">
+      <h2 class="import-title">导入模型</h2>
+      <button class="import-close" id="btnCloseImport" title="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="import-tabs">
+      <button class="import-tab active" data-tab="gguf">GGUF</button>
+      <button class="import-tab" data-tab="openai">OpenAI 兼容</button>
+    </div>
+
+    <!-- GGUF Tab Content -->
+    <div class="import-body">
+    <div class="import-tab-content active" id="tab-gguf">
+      <div class="import-field">
+        <label class="import-label">主 GGUF 文件</label>
+        <div class="file-selector">
+          <input type="text" class="import-input" id="ggufFile" placeholder="选择 .gguf 模型文件" readonly>
+          <button class="file-browse-btn" id="btnBrowseFile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            选择文件
+          </button>
+        </div>
+        <span class="import-field-error" id="ggufFileError">请选择 GGUF 模型文件</span>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型名称</label>
+          <input type="text" class="import-input" id="ggufModelName" placeholder="输入模型名称">
+          <span class="import-field-error" id="ggufNameError">请输入模型名称</span>
+        </div>
+        <div class="import-field">
+          <label class="import-label">模型类型</label>
+          <div class="custom-select" data-select-id="ggufModelType">
+            <input type="hidden" id="ggufModelType" value="text">
+            <button class="custom-select-trigger" type="button">
+              <span class="custom-select-text">文本生成</span>
+              <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-dropdown">
+              <button class="custom-select-option active" data-value="text" type="button">文本生成</button>
+              <button class="custom-select-option" data-value="multimodal" type="button">多模态</button>
+              <button class="custom-select-option" data-value="ocr" type="button">OCR 识别</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="import-divider"></div>
+
+      <div class="import-field">
+        <label class="import-label">思考能力</label>
+        <div class="custom-select" data-select-id="ggufThinking">
+          <input type="hidden" id="ggufThinking" value="auto">
+          <button class="custom-select-trigger" type="button">
+            <span class="custom-select-text">自动识别旧字段</span>
+            <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-dropdown">
+            <button class="custom-select-option active" data-value="auto" type="button">自动识别旧字段</button>
+            <button class="custom-select-option" data-value="none" type="button">不支持深度思考</button>
+            <button class="custom-select-option" data-value="thinking_enabled" type="button">思考开关 thinking_enabled</button>
+            <button class="custom-select-option" data-value="reasoning_effort" type="button">推理级别 reasoning_effort</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OpenAI Compatible Tab Content -->
+    <div class="import-tab-content" id="tab-openai">
+      <div class="import-field">
+        <label class="import-label">API Base URL</label>
+        <div class="url-with-test">
+          <input type="text" class="import-input" id="openaiUrl" placeholder="https://api.openai.com/v1">
+          <button class="test-connection-btn" id="btnTestConnection">
+            <span class="test-spinner"></span>
+            <svg class="test-icon-default" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span class="test-text">测试连接</span>
+          </button>
+        </div>
+        <span class="import-field-error" id="openaiUrlError">请输入 API Base URL</span>
+        <span class="connection-status" id="connectionStatus"></span>
+      </div>
+
+      <div class="import-field">
+        <label class="import-label">API Key</label>
+        <input type="password" class="import-input" id="openaiKey" placeholder="sk-...">
+        <span class="import-field-hint">部分本地服务可留空</span>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型名称</label>
+          <input type="text" class="import-input" id="openaiModelName" placeholder="本地展示名称">
+          <span class="import-field-error" id="openaiNameError">请输入模型名称</span>
+        </div>
+        <div class="import-field">
+          <label class="import-label">模型 ID</label>
+          <input type="text" class="import-input" id="openaiModelId" placeholder="gpt-4o / deepseek-chat">
+          <span class="import-field-error" id="openaiIdError">请输入模型 ID</span>
+        </div>
+      </div>
+
+      <div class="import-field-row">
+        <div class="import-field">
+          <label class="import-label">模型类型</label>
+          <div class="custom-select" data-select-id="openaiModelType">
+            <input type="hidden" id="openaiModelType" value="text">
+            <button class="custom-select-trigger" type="button">
+              <span class="custom-select-text">文本生成</span>
+              <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="custom-select-dropdown">
+              <button class="custom-select-option active" data-value="text" type="button">文本生成</button>
+              <button class="custom-select-option" data-value="multimodal" type="button">多模态</button>
+              <button class="custom-select-option" data-value="ocr" type="button">OCR 识别</button>
+            </div>
+          </div>
+        </div>
+        <div class="import-field">
+          <label class="import-label">上下文长度</label>
+          <input type="number" class="import-num-input" id="openaiContextLen" min="512" max="1048576" step="512" placeholder="留空使用服务默认值">
+          <span class="import-field-hint">留空使用服务默认值</span>
+        </div>
+      </div>
+
+      <div class="import-divider"></div>
+
+      <div class="import-field">
+        <label class="import-label">思考能力</label>
+        <div class="custom-select" data-select-id="openaiThinking">
+          <input type="hidden" id="openaiThinking" value="auto">
+          <button class="custom-select-trigger" type="button">
+            <span class="custom-select-text">按模型 ID 自动识别</span>
+            <svg class="custom-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="custom-select-dropdown">
+            <button class="custom-select-option active" data-value="auto" type="button">按模型 ID 自动识别</button>
+            <button class="custom-select-option" data-value="none" type="button">不支持深度思考</button>
+            <button class="custom-select-option" data-value="thinking_enabled" type="button">思考开关 thinking_enabled</button>
+            <button class="custom-select-option" data-value="reasoning_effort" type="button">推理级别 reasoning_effort</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="import-footer">
+      <button class="import-btn-cancel" id="btnCancelImport">取消</button>
+      <button class="import-btn-confirm" id="btnConfirmImport">导入模型</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-notification" id="toastNotification">
+  <span class="toast-icon" id="toastIcon"></span>
+  <span class="toast-text" id="toastText"></span>
 </div>
 
 <script>
@@ -1442,6 +2543,7 @@
 
   let currentCategory = 'all';
   let currentSearch = '';
+  let currentStatus = 'all';
 
   // Model icons
   const iconMap = {
@@ -1461,11 +2563,14 @@
     const grid = document.getElementById('modelGrid');
     const filtered = models.filter(m => {
       const catMatch = currentCategory === 'all' || m.categories.includes(currentCategory);
+      const statusMatch = currentStatus === 'all' ||
+        (currentStatus === 'installed' && m.installed) ||
+        (currentStatus === 'running' && m.running);
       const searchMatch = currentSearch === '' ||
         m.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
         m.desc.toLowerCase().includes(currentSearch.toLowerCase()) ||
         m.capabilities.some(c => c.toLowerCase().includes(currentSearch.toLowerCase()));
-      return catMatch && searchMatch;
+      return catMatch && statusMatch && searchMatch;
     });
 
     if (filtered.length === 0) {
@@ -1476,7 +2581,7 @@
     grid.innerHTML = filtered.map(m => `
       <div class="model-card ${m.installed ? 'installed' : ''}" data-id="${m.id}" onclick="openDetail('${m.id}')">
         <div class="model-card-header">
-          <div class="model-icon">${iconMap[m.id] || defaultIcon}</div>
+          <div class="model-icon">${iconMap[m.id] || m.icon || defaultIcon}</div>
           <div class="model-info">
             <span class="model-name">${m.name}</span>
             <span class="model-version">${m.version}</span>
@@ -1502,6 +2607,7 @@
         <button class="card-more-btn" onclick="event.stopPropagation(); toggleCardMenu('${m.id}', this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg></button>
       </div>
     `).join('');
+    updateStatusCounts();
   }
 
   // Category tab switching
@@ -1510,6 +2616,23 @@
       document.querySelectorAll('.ms-cat-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       currentCategory = tab.dataset.cat;
+      renderModels();
+    });
+  });
+
+  // Update status tab counts (total / installed / running)
+  function updateStatusCounts() {
+    document.getElementById('countAll').textContent = models.length;
+    document.getElementById('countInstalled').textContent = models.filter(m => m.installed).length;
+    document.getElementById('countRunning').textContent = models.filter(m => m.running).length;
+  }
+
+  // Status tab switching (higher-level filter)
+  document.querySelectorAll('.ms-status-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.ms-status-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentStatus = tab.dataset.status;
       renderModels();
     });
   });
@@ -1628,6 +2751,7 @@
       btn.classList.add('run');
       btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>运行';
     }
+    updateStatusCounts();
   }
 
   // Pause a running model (bottom-left pause button)
@@ -1731,12 +2855,391 @@
     } else {
       stopModel(model, card, btn);
     }
+    updateStatusCounts();
   }
 
   document.getElementById('detailClose').addEventListener('click', closeDetail);
   document.getElementById('detailOverlay').addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeDetail();
   });
+
+  // ===== Import Model Modal =====
+  const importOverlay = document.getElementById('importOverlay');
+  const btnImportModel = document.getElementById('btnImportModel');
+  const btnCloseImport = document.getElementById('btnCloseImport');
+  const btnCancelImport = document.getElementById('btnCancelImport');
+  const btnConfirmImport = document.getElementById('btnConfirmImport');
+  const btnBrowseFile = document.getElementById('btnBrowseFile');
+  const btnTestConnection = document.getElementById('btnTestConnection');
+  const importTabs = document.querySelectorAll('.import-tab');
+
+  // ===== Custom Select Dropdowns =====
+  function setCustomSelectValue(selectId, value) {
+    const hiddenInput = document.getElementById(selectId);
+    if (!hiddenInput) return;
+    hiddenInput.value = value;
+    const container = hiddenInput.closest('.custom-select');
+    if (!container) return;
+    const options = container.querySelectorAll('.custom-select-option');
+    options.forEach(function(opt) {
+      opt.classList.toggle('active', opt.dataset.value === value);
+    });
+    const activeOption = container.querySelector('.custom-select-option.active');
+    if (activeOption) {
+      container.querySelector('.custom-select-text').textContent = activeOption.textContent;
+    }
+  }
+
+  document.querySelectorAll('.custom-select').forEach(function(sel) {
+    const trigger = sel.querySelector('.custom-select-trigger');
+    const options = sel.querySelectorAll('.custom-select-option');
+    const hiddenInput = sel.querySelector('input[type="hidden"]');
+
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.querySelectorAll('.custom-select.open').forEach(function(s) {
+        if (s !== sel) s.classList.remove('open');
+      });
+      sel.classList.toggle('open');
+    });
+
+    options.forEach(function(option) {
+      option.addEventListener('click', function() {
+        const value = option.dataset.value;
+        hiddenInput.value = value;
+        sel.querySelector('.custom-select-text').textContent = option.textContent;
+        options.forEach(function(o) { o.classList.remove('active'); });
+        option.classList.add('active');
+        sel.classList.remove('open');
+      });
+    });
+  });
+
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.custom-select.open').forEach(function(s) {
+      s.classList.remove('open');
+    });
+  });
+
+  // ===== Toast Notification =====
+  const toastNotification = document.getElementById('toastNotification');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastText = document.getElementById('toastText');
+  let toastTimer = null;
+
+  function showToast(message, type) {
+    type = type || 'success';
+    clearTimeout(toastTimer);
+    toastText.textContent = message;
+    toastNotification.className = 'toast-notification ' + type;
+    if (type === 'success') {
+      toastIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+    } else {
+      toastIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    }
+    toastNotification.classList.add('show');
+    toastTimer = setTimeout(function() {
+      toastNotification.classList.remove('show');
+    }, 3000);
+  }
+
+  // ===== Loading Animation =====
+  function showLoadingAnimation() {
+    const overlay = document.getElementById('loadingOverlay');
+    const progressFill = document.getElementById('loadingProgressFill');
+    const percentText = document.getElementById('loadingPercent');
+    const subtitle = document.getElementById('loadingSubtitle');
+
+    if (!overlay) return;
+
+    overlay.classList.add('show');
+
+    const stages = [
+      { at: 0, text: '初始化上下文引擎...' },
+      { at: 20, text: '加载模型权重...' },
+      { at: 45, text: '配置 GPU 层数...' },
+      { at: 70, text: '建立 KV 缓存...' },
+      { at: 90, text: '模型就绪，准备响应...' }
+    ];
+
+    let progress = 0;
+    const duration = 5000;
+    const interval = 50;
+    const step = 100 / (duration / interval);
+
+    const timer = setInterval(function() {
+      progress += step;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(timer);
+        setTimeout(function() {
+          overlay.classList.remove('show');
+        }, 400);
+      }
+
+      if (progressFill) progressFill.style.width = progress + '%';
+      if (percentText) percentText.textContent = Math.floor(progress) + '%';
+
+      for (let i = stages.length - 1; i >= 0; i--) {
+        if (progress >= stages[i].at) {
+          if (subtitle) subtitle.textContent = stages[i].text;
+          break;
+        }
+      }
+    }, interval);
+  }
+
+  // ===== Form Validation Helpers =====
+  function showFieldError(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
+    if (input) input.classList.add('error');
+    if (error) error.classList.add('show');
+  }
+
+  function clearFieldError(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const error = document.getElementById(errorId);
+    if (input) input.classList.remove('error');
+    if (error) error.classList.remove('show');
+  }
+
+  function clearAllErrors() {
+    document.querySelectorAll('.import-field-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.import-input, .import-select').forEach(e => e.classList.remove('error'));
+  }
+
+  // ===== Reset Import Form =====
+  function resetImportForm() {
+    document.getElementById('ggufFile').value = '';
+    document.getElementById('ggufModelName').value = '';
+    setCustomSelectValue('ggufModelType', 'text');
+    setCustomSelectValue('ggufThinking', 'auto');
+    document.getElementById('openaiUrl').value = '';
+    document.getElementById('openaiKey').value = '';
+    document.getElementById('openaiModelName').value = '';
+    document.getElementById('openaiModelId').value = '';
+    setCustomSelectValue('openaiModelType', 'text');
+    document.getElementById('openaiContextLen').value = '';
+    setCustomSelectValue('openaiThinking', 'auto');
+
+    // Reset test connection button
+    btnTestConnection.className = 'test-connection-btn';
+    btnTestConnection.querySelector('.test-text').textContent = '测试连接';
+    document.getElementById('connectionStatus').className = 'connection-status';
+    document.getElementById('connectionStatus').textContent = '';
+
+    clearAllErrors();
+  }
+
+  // Open import modal
+  if (btnImportModel) {
+    btnImportModel.addEventListener('click', function() {
+      importOverlay.classList.add('show');
+    });
+  }
+
+  // Close import modal
+  function closeImportModal() {
+    importOverlay.classList.remove('show');
+    setTimeout(resetImportForm, 300);
+  }
+
+  btnCloseImport.addEventListener('click', closeImportModal);
+  btnCancelImport.addEventListener('click', closeImportModal);
+
+  importOverlay.addEventListener('click', function(e) {
+    if (e.target === importOverlay) closeImportModal();
+  });
+
+  // Tab switching
+  importTabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      importTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.import-tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      clearAllErrors();
+    });
+  });
+
+  // ===== Main GGUF file browse =====
+  if (btnBrowseFile) {
+    btnBrowseFile.addEventListener('click', function() {
+      const fakeInput = document.createElement('input');
+      fakeInput.type = 'file';
+      fakeInput.accept = '.gguf';
+      fakeInput.style.display = 'none';
+      fakeInput.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          document.getElementById('ggufFile').value = file.name;
+          clearFieldError('ggufFile', 'ggufFileError');
+          const nameInput = document.getElementById('ggufModelName');
+          if (!nameInput.value) {
+            const baseName = file.name.replace(/\.gguf$/i, '');
+            nameInput.value = baseName;
+            clearFieldError('ggufModelName', 'ggufNameError');
+          }
+        }
+      });
+      document.body.appendChild(fakeInput);
+      fakeInput.click();
+      document.body.removeChild(fakeInput);
+    });
+  }
+
+  // ===== Test Connection (OpenAI) =====
+  if (btnTestConnection) {
+    btnTestConnection.addEventListener('click', function() {
+      const url = document.getElementById('openaiUrl').value.trim();
+      const statusEl = document.getElementById('connectionStatus');
+
+      if (!url) {
+        showFieldError('openaiUrl', 'openaiUrlError');
+        return;
+      }
+      clearFieldError('openaiUrl', 'openaiUrlError');
+
+      btnTestConnection.className = 'test-connection-btn testing';
+      btnTestConnection.querySelector('.test-text').textContent = '测试中...';
+      statusEl.className = 'connection-status';
+
+      setTimeout(function() {
+        const isValid = /^https?:\/\/.+/.test(url);
+        if (isValid) {
+          btnTestConnection.className = 'test-connection-btn success';
+          btnTestConnection.querySelector('.test-text').textContent = '已连接';
+          statusEl.className = 'connection-status show success';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 连接成功，可以导入模型';
+        } else {
+          btnTestConnection.className = 'test-connection-btn fail';
+          btnTestConnection.querySelector('.test-text').textContent = '连接失败';
+          statusEl.className = 'connection-status show fail';
+          statusEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> URL 格式不正确，请检查后重试';
+        }
+      }, 1500);
+    });
+  }
+
+  // Clear errors on input
+  document.getElementById('ggufFile').addEventListener('change', () => clearFieldError('ggufFile', 'ggufFileError'));
+  document.getElementById('ggufModelName').addEventListener('input', () => clearFieldError('ggufModelName', 'ggufNameError'));
+  document.getElementById('openaiUrl').addEventListener('input', () => {
+    clearFieldError('openaiUrl', 'openaiUrlError');
+    btnTestConnection.className = 'test-connection-btn';
+    btnTestConnection.querySelector('.test-text').textContent = '测试连接';
+    document.getElementById('connectionStatus').className = 'connection-status';
+  });
+  document.getElementById('openaiModelName').addEventListener('input', () => clearFieldError('openaiModelName', 'openaiNameError'));
+  document.getElementById('openaiModelId').addEventListener('input', () => clearFieldError('openaiModelId', 'openaiIdError'));
+
+  // ===== Confirm Import =====
+  btnConfirmImport.addEventListener('click', function() {
+    const activeTab = document.querySelector('.import-tab.active').dataset.tab;
+
+    if (activeTab === 'gguf') {
+      const file = document.getElementById('ggufFile').value;
+      const name = document.getElementById('ggufModelName').value;
+      let hasError = false;
+
+      if (!file) {
+        showFieldError('ggufFile', 'ggufFileError');
+        hasError = true;
+      }
+      if (!name) {
+        showFieldError('ggufModelName', 'ggufNameError');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const modelType = document.getElementById('ggufModelType').value;
+
+      // Add model to store
+      const newModel = {
+        id: 'imported-' + Date.now(),
+        name: name,
+        version: '本地导入',
+        installed: true,
+        running: false,
+        speed: '中',
+        vram: '未知',
+        categories: [modelType === 'text' ? 'dialogue' : (modelType === 'multimodal' ? 'multimodal' : 'ocr')],
+        capabilities: getModelCapabilities(modelType),
+        desc: '本地导入的 GGUF 模型',
+        params: [
+          { key: '参数量', val: '未知' },
+          { key: '模型大小', val: '待确认' },
+          { key: '模型来源', val: '本地导入' }
+        ],
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+      };
+      models.push(newModel);
+      renderModels();
+
+      closeImportModal();
+      showLoadingAnimation();
+      setTimeout(function() {
+        showToast('模型 "' + name + '" 导入成功', 'success');
+      }, 5500);
+
+    } else {
+      const url = document.getElementById('openaiUrl').value.trim();
+      const modelName = document.getElementById('openaiModelName').value.trim();
+      const modelId = document.getElementById('openaiModelId').value.trim();
+      let hasError = false;
+
+      if (!url) {
+        showFieldError('openaiUrl', 'openaiUrlError');
+        hasError = true;
+      }
+      if (!modelName) {
+        showFieldError('openaiModelName', 'openaiNameError');
+        hasError = true;
+      }
+      if (!modelId) {
+        showFieldError('openaiModelId', 'openaiIdError');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const modelType = document.getElementById('openaiModelType').value;
+
+      const newModel = {
+        id: 'openai-' + Date.now(),
+        name: modelName,
+        version: 'OpenAI 兼容',
+        installed: true,
+        running: false,
+        speed: '快',
+        vram: '云端',
+        categories: [modelType === 'text' ? 'dialogue' : (modelType === 'multimodal' ? 'multimodal' : 'ocr')],
+        capabilities: getModelCapabilities(modelType),
+        desc: 'OpenAI 兼容云端模型（' + modelId + '）',
+        params: [
+          { key: 'API Base URL', val: url },
+          { key: '模型 ID', val: modelId },
+          { key: '运行环境', val: '云端' }
+        ],
+        icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>'
+      };
+      models.push(newModel);
+      renderModels();
+
+      closeImportModal();
+      showToast('模型 "' + modelName + '" 导入成功', 'success');
+    }
+  });
+
+  // Helper: get capabilities based on model type
+  function getModelCapabilities(type) {
+    const capMap = {
+      text: ['对话', '推理', '文本生成'],
+      multimodal: ['多模态', '视觉理解', '对话'],
+      ocr: ['OCR 识别', '图像理解']
+    };
+    return capMap[type] || ['对话'];
+  }
 
   // Initial render
   renderModels();
