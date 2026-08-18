@@ -1962,6 +1962,159 @@
     color: var(--text);
   }
 
+  .kb-toolbar-spacer {
+    flex: 1;
+  }
+
+  .kb-tool-btn.active {
+    background: rgba(255, 92, 92, 0.18);
+    color: #ff8a80;
+  }
+
+  /* 批量模式下文件项：勾选框 */
+  .kb-file .kb-check {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    background: transparent;
+    color: transparent;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+    transition: all 0.15s ease;
+  }
+
+  .kb-batch-mode .kb-file .kb-check {
+    display: flex;
+  }
+
+  .kb-file .kb-check.checked {
+    background: #ffffff;
+    border-color: #ffffff;
+    color: #000000;
+  }
+
+  .kb-file.checked {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .kb-batch-mode .kb-file .kb-file-info {
+    padding-right: 44px;
+  }
+
+  .kb-batch-mode .kb-file-more {
+    display: none;
+  }
+
+  /* 批量操作按钮组（settings 卡片右下角） */
+  .kb-batch-actions {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .kb-batch-mode .kb-batch-actions {
+    display: flex;
+  }
+
+  /* 文字版全选按钮 */
+  .kb-batch-select-all {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.06);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .kb-batch-select-all:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .kb-batch-select-all.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.35);
+  }
+
+  /* 批量删除按钮（位于按钮组内） */
+  .kb-batch-delete-fab {
+    position: relative;
+    height: 34px;
+    padding: 0 14px 0 12px;
+    border-radius: 8px;
+    border: 1px solid #ff5c5c;
+    background: rgba(255, 92, 92, 0.18);
+    color: #ff8a80;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+
+  .kb-batch-delete-fab:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: rgba(255, 92, 92, 0.26);
+    color: #ff9c94;
+    border-color: #ff7875;
+  }
+
+  .kb-batch-delete-fab:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .kb-batch-delete-fab-text {
+    line-height: 1;
+  }
+
+  .kb-batch-delete-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: #ff5c5c;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1e1e22;
+    box-sizing: border-box;
+  }
+
   .kb-file-list {
     flex: 1;
     overflow-y: auto;
@@ -2040,6 +2193,24 @@
     color: var(--text-dim);
     opacity: 0.75;
     margin-top: 2px;
+  }
+
+  /* 上传/解析中的加载动画 */
+  .kb-file-meta-spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-top-color: var(--text-dim);
+    border-radius: 50%;
+    animation: kbSpinner 0.8s linear infinite;
+    vertical-align: -1px;
+    margin-right: 6px;
+    box-sizing: border-box;
+  }
+
+  @keyframes kbSpinner {
+    to { transform: rotate(360deg); }
   }
 
   /* 悬浮更多按钮 */
@@ -2243,6 +2414,373 @@
   .kb-res-tool:hover {
     background: rgba(255,255,255,0.08);
     color: var(--text);
+  }
+
+  /* 历史对话弹窗 */
+  .kb-history-panel {
+    position: fixed;
+    width: 260px;
+    max-height: 380px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px) scale(0.97);
+    transition: opacity 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .kb-history-panel.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .kb-history-panel::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .kb-history-panel::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+  }
+
+  .kb-history-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 6px 10px 8px;
+    margin-bottom: 4px;
+  }
+
+  .kb-history-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    position: relative;
+  }
+
+  .kb-history-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .kb-history-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .kb-history-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .kb-history-item.active svg {
+    color: var(--text);
+  }
+
+  .kb-history-item-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kb-history-item-more {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .kb-history-item:hover .kb-history-item-more,
+  .kb-history-item-more:focus {
+    opacity: 1;
+  }
+
+  .kb-history-item-more:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .kb-history-empty {
+    padding: 24px 0;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    opacity: 0.7;
+  }
+
+  /* 文件预览弹窗 */
+  .kb-file-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 11000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .kb-file-preview-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .kb-file-preview-modal {
+    width: 1000px;
+    max-width: 90vw;
+    height: 800px;
+    max-height: 80vh;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.96);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .kb-file-preview-overlay.show .kb-file-preview-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .kb-file-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .kb-file-preview-title {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 40%;
+  }
+
+  .kb-file-preview-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .kb-file-preview-zoom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kb-file-preview-zoom-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s ease;
+  }
+
+  .kb-file-preview-zoom-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+  }
+
+  .kb-file-preview-zoom-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .kb-file-preview-zoom-level {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    min-width: 42px;
+    text-align: center;
+  }
+
+  .kb-file-preview-page {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 0 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .kb-file-preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kb-file-preview-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.15s ease;
+  }
+
+  .kb-file-preview-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+  }
+
+  .kb-file-preview-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .kb-file-preview-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .kb-file-preview-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 2px;
+  }
+
+  .kb-file-preview-page-content {
+    background: rgba(28, 28, 32, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 700px;
+    min-height: 400px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #e0e0e0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .kb-file-preview-page-content.cover {
+    background: #000;
+    color: #fff;
+    text-align: center;
+    border: none;
+  }
+
+  .kb-file-preview-page-content.cover h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  .kb-file-preview-page-content.cover .subtitle {
+    font-size: 1.1rem;
+    color: #ccc;
+    margin-bottom: 24px;
+  }
+
+  .kb-file-preview-page-content.cover .badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: #e53935;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .kb-file-preview-page-content.toc {
+    align-items: flex-start;
+    padding: 36px;
+    background: rgba(28, 28, 32, 0.8);
+  }
+
+  .kb-file-preview-page-content.toc h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+
+  .kb-file-preview-page-content.toc ol {
+    list-style: none;
+    counter-reset: item;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+
+  .kb-file-preview-page-content.toc li {
+    counter-increment: item;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 1.05rem;
+    color: #aaa;
+  }
+
+  .kb-file-preview-page-content.toc li::before {
+    content: counter(item) " ";
+    font-weight: 700;
+    color: #fff;
+    margin-right: 8px;
+  }
+
+  .kb-file-preview-page-content.toc li.active {
+    color: #fff;
+    font-weight: 600;
   }
 
   /* Chat window (right card) */
@@ -2964,19 +3502,21 @@
     padding: 0 16px;
     border-radius: 8px;
     border: none;
-    background: linear-gradient(180deg, #ef5350, #c62828);
-    color: #fff;
+    background: #4f2626;
+    color: #ff3b3b;
+    -webkit-text-stroke: 0.5px #ff1a1a;
+    text-shadow: none;
     font-family: inherit;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 400;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 14px rgba(198, 40, 40, 0.35);
+    box-shadow: 0 4px 14px rgba(127, 29, 29, 0.35);
   }
 
   .kb-modal-btn-delete-confirm:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(198, 40, 40, 0.45);
+    box-shadow: 0 6px 18px rgba(127, 29, 29, 0.45);
   }
 
   .kb-delete-confirm-text {
@@ -3320,6 +3860,10 @@
         <button class="kb-tool-btn" title="上传文档到知识库" id="btnFileUpload">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         </button>
+        <div class="kb-toolbar-spacer"></div>
+        <button class="kb-tool-btn" title="批量操作" id="btnBatchToggle">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
       </div>
 
       <!-- 文件列表 -->
@@ -3381,12 +3925,22 @@
           </div>
         </div>
       </div>
+
+      <!-- 批量操作按钮组（settings 卡片右下角） -->
+      <div class="kb-batch-actions">
+        <button type="button" class="kb-batch-select-all" id="btnBatchSelectAll" title="全选">全选</button>
+        <button type="button" class="kb-batch-delete-fab" id="btnBatchDeleteFab" title="请先勾选要删除的文件" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          <span class="kb-batch-delete-fab-text">删除</span>
+          <span class="kb-batch-delete-count" id="kbBatchDeleteCount">0</span>
+        </button>
+      </div>
     </div>
 
     <!-- 右侧：知识库问答 -->
     <div class="ig-card ig-result" id="igResult">
       <div class="ig-res-header">
-        <span class="ig-res-title" id="kbChatTitle">产品迭代 · 知识库问答</span>
+        <span class="ig-res-title" id="kbChatTitle">知识库问答</span>
         <div class="kb-res-tools">
           <button class="kb-res-tool" id="btnKbHistory" title="历史对话">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -3530,6 +4084,38 @@
         <button class="kb-modal-btn-cancel" id="btnCancelDeleteConfirm">取消</button>
         <button class="kb-modal-btn-delete-confirm" id="btnConfirmDelete">确认删除</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 文件预览弹窗 -->
+<div class="kb-file-preview-overlay" id="kbFilePreviewOverlay">
+  <div class="kb-file-preview-modal">
+    <div class="kb-file-preview-header">
+      <div class="kb-file-preview-title" id="kbFilePreviewTitle">产品需求文档.docx</div>
+      <div class="kb-file-preview-toolbar">
+        <div class="kb-file-preview-zoom">
+          <button class="kb-file-preview-zoom-btn" id="kbPreviewZoomOut" title="缩小">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+          <span class="kb-file-preview-zoom-level" id="kbPreviewZoomLevel">100%</span>
+          <button class="kb-file-preview-zoom-btn" id="kbPreviewZoomIn" title="放大">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div class="kb-file-preview-page" id="kbPreviewPage">1 / 21</div>
+        <div class="kb-file-preview-actions">
+          <button class="kb-file-preview-action-btn" id="kbPreviewDownload" title="下载">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+          <button class="kb-file-preview-action-btn" id="kbPreviewClose" title="关闭">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="kb-file-preview-content" id="kbFilePreviewContent">
+      <!-- 动态内容 -->
     </div>
   </div>
 </div>
@@ -3727,6 +4313,9 @@
   let currentKb = '产品迭代';
   let fileSortMode = 'time';          // time | name
   let editingKb = null;               // 正在编辑的知识库名（null 表示创建模式）
+  let batchMode = false;              // 是否处于批量操作模式
+  const batchSelected = new Set();    // 批量模式下已勾选的文件名
+  let kbPendingDeleteFiles = null;    // 待批量删除的文件列表
 
   // ---- 元素引用 ----
   const kbChat = document.getElementById('kbChat');
@@ -3771,14 +4360,26 @@
     return { label: 'F', cls: 'md' };
   }
 
+  // 文件项状态文字（上传中 / 解析中 / 正常信息）
+  function fileMetaText(f) {
+    if (f.status === 'uploading') {
+      return '<span class="kb-file-meta-spinner"></span>上传中...';
+    }
+    if (f.status === 'parsing') {
+      return '<span class="kb-file-meta-spinner"></span>解析中...';
+    }
+    return f.size + ' · ' + f.date;
+  }
+
   // ---- 知识库切换 ----
   function selectKb(el) {
     if (!el || el.getAttribute('data-kb') === currentKb) return;
+    if (batchMode) toggleBatchMode();
     document.querySelectorAll('.kb-item').forEach(function (i) { i.classList.remove('active'); });
     el.classList.add('active');
     currentKb = el.getAttribute('data-kb');
     kbLibName.textContent = currentKb;
-    kbChatTitle.textContent = currentKb + ' · 知识库问答';
+    kbChatTitle.textContent = '知识库问答';
     renderFiles();
     resetChat();
   }
@@ -3805,19 +4406,35 @@
 
     files.forEach(function (f) {
       const t = typeInfo(f.name);
+      const checked = batchSelected.has(f.name);
       const el = document.createElement('div');
-      el.className = 'kb-file';
+      el.className = 'kb-file' + (checked ? ' checked' : '');
       el.setAttribute('data-file', f.name);
       el.innerHTML =
         '<div class="kb-file-icon ' + t.cls + '">' + t.label + '</div>' +
         '<div class="kb-file-info">' +
         '<div class="kb-file-name">' + escHtml(f.name) + '</div>' +
-        '<div class="kb-file-meta">' + f.size + ' · ' + f.date + '</div>' +
+        '<div class="kb-file-meta">' + fileMetaText(f) + '</div>' +
         '</div>' +
+        '<button type="button" class="kb-check' + (checked ? ' checked' : '') + '" title="选择文件">' +
+        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+        '</button>' +
         '<button type="button" class="kb-file-more" title="更多">' +
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>' +
         '</button>';
-      el.addEventListener('click', function () { selectFile(el); });
+      el.addEventListener('click', function () {
+        if (batchMode) {
+          toggleBatchCheck(el, f.name);
+        } else {
+          selectFile(el);
+          openFilePreview(f);
+        }
+      });
+      const checkBtn = el.querySelector('.kb-check');
+      checkBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleBatchCheck(el, f.name);
+      });
       const moreBtn = el.querySelector('.kb-file-more');
       moreBtn.addEventListener('click', function (e) {
         e.stopPropagation();
@@ -3826,12 +4443,92 @@
       });
       kbFileList.appendChild(el);
     });
+    updateBatchUI();
   }
 
   function selectFile(el) {
     document.querySelectorAll('.kb-file').forEach(function (f) { f.classList.remove('selected'); });
     el.classList.add('selected');
   }
+
+  // ---- 批量操作 ----
+  const btnBatchToggle = document.getElementById('btnBatchToggle');
+  const btnBatchSelectAll = document.getElementById('btnBatchSelectAll');
+  const btnBatchDeleteFab = document.getElementById('btnBatchDeleteFab');
+  const kbBatchDeleteCount = document.getElementById('kbBatchDeleteCount');
+
+  function toggleBatchMode() {
+    batchMode = !batchMode;
+    btnBatchToggle.classList.toggle('active', batchMode);
+    document.getElementById('igSettings').classList.toggle('kb-batch-mode', batchMode);
+    if (!batchMode) batchSelected.clear();
+    renderFiles();
+  }
+
+  function updateBatchUI() {
+    const total = document.querySelectorAll('#kbFileList .kb-file').length;
+    const allChecked = batchSelected.size > 0 && batchSelected.size === total;
+    btnBatchSelectAll.classList.toggle('active', allChecked);
+    btnBatchSelectAll.textContent = allChecked ? '取消全选' : '全选';
+    btnBatchSelectAll.title = allChecked ? '取消全选' : '全选';
+    kbBatchDeleteCount.textContent = batchSelected.size;
+    btnBatchDeleteFab.disabled = batchSelected.size === 0;
+    btnBatchDeleteFab.title = batchSelected.size > 0 ? '删除选中（' + batchSelected.size + '）' : '请先勾选要删除的文件';
+  }
+
+  function toggleBatchCheck(el, name) {
+    if (batchSelected.has(name)) {
+      batchSelected.delete(name);
+      el.classList.remove('checked');
+      el.querySelector('.kb-check').classList.remove('checked');
+    } else {
+      batchSelected.add(name);
+      el.classList.add('checked');
+      el.querySelector('.kb-check').classList.add('checked');
+    }
+    updateBatchUI();
+  }
+
+  function requestBatchDelete(names) {
+    if (!names.length) return;
+    kbPendingDeleteFiles = names.slice();
+    kbDeleteConfirmText.textContent = '确定要删除选中的 ' + names.length + ' 个文件吗？删除后不可恢复。';
+    closeKbFileMenu();
+    kbDeleteConfirmOverlay.classList.add('show');
+  }
+
+  btnBatchToggle.addEventListener('click', toggleBatchMode);
+
+  btnBatchSelectAll.addEventListener('click', function () {
+    const allChecked = batchSelected.size > 0 && batchSelected.size === document.querySelectorAll('#kbFileList .kb-file').length;
+    document.querySelectorAll('#kbFileList .kb-file').forEach(function (f) {
+      const name = f.getAttribute('data-file');
+      if (allChecked) {
+        batchSelected.delete(name);
+        f.classList.remove('checked');
+        f.querySelector('.kb-check').classList.remove('checked');
+      } else {
+        batchSelected.add(name);
+        f.classList.add('checked');
+        f.querySelector('.kb-check').classList.add('checked');
+      }
+    });
+    updateBatchUI();
+  });
+
+  btnBatchDeleteFab.addEventListener('click', function () {
+    if (!batchSelected.size) {
+      kbToast('请先勾选要删除的文件', false);
+      return;
+    }
+    requestBatchDelete(Array.from(batchSelected));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && batchMode && !kbDeleteConfirmOverlay.classList.contains('show')) {
+      toggleBatchMode();
+    }
+  });
 
   // ---- 文件操作菜单（重命名 / 删除，浮层挂载 body） ----
   const kbFileMenu = document.createElement('div');
@@ -4066,7 +4763,7 @@
       }
       if (currentKb === editingKb) currentKb = name;
       kbLibName.textContent = currentKb;
-      kbChatTitle.textContent = currentKb + ' · 知识库问答';
+      kbChatTitle.textContent = '知识库问答';
       closeKbModal();
       kbToast('知识库已更新', true);
     } else {
@@ -4146,7 +4843,23 @@
   });
 
   document.getElementById('btnConfirmDelete').addEventListener('click', function () {
+    if (kbPendingDeleteFiles && kbPendingDeleteFiles.length) {
+      const kb = kbData[currentKb];
+      const names = kbPendingDeleteFiles;
+      if (kb) {
+        kb.files = kb.files.filter(function (x) { return names.indexOf(x.name) === -1; });
+        kb.count = kb.files.length;
+      }
+      names.forEach(function (n) { batchSelected.delete(n); });
+      kbPendingDeleteFiles = null;
+      closeKbDeleteConfirm();
+      renderFiles();
+      updateBatchUI();
+      kbToast('已删除 ' + names.length + ' 个文件', true);
+      return;
+    }
     if (!kbDeleteTarget) return;
+    if (batchMode) toggleBatchMode();
     const deletedName = kbDeleteTarget;
     const deletedCurrent = (currentKb === deletedName);
     delete kbData[deletedName];
@@ -4166,7 +4879,7 @@
       } else {
         currentKb = keys[0];
         kbLibName.textContent = currentKb;
-        kbChatTitle.textContent = currentKb + ' · 知识库问答';
+        kbChatTitle.textContent = '知识库问答';
         renderFiles();
         resetChat();
       }
@@ -4256,15 +4969,30 @@
     const now = new Date();
     const pad = function (n) { return (n < 10 ? '0' : '') + n; };
     const kb = kbData[currentKb];
-    kb.files.unshift({
+    const entry = {
       name: file.name,
       size: kbFormatFileSize(file.size),
-      date: now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate())
-    });
+      date: now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate()),
+      status: 'uploading'
+    };
+    kb.files.unshift(entry);
     kb.count += 1;
     renderFiles();
-    kbToast('已上传：' + file.name, true);
+    kbToast('开始上传：' + file.name, true);
     kbToolFileInput.value = '';
+
+    // 上传中 -> 解析中（5s 后）
+    setTimeout(function () {
+      entry.status = 'parsing';
+      renderFiles();
+    }, 5000);
+
+    // 解析中 -> 完成，显示大小与时间（再 5s 后）
+    setTimeout(function () {
+      entry.status = null;
+      renderFiles();
+      kbToast('上传完成：' + file.name, true);
+    }, 10000);
   });
 
   // 发送
@@ -4281,13 +5009,107 @@
   });
 
   // 历史对话 / 新建对话
-  document.getElementById('btnKbHistory').addEventListener('click', function () {
-    resetChat();
-    kbToast('已加载最近一次对话', true);
+  const kbHistoryPanel = document.createElement('div');
+  kbHistoryPanel.className = 'kb-history-panel';
+  document.body.appendChild(kbHistoryPanel);
+
+  // 模拟历史对话数据
+  const kbHistoryData = [
+    { id: 1, title: '生成思维导图', date: '2026/08/18', time: '14:32' },
+    { id: 2, title: '总结', date: '2026/08/18', time: '11:05' },
+    { id: 3, title: '产品需求分析', date: '2026/08/17', time: '16:48' },
+    { id: 4, title: '竞品对比报告', date: '2026/08/17', time: '09:20' },
+    { id: 5, title: '技术架构评审', date: '2026/08/16', time: '15:10' }
+  ];
+
+  let kbHistoryActiveId = 1;
+
+  function renderHistoryPanel() {
+    let html = '<div class="kb-history-title">历史记录</div>';
+    kbHistoryData.forEach(function (item) {
+      const isActive = item.id === kbHistoryActiveId ? ' active' : '';
+      html += '<div class="kb-history-item' + isActive + '" data-id="' + item.id + '">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
+        '<span class="kb-history-item-title">' + escHtml(item.title) + '</span>' +
+        '<button type="button" class="kb-history-item-more" title="更多" data-id="' + item.id + '">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>' +
+        '</button>' +
+        '</div>';
+    });
+    if (!kbHistoryData.length) {
+      html = '<div class="kb-history-title">历史记录</div><div class="kb-history-empty">暂无历史对话</div>';
+    }
+    kbHistoryPanel.innerHTML = html;
+
+    // 点击对话项
+    kbHistoryPanel.querySelectorAll('.kb-history-item').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        if (e.target.closest('.kb-history-item-more')) return;
+        const id = parseInt(el.getAttribute('data-id'));
+        kbHistoryActiveId = id;
+        closeHistoryPanel();
+        const item = kbHistoryData.find(function (x) { return x.id === id; });
+        if (item) {
+          // 切换对话，无提示
+        }
+      });
+    });
+
+    // 点击更多按钮
+    kbHistoryPanel.querySelectorAll('.kb-history-item-more').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const id = parseInt(btn.getAttribute('data-id'));
+        const item = kbHistoryData.find(function (x) { return x.id === id; });
+        if (item) {
+          kbToast('对话「' + item.title + '」更多操作', true);
+        }
+      });
+    });
+  }
+
+  function openHistoryPanel() {
+    renderHistoryPanel();
+    const btn = document.getElementById('btnKbHistory');
+    const rect = btn.getBoundingClientRect();
+    const panelW = 280;
+    const panelH = 360;
+    let left = rect.right - panelW;
+    let top = rect.bottom + 6;
+    if (left < 8) left = 8;
+    if (top + panelH > window.innerHeight) top = rect.top - panelH - 6;
+    kbHistoryPanel.style.left = left + 'px';
+    kbHistoryPanel.style.top = top + 'px';
+    kbHistoryPanel.classList.add('show');
+  }
+
+  function closeHistoryPanel() {
+    kbHistoryPanel.classList.remove('show');
+  }
+
+  document.getElementById('btnKbHistory').addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (kbHistoryPanel.classList.contains('show')) {
+      closeHistoryPanel();
+    } else {
+      openHistoryPanel();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!kbHistoryPanel.contains(e.target) && e.target.id !== 'btnKbHistory') {
+      closeHistoryPanel();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && kbHistoryPanel.classList.contains('show')) {
+      closeHistoryPanel();
+    }
   });
   document.getElementById('btnNewChat').addEventListener('click', function () {
     resetChat();
-    kbToast('已开启新对话', true);
+    // 新建对话，无提示
   });
 
   // ===== 模型选择下拉（参照首页，浮层挂载到 body 避免被卡片裁剪） =====
@@ -4437,6 +5259,120 @@
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
+
+  // ---- 文件预览弹窗 ----
+  const kbFilePreviewOverlay = document.getElementById('kbFilePreviewOverlay');
+  const kbFilePreviewTitle = document.getElementById('kbFilePreviewTitle');
+  const kbFilePreviewContent = document.getElementById('kbFilePreviewContent');
+  const kbPreviewZoomLevel = document.getElementById('kbPreviewZoomLevel');
+  const kbPreviewPage = document.getElementById('kbPreviewPage');
+  const kbPreviewZoomIn = document.getElementById('kbPreviewZoomIn');
+  const kbPreviewZoomOut = document.getElementById('kbPreviewZoomOut');
+
+  let previewZoom = 100;
+  let previewCurrentPage = 1;
+  let previewTotalPages = 21;
+  let previewCurrentFile = null;
+
+  // 模拟文件内容数据
+  const fileContentData = {
+    '产品需求文档.docx': {
+      pages: 21,
+      content: [
+        { type: 'cover', title: 'Connect AI with Real Life', subtitle: 'AI as a Service', badge: 'AI as a Service' },
+        { type: 'toc', title: 'WHO WE ARE', items: ['WHO WE ARE', 'BRAND & PRODUCT', 'INTEGRATED BUSINESS SOLUTION', 'AI PRODUCT MATRIX', 'CORE TECHNOLOGY', 'TEAM & CULTURE'] }
+      ]
+    }
+  };
+
+  function openFilePreview(file) {
+    previewCurrentFile = file;
+    previewCurrentPage = 1;
+    previewZoom = 100;
+    const data = fileContentData[file.name] || { pages: 10, content: [] };
+    previewTotalPages = data.pages;
+
+    kbFilePreviewTitle.textContent = file.name;
+    updatePreviewUI();
+    renderPreviewContent(data.content[0]);
+
+    kbFilePreviewOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFilePreview() {
+    kbFilePreviewOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+    previewCurrentFile = null;
+  }
+
+  function updatePreviewUI() {
+    kbPreviewZoomLevel.textContent = previewZoom + '%';
+    kbPreviewPage.textContent = previewCurrentPage + ' / ' + previewTotalPages;
+    kbPreviewZoomOut.disabled = previewZoom <= 50;
+    kbPreviewZoomIn.disabled = previewZoom >= 200;
+  }
+
+  function renderPreviewContent(pageData) {
+    if (!pageData) {
+      kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content"><p>暂无预览内容</p></div>';
+      return;
+    }
+
+    if (pageData.type === 'cover') {
+      kbFilePreviewContent.innerHTML =
+        '<div class="kb-file-preview-page-content cover">' +
+        '<div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 60px; opacity: 0.9;">PLAUD.AI</div>' +
+        '<h1>' + escHtml(pageData.title) + '</h1>' +
+        '<div class="subtitle">' + escHtml(pageData.subtitle) + '</div>' +
+        '<div class="badge">' + escHtml(pageData.badge) + '</div>' +
+        '<div style="margin-top: 80px; font-size: 0.85rem; opacity: 0.6;">Website: www.plaud.ai | Email: hi@plaud.ai</div>' +
+        '</div>';
+    } else if (pageData.type === 'toc') {
+      let itemsHtml = pageData.items.map(function (item, idx) {
+        return '<li class="' + (idx === 0 ? 'active' : '') + '">' + escHtml(item) + '</li>';
+      }).join('');
+      kbFilePreviewContent.innerHTML =
+        '<div class="kb-file-preview-page-content toc">' +
+        '<h2>' + escHtml(pageData.title) + '</h2>' +
+        '<ol>' + itemsHtml + '</ol>' +
+        '</div>';
+    } else {
+      kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content"><p>第 ' + previewCurrentPage + ' 页内容</p></div>';
+    }
+  }
+
+  kbPreviewZoomIn.addEventListener('click', function () {
+    if (previewZoom < 200) {
+      previewZoom += 10;
+      updatePreviewUI();
+    }
+  });
+
+  kbPreviewZoomOut.addEventListener('click', function () {
+    if (previewZoom > 50) {
+      previewZoom -= 10;
+      updatePreviewUI();
+    }
+  });
+
+  document.getElementById('kbPreviewDownload').addEventListener('click', function () {
+    if (previewCurrentFile) {
+      kbToast('开始下载：' + previewCurrentFile.name, true);
+    }
+  });
+
+  document.getElementById('kbPreviewClose').addEventListener('click', closeFilePreview);
+
+  kbFilePreviewOverlay.addEventListener('click', function (e) {
+    if (e.target === kbFilePreviewOverlay) closeFilePreview();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && kbFilePreviewOverlay.classList.contains('show')) {
+      closeFilePreview();
+    }
+  });
 
   // ---- 初始化 ----
   renderFiles();
