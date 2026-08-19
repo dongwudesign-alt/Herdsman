@@ -2783,6 +2783,94 @@
     font-weight: 600;
   }
 
+  /* 文档内容页（PDF 风格） */
+  .kb-file-preview-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 24px;
+    background: #1a1a1e;
+  }
+
+  .kb-file-preview-page-content.doc {
+    background: #fff;
+    color: #1a1a1a;
+    width: 100%;
+    max-width: 780px;
+    min-height: 1100px;
+    padding: 48px 56px;
+    border-radius: 0;
+    border: none;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .kb-file-preview-page-content.doc h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 32px 0;
+    line-height: 1.4;
+  }
+
+  .kb-file-preview-page-content.doc h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 28px 0 16px 0;
+    line-height: 1.4;
+  }
+
+  .kb-file-preview-page-content.doc h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 20px 0 10px 0;
+    line-height: 1.4;
+  }
+
+  .kb-file-preview-page-content.doc ol {
+    padding-left: 24px;
+    margin: 0 0 12px 0;
+  }
+
+  .kb-file-preview-page-content.doc ol li {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 4px;
+  }
+
+  .kb-file-preview-page-content.doc ol li strong {
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  .kb-file-preview-page-content.doc ul {
+    padding-left: 24px;
+    margin: 0 0 12px 0;
+  }
+
+  .kb-file-preview-page-content.doc ul li {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.8;
+    margin-bottom: 2px;
+  }
+
+  .kb-file-preview-page-content.doc p {
+    font-size: 0.95rem;
+    color: #333;
+    line-height: 1.8;
+    margin: 0 0 8px 0;
+  }
+
   /* Chat window (right card) */
   .kb-chat {
     flex: 1;
@@ -2859,33 +2947,23 @@
 
   .kb-msg-user {
     align-self: flex-end;
-    flex-direction: row-reverse;
+    flex-direction: row;
   }
 
-  .kb-msg-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: rgba(96, 165, 250, 0.15);
-    color: #7fb3f7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 0.62rem;
-    font-weight: 600;
-  }
-
-  .kb-msg-avatar.user {
-    background: rgba(255,255,255,0.1);
-    color: var(--text);
+  /* AI 回答：取消气泡卡片，文字直接平铺，占满对话框宽度 */
+  .kb-msg-assistant {
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
   }
 
   .kb-msg-bubble {
+    width: auto;
+    flex: 0 0 auto;
+    max-width: 100%;
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: 12px;
-    border-top-left-radius: 4px;
     padding: 10px 12px;
     font-size: 0.8rem;
     line-height: 1.6;
@@ -2893,10 +2971,23 @@
   }
 
   .kb-msg-user .kb-msg-bubble {
-    background: rgba(96, 165, 250, 0.14);
-    border-color: rgba(96, 165, 250, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.28);
     border-radius: 12px;
-    border-top-right-radius: 4px;
+  }
+
+  .kb-msg-assistant .kb-msg-bubble {
+    width: 100%;
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  #kbStreamContent {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .kb-msg-meta {
@@ -2909,6 +3000,222 @@
   .kb-msg-typing .kb-msg-bubble {
     color: var(--text-dim);
     font-style: italic;
+  }
+
+  /* AI 消息完整样式 */
+  .kb-ai-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .kb-ai-header svg { opacity: 0.7; }
+  .kb-ai-thinking {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+  .kb-search-results {
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+  .kb-search-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 0;
+  }
+  .kb-search-item .check-icon {
+    color: #4ade80;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+  }
+  .kb-search-more {
+    color: var(--text-dim);
+    opacity: 0.6;
+    cursor: pointer;
+    font-size: 0.72rem;
+    margin-top: 2px;
+  }
+  .kb-ai-summary {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .kb-ai-summary strong { color: var(--text); }
+  .kb-section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .kb-section-header .star-icon { color: #facc15; font-size: 0.85rem; }
+  .kb-feature-section {
+    margin-bottom: 14px;
+  }
+  .kb-feature-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .kb-feature-title .num-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .kb-feature-list {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0;
+  }
+  .kb-feature-list li {
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 2px;
+  }
+  .kb-feature-list li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .kb-feature-list li .ref-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.95);
+    color: #0b0b0c;
+    font-size: 0.62rem;
+    font-weight: 700;
+    margin-left: 3px;
+    vertical-align: middle;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 14px rgba(255,255,255,0.35);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .kb-ref-num:hover {
+    box-shadow: 0 0 8px rgba(255,255,255,0.9), 0 0 18px rgba(255,255,255,0.5);
+  }
+
+  /* 引用编号悬浮卡片 */
+  .kb-ref-tooltip {
+    position: fixed;
+    width: 340px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    cursor: pointer;
+  }
+
+  .kb-ref-tooltip.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .kb-ref-tooltip-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .kb-ref-tooltip-desc {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .kb-ref-tooltip-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .kb-ref-tooltip-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .kb-ref-tooltip-footer-left svg {
+    flex-shrink: 0;
+  }
+
+  .kb-ref-tooltip-footer-right {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* 思考动效 */
+  .kb-thinking-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 4px;
+  }
+  .kb-thinking-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: kbThinkPulse 1.2s ease-in-out infinite;
+  }
+  .kb-thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .kb-thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes kbThinkPulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* 流式渐入 */
+  .kb-stream-in {
+    animation: kbStreamFade 0.35s ease forwards;
+  }
+  @keyframes kbStreamFade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* Input bar（首页对话框样式适配，宽度高度随卡片自适应） */
@@ -4647,13 +4954,9 @@
     wrap.className = 'kb-msg kb-msg-' + kind;
     if (kind === 'user') {
       wrap.innerHTML =
-        '<div class="kb-msg-avatar user">我</div>' +
         '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div></div>';
     } else {
       wrap.innerHTML =
-        '<div class="kb-msg-avatar">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-        '</div>' +
         '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div>' +
         (meta ? '<div class="kb-msg-meta">' + meta + '</div>' : '') + '</div>';
     }
@@ -4665,9 +4968,6 @@
     const wrap = document.createElement('div');
     wrap.className = 'kb-msg kb-msg-assistant kb-msg-typing';
     wrap.innerHTML =
-      '<div class="kb-msg-avatar">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-      '</div>' +
       '<div class="kb-msg-bubble"><div class="kb-msg-text">正在检索知识库文档...</div></div>';
     kbChat.appendChild(wrap);
     kbChat.scrollTop = kbChat.scrollHeight;
@@ -4694,33 +4994,130 @@
     appendMsg('user', escHtml(text));
     kbInput.value = '';
     kbInput.style.height = 'auto';
-    const typing = appendTyping();
+
+    if (/核心功能/.test(text)) {
+      showThinkingThenStream();
+    } else {
+      const typing = appendTyping();
+      setTimeout(function () {
+        typing.remove();
+        const kb = kbData[currentKb];
+        const files = kb ? kb.files.slice() : [];
+        const docs = files.map(function (f) { return f.name; });
+        let answer;
+        if (/总结|重点/.test(text)) {
+          answer = '根据「' + escHtml(currentKb) + '」库内的 ' + (files.length ? escHtml(docs.slice(0, 3).join('、')) : '已有文档') + '，核心要点如下：' +
+            '<br>1. 明确业务目标与验收标准，各阶段可量化追踪；' +
+            '<br>2. 关键流程已有书面规范，含责任人与时间节点；' +
+            '<br>3. 风险项已登记并配置了对应的应对预案。' +
+            '<br>如需逐条展开，可继续追问具体章节。';
+        } else if (/对比|区别/.test(text)) {
+          answer = '对比结论：两者定位不同。库内文档显示，前者侧重流程覆盖与稳定性，后者更关注效率与体验细节。' +
+            '<br>建议结合具体业务场景选择，详细维度对比可见相关分析文档。';
+        } else if (/删除|清理/.test(text)) {
+          answer = '已找到相关操作说明：删除文档前请先归档备份，确认无下游引用后再移除，并在变更记录中登记。';
+        } else {
+          answer = '我已在「' + escHtml(currentKb) + '」知识库中检索到相关内容：' +
+            '<br>该问题与 ' + escHtml(docs[0] || '库内文档') + ' 及 ' + escHtml(docs[1] || '关联记录') + ' 相关，' +
+            '核心信息已整理如上，建议先核对原始文档的上下文后再做决策。';
+        }
+        const used = Math.min(2, Math.max(1, files.length));
+        appendMsg('assistant', answer, '刚刚 · 引用 ' + used + ' 个文档');
+      }, 900);
+    }
+  }
+
+  // ---- 思考动效 + 流式输出 ----
+  function showThinkingThenStream() {
+    kbWelcome.style.display = 'none';
+
+    const wrap = document.createElement('div');
+    wrap.className = 'kb-msg kb-msg-assistant';
+    wrap.innerHTML =
+      '<div class="kb-msg-bubble"><div class="kb-msg-text" id="kbStreamContent">' +
+      '<div class="kb-ai-header">' +
+      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
+      '知识库</div>' +
+      '<div class="kb-ai-thinking">我基于已生成文档的知识库内容来回答。让我先检索知识库中关于产品核心功能的完整信息。<span class="kb-thinking-dots"><span></span><span></span><span></span></span></div>' +
+      '</div></div>';
+    kbChat.appendChild(wrap);
+    kbChat.scrollTop = kbChat.scrollHeight;
 
     setTimeout(function () {
-      typing.remove();
-      const kb = kbData[currentKb];
-      const files = kb ? kb.files.slice() : [];
-      const docs = files.map(function (f) { return f.name; });
-      let answer;
-      if (/总结|核心|重点/.test(text)) {
-        answer = '根据「' + escHtml(currentKb) + '」库内的 ' + (files.length ? escHtml(docs.slice(0, 3).join('、')) : '已有文档') + '，核心要点如下：' +
-          '<br>1. 明确业务目标与验收标准，各阶段可量化追踪；' +
-          '<br>2. 关键流程已有书面规范，含责任人与时间节点；' +
-          '<br>3. 风险项已登记并配置了对应的应对预案。' +
-          '<br>如需逐条展开，可继续追问具体章节。';
-      } else if (/对比|区别/.test(text)) {
-        answer = '对比结论：两者定位不同。库内文档显示，前者侧重流程覆盖与稳定性，后者更关注效率与体验细节。' +
-          '<br>建议结合具体业务场景选择，详细维度对比可见相关分析文档。';
-      } else if (/删除|清理/.test(text)) {
-        answer = '已找到相关操作说明：删除文档前请先归档备份，确认无下游引用后再移除，并在变更记录中登记。';
-      } else {
-        answer = '我已在「' + escHtml(currentKb) + '」知识库中检索到相关内容：' +
-          '<br>该问题与 ' + escHtml(docs[0] || '库内文档') + ' 及 ' + escHtml(docs[1] || '关联记录') + ' 相关，' +
-          '核心信息已整理如上，建议先核对原始文档的上下文后再做决策。';
+      streamCoreFeaturesAnswer();
+    }, 5000);
+  }
+
+  function streamCoreFeaturesAnswer() {
+    var container = document.getElementById('kbStreamContent');
+    if (!container) return;
+
+    var chunks = [
+      '<div class="kb-search-results">' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 模型面板</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 路由模式配置项功能清单</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 本地模型商店界面-功能清单</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 模型管理</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 高级设置</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> GENT 配置模块</div>' +
+        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 知识库界面功能清单</div>' +
+        '<div class="kb-search-more">知识库搜索 产品的核心功能模块和功能定位,本地模型商店 模型管理 模型面板 路由模式 监控面板 知识库 GENT配置 高...</div>' +
+      '</div>' +
+      '<div class="kb-ai-summary">该产品包含 <strong>8大核心功能模块</strong>，下面是各模块的核心功能总结：</div>',
+
+      '<div class="kb-section-header kb-stream-in"><span class="star-icon">&#10024;</span> 产品核心功能一览</div>',
+
+      '<div class="kb-feature-section kb-stream-in">' +
+        '<div class="kb-feature-title"><span class="num-badge">1</span> 本地模型商店</div>' +
+        '<ul class="kb-feature-list">' +
+        '<li><strong>模型浏览与搜索：</strong>网格布局展示模型卡片，支持按名称/描述搜索</li>' +
+        '<li><strong>分类标签筛选：</strong>11类标签（对话/语言、多模态、视觉语言、图像生成、语音合成/识别、向量嵌入、重排序、OCR、文档处理、NPU系列等）</li>' +
+        '<li><strong>模型下载与安装：</strong>查看详情 &rarr; 下载模型 &rarr; 已安装状态标识</li>' +
+        '<li><strong>左侧导航：</strong>模型中心、性能测试、接口文档、调用统计 <span class="ref-num kb-ref-num">1</span></li>' +
+        '</ul>' +
+      '</div>',
+
+      '<div class="kb-feature-section kb-stream-in">' +
+        '<div class="kb-feature-title"><span class="num-badge">2</span> 模型管理</div>' +
+        '<ul class="kb-feature-list">' +
+        '<li><strong>系统资源监控：</strong>实时显示 CPU、GPU、RAM、VRAM 占用率进度条</li>' +
+        '<li><strong>模型列表管理：</strong>表格展示已安装模型，含名称、性能、能力标签</li>' +
+        '<li><strong>模型开关：</strong>一键开启/关闭模型</li>' +
+        '<li><strong>模型操作：</strong>管理（配置上下文大小和高级设置）、删除（含确认弹窗）、版本升级提示 <span class="ref-num kb-ref-num">2</span></li>' +
+        '</ul>' +
+      '</div>',
+
+      '<div class="kb-feature-section kb-stream-in">' +
+        '<div class="kb-feature-title"><span class="num-badge">3</span> 模型面板（双端模型选择）</div>' +
+        '<ul class="kb-feature-list">' +
+        '<li><strong>双端布局：</strong>左侧 Herdsman 本地模型面板 + 右侧 Flowy 云端模型面板</li>' +
+        '<li><strong>三种部署模式：</strong>全端侧、全云端、智能路由/先端后云</li>' +
+        '<li><strong>云端模型库：</strong>接入多个商大模型（Claude、Deepseek、Gemini、GLM、GPT、Kimi、Minimax、Qwen等），统一接口地址</li>' +
+        '<li><strong>Token配额管控：</strong>5小时滑动窗口限额，10K&ndash;1T 可调预算滑块 <span class="ref-num kb-ref-num">3</span></li>' +
+        '</ul>' +
+      '</div>',
+
+      '<div class="kb-feature-section kb-stream-in">' +
+        '<div class="kb-feature-title"><span class="num-badge">4</span> 路由模式配置（调度总控）</div>' +
+        '<ul class="kb-feature-list">' +
+        '<li><strong>四种策略：</strong>auto（智能路由）、edge（全端侧）、cloud（全云端）、cascade（先端后云）</li>' +
+        '<li><strong>三种路由模式（auto策略下）：</strong>single（单路径）、cascade（级联）、split（分流/并行）</li>' +
+        '<li><strong>四种Profile：</strong>economy（更多端侧）、balanced（均衡）、premium（更多云端）、privacy（尽量端侧/隐私优先）</li>' +
+        '</ul>' +
+      '</div>'
+    ];
+
+    var idx = 0;
+    function revealNext() {
+      if (idx >= chunks.length) return;
+      container.insertAdjacentHTML('beforeend', chunks[idx]);
+      idx++;
+      kbChat.scrollTop = kbChat.scrollHeight;
+      if (idx < chunks.length) {
+        setTimeout(revealNext, 350 + Math.random() * 200);
       }
-      const used = Math.min(2, Math.max(1, files.length));
-      appendMsg('assistant', answer, '刚刚 · 引用 ' + used + ' 个文档');
-    }, 900);
+    }
+    revealNext();
   }
 
   // ---- 创建 / 编辑知识库弹窗 ----
@@ -5142,12 +5539,12 @@
   const kbUploadDropdown = document.createElement('div');
   kbUploadDropdown.className = 'upload-dropdown';
   kbUploadDropdown.innerHTML =
-    '<button class="upload-item" id="kbBtnUploadImage">' +
-    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
-    '<span>上传图片</span></button>' +
     '<button class="upload-item" id="kbBtnUploadFile">' +
     '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>' +
-    '<span>上传文件</span></button>';
+    '<span>本地文件</span></button>' +
+    '<button class="upload-item" id="kbBtnUploadKb">' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
+    '<span>知识库</span></button>';
   document.body.appendChild(kbUploadDropdown);
 
   // 定位浮层（fixed 相对视口）
@@ -5213,6 +5610,179 @@
     kbUploadDropdown.classList.remove('show');
   });
 
+  // 引用编号悬浮卡片
+  const kbRefTooltip = document.createElement('div');
+  kbRefTooltip.className = 'kb-ref-tooltip';
+  document.body.appendChild(kbRefTooltip);
+
+  const kbRefData = {
+    1: {
+      title: '1.本地模型商店界面-功能清单',
+      desc: '接口文档：查看本地模型调用 API 接口说明文档 调用统计：统计模型调用次数、资源消耗等运行数据',
+      docTitle: '本地模型商店界面-功能清单',
+      docHtml:
+        '<h2>一、左侧全局导航栏</h2>' +
+        '<ol>' +
+          '<li><strong>模型中心（当前选中）：</strong>模型浏览、下载、安装、管理主页面</li>' +
+          '<li><strong>性能测试：</strong>对已加载模型执行性能基准测试</li>' +
+          '<li><strong>接口文档：</strong>查看本地模型调用 API 接口说明文档</li>' +
+          '<li><strong>调用统计：</strong>统计模型调用次数、资源消耗等运行数据</li>' +
+        '</ol>' +
+        '<h2>二、右侧模型商店</h2>' +
+        '<h3>顶部区域</h3>' +
+        '<p><strong>搜索框：</strong>根据模型名称、描述、标签检索过滤模型列表。</p>' +
+        '<h3>模型分类标签栏</h3>' +
+        '<ul>' +
+          '<li>对话 / 语言</li>' +
+          '<li>多模态</li>' +
+          '<li>视觉语言</li>' +
+          '<li>图像生成</li>' +
+          '<li>语音合成</li>' +
+          '<li>语音识别</li>' +
+          '<li>向量嵌入</li>' +
+          '<li>重排序</li>' +
+          '<li>OCR</li>' +
+          '<li>文档处理</li>' +
+          '<li>NPU 系列模型 (WinML)</li>' +
+        '</ul>'
+    },
+    2: {
+      title: '2.模型管理',
+      desc: '管理：进入启动模型配置，进入的就是文件index 首页点击发送按钮后弹出的启动模型弹窗，可以设置上下文大小和高级设置 删除：删除当前模型，弹出弹窗再次确认是否删除，确认后删除。',
+      docTitle: '模型管理',
+      docHtml:
+        '<h2>一、系统资源监控</h2>' +
+        '<p>实时显示 CPU、GPU、RAM、VRAM 占用率进度条，帮助用户了解当前系统资源使用情况。</p>' +
+        '<h2>二、模型列表管理</h2>' +
+        '<p>表格展示已安装模型，包含以下信息：</p>' +
+        '<ul>' +
+          '<li>模型名称</li>' +
+          '<li>性能指标</li>' +
+          '<li>能力标签</li>' +
+        '</ul>' +
+        '<h2>三、模型开关</h2>' +
+        '<p>一键开启/关闭模型，快速控制模型的运行状态。</p>' +
+        '<h2>四、模型操作</h2>' +
+        '<ol>' +
+          '<li><strong>管理：</strong>进入启动模型配置，进入的就是文件 index 首页点击发送按钮后弹出的启动模型弹窗，可以设置上下文大小和高级设置</li>' +
+          '<li><strong>删除：</strong>删除当前模型，弹出弹窗再次确认是否删除，确认后删除。</li>' +
+          '<li><strong>版本升级提示：</strong>当有新版本可用时，提示用户进行升级。</li>' +
+        '</ol>'
+    },
+    3: {
+      title: '3.模型面板',
+      desc: '每个模型标注上下文窗口上限（1M / 262K / 203K / 205K等），选中模型高亮区分 ## 三、配额与认证模块（限流管控） 开关：启用云端 Token 配额 关闭状态：云端 Token 不限量开启状态：启用 5 小时滑动窗口限额 Token 预算…',
+      docTitle: '模型面板',
+      docHtml:
+        '<h2>一、双端模型选择</h2>' +
+        '<p>左侧 Herdsman 本地模型面板 + 右侧 Flowy 云端模型面板。</p>' +
+        '<h3>三种部署模式</h3>' +
+        '<ul>' +
+          '<li>全端侧</li>' +
+          '<li>全云端</li>' +
+          '<li>智能路由 / 先端后云</li>' +
+        '</ul>' +
+        '<h2>二、云端模型库</h2>' +
+        '<p>接入多个商用大模型（Claude、Deepseek、Gemini、GLM、GPT、Kimi、Minimax、Qwen 等），统一接口地址。</p>' +
+        '<h2>三、配额与认证模块（限流管控）</h2>' +
+        '<p>每个模型标注上下文窗口上限（1M / 262K / 203K / 205K 等），选中模型高亮区分。</p>' +
+        '<ul>' +
+          '<li><strong>开关：</strong>启用云端 Token 配额</li>' +
+          '<li><strong>关闭状态：</strong>云端 Token 不限量</li>' +
+          '<li><strong>开启状态：</strong>启用 5 小时滑动窗口限额</li>' +
+          '<li><strong>Token 预算：</strong>10K–1T 可调预算滑块</li>' +
+        '</ul>'
+    }
+  };
+
+  function showRefTooltip(el) {
+    const num = parseInt(el.textContent.trim(), 10);
+    const data = kbRefData[num];
+    if (!data) return;
+    kbRefTooltip.innerHTML =
+      '<div class="kb-ref-tooltip-title">' + data.title + '</div>' +
+      '<div class="kb-ref-tooltip-desc">' + data.desc + '</div>' +
+      '<div class="kb-ref-tooltip-footer">' +
+        '<div class="kb-ref-tooltip-footer-left">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
+          '<span>markdown</span>' +
+        '</div>' +
+        '<div class="kb-ref-tooltip-footer-right">@产品迭代</div>' +
+      '</div>';
+    const rect = el.getBoundingClientRect();
+    let top = rect.bottom + 8;
+    let left = rect.left;
+    if (left + 340 > window.innerWidth) left = window.innerWidth - 356;
+    if (left < 8) left = 8;
+    if (top + 200 > window.innerHeight) top = rect.top - 200 - 8;
+    kbRefTooltip.style.top = top + 'px';
+    kbRefTooltip.style.left = left + 'px';
+    requestAnimationFrame(function () { kbRefTooltip.classList.add('show'); });
+  }
+
+  function hideRefTooltip() {
+    kbRefTooltip.classList.remove('show');
+  }
+
+  var kbRefHideTimer = null;
+  var kbRefCurrentEl = null;
+
+  function scheduleHideRefTooltip() {
+    clearTimeout(kbRefHideTimer);
+    kbRefHideTimer = setTimeout(function () {
+      hideRefTooltip();
+      kbRefCurrentEl = null;
+    }, 200);
+  }
+
+  function cancelHideRefTooltip() {
+    clearTimeout(kbRefHideTimer);
+  }
+
+  document.addEventListener('mouseover', function (e) {
+    const ref = e.target.closest('.kb-ref-num');
+    if (ref) {
+      cancelHideRefTooltip();
+      kbRefCurrentEl = ref;
+      showRefTooltip(ref);
+    }
+    if (e.target === kbRefTooltip || kbRefTooltip.contains(e.target)) {
+      cancelHideRefTooltip();
+    }
+  });
+
+  document.addEventListener('mouseout', function (e) {
+    const ref = e.target.closest('.kb-ref-num');
+    if (ref) {
+      const related = e.relatedTarget;
+      if (!related || (!kbRefTooltip.contains(related) && !related.closest('.kb-ref-num'))) {
+        scheduleHideRefTooltip();
+      }
+    }
+    if (e.target === kbRefTooltip || kbRefTooltip.contains(e.target)) {
+      const related = e.relatedTarget;
+      if (!related || (!related.closest('.kb-ref-num') && !kbRefTooltip.contains(related))) {
+        scheduleHideRefTooltip();
+      }
+    }
+  });
+
+  // 点击悬浮卡片打开文件预览弹窗
+  kbRefTooltip.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const num = parseInt(kbRefTooltip.querySelector('.kb-ref-tooltip-title').textContent.trim().charAt(0), 10);
+    const data = kbRefData[num];
+    if (!data) return;
+    hideRefTooltip();
+    kbFilePreviewTitle.textContent = data.docTitle;
+    kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content doc">' +
+      '<h1>' + data.docTitle + '</h1>' +
+      data.docHtml +
+      '</div>';
+    kbFilePreviewOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  });
+
   // 文件上传与附件展示（参照首页）
   const kbFileInput = document.createElement('input');
   kbFileInput.type = 'file';
@@ -5228,9 +5798,10 @@
     e.stopPropagation();
     kbFileInput.click();
   });
-  document.getElementById('kbBtnUploadImage').addEventListener('click', function (e) {
+  document.getElementById('kbBtnUploadKb').addEventListener('click', function (e) {
     e.stopPropagation();
-    kbFileInput.click();
+    kbUploadDropdown.classList.remove('show');
+    kbToast('从知识库选择文档（待接入）', true);
   });
 
   kbFileInput.addEventListener('change', function (e) {
