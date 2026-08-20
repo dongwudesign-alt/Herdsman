@@ -41,6 +41,44 @@
     color: var(--text);
 }
 
+.mt-rec-title-edit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mt-rec-edit-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.mt-rec-edit-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+.mt-rec-title-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    outline: none;
+    min-width: 0;
+    width: 200px;
+    padding: 2px 0;
+}
+
 .mt-rec-meta {
     display: flex;
     gap: 14px;
@@ -174,17 +212,20 @@
 /* AI Loading Overlay */
 .ai-loading-overlay {
     display: none;
-    position: fixed;
+    position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, rgba(10,10,12,0.95) 0%, rgba(3,3,5,0.98) 100%);
+    left: 232px;
+    right: 12px;
+    bottom: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 55%, rgba(10,10,14,0.22) 100%),
+      rgba(14,14,18,0.30);
     z-index: 500;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    border-radius: 12px;
 }
 
 .ai-loading-overlay.show {
@@ -395,22 +436,83 @@
     <div class="mt-card mt-workbench" id="mtWorkbench">
       <div class="mt-header"><span class="mt-title">工作台</span></div>
       <div class="mt-wb-tabs">
-        <button class="mt-wb-tab active" id="tabParticipants">参会人员</button>
+        <button class="mt-wb-tab active" id="tabSettings">设置</button>
+        <button class="mt-wb-tab" id="tabParticipants">参会人员</button>
         <button class="mt-wb-tab" id="tabNotes">笔记</button>
       </div>
-      <div class="mt-search-wrap" id="searchWrap">
+
+      <!-- Settings Panel -->
+      <div class="mt-settings-panel show" id="settingsPanel">
+        <div class="mt-settings-item">
+          <div class="mt-settings-label">ASR 模型</div>
+          <div class="mt-settings-select-wrap is-locked">
+            <button class="mt-settings-select-btn" id="asrModelBtn" type="button" disabled>whisper-large-v3</button>
+            <svg class="mt-settings-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="mt-settings-dropdown" id="asrModelDropdown">
+              <div class="mt-settings-option selected" data-value="whisper-large-v3">whisper-large-v3</div>
+              <div class="mt-settings-option" data-value="whisper-medium">whisper-medium</div>
+              <div class="mt-settings-option" data-value="funasr">FunASR</div>
+              <div class="mt-settings-option" data-value="sensevoice">SenseVoice</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-settings-item">
+          <div class="mt-settings-label">总结模型</div>
+          <div class="mt-settings-select-wrap">
+            <button class="mt-settings-select-btn" id="summaryModelBtn" type="button">未选择</button>
+            <svg class="mt-settings-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="mt-settings-dropdown" id="summaryModelDropdown">
+              <div class="mt-settings-option empty selected" data-value="">未选择</div>
+              <div class="mt-settings-option" data-value="qwen-max">Qwen-Max</div>
+              <div class="mt-settings-option" data-value="qwen-plus">Qwen-Plus</div>
+              <div class="mt-settings-option" data-value="gpt-4o">GPT-4o</div>
+              <div class="mt-settings-option" data-value="glm-4">GLM-4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-settings-item">
+          <div class="mt-settings-label">音频设备</div>
+          <div class="mt-settings-select-wrap">
+            <button class="mt-settings-select-btn" id="audioDeviceBtn" type="button">默认扬声器</button>
+            <svg class="mt-settings-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="mt-settings-dropdown" id="audioDeviceDropdown">
+              <div class="mt-settings-option selected" data-value="default">默认扬声器</div>
+              <div class="mt-settings-option" data-value="spk1">扬声器 (Realtek Audio)</div>
+              <div class="mt-settings-option" data-value="spk2">扬声器 (USB Audio Device)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-settings-item">
+          <div class="mt-settings-label">麦克风设备</div>
+          <div class="mt-settings-select-wrap">
+            <button class="mt-settings-select-btn" id="microphoneDeviceBtn" type="button">默认麦克风</button>
+            <svg class="mt-settings-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            <div class="mt-settings-dropdown" id="microphoneDeviceDropdown">
+              <div class="mt-settings-option selected" data-value="default">默认麦克风</div>
+              <div class="mt-settings-option" data-value="mic1">麦克风 (Realtek Audio)</div>
+              <div class="mt-settings-option" data-value="mic2">麦克风 (USB Audio Device)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-search-wrap hide" id="searchWrap">
         <svg class="mt-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" class="mt-search-input" id="searchInput" placeholder="搜索参会人员" style="position: relative;">
         <button class="mt-add-btn" id="addBtn" title="添加参会人">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
       </div>
-      <div class="mt-participants" id="participantsList">
-        <div class="mt-participant"><div class="mt-avatar">张</div><div class="mt-participant-info"><div class="mt-participant-name">张三</div><div class="mt-participant-role">产品经理</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">李</div><div class="mt-participant-info"><div class="mt-participant-name">李四</div><div class="mt-participant-role">技术负责人</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">王</div><div class="mt-participant-info"><div class="mt-participant-name">王五</div><div class="mt-participant-role">后端开发</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">赵</div><div class="mt-participant-info"><div class="mt-participant-name">赵六</div><div class="mt-participant-role">前端开发</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">陈</div><div class="mt-participant-info"><div class="mt-participant-name">陈七</div><div class="mt-participant-role">UI设计师</div></div><button class="mt-participant-remove" title="移除" data-bound="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button></div>
+      <div class="mt-participants-title" style="display:none;">人员列表</div>
+      <div class="mt-participants hide" id="participantsList">
+        <div class="mt-participant"><div class="mt-avatar">张</div><div class="mt-participant-info"><div class="mt-participant-name">张三</div><div class="mt-participant-role">产品经理</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">李</div><div class="mt-participant-info"><div class="mt-participant-name">李四</div><div class="mt-participant-role">技术负责人</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">王</div><div class="mt-participant-info"><div class="mt-participant-name">王五</div><div class="mt-participant-role">后端开发</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">赵</div><div class="mt-participant-info"><div class="mt-participant-name">赵六</div><div class="mt-participant-role">前端开发</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">陈</div><div class="mt-participant-info"><div class="mt-participant-name">陈七</div><div class="mt-participant-role">UI设计师</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <button class="mt-add-participants-btn" id="addParticipantsBtn" style="display: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>添加人员</span></button>
       </div>
       <div class="mt-notes" id="notesList">
         <textarea class="mt-notes-textarea" id="notesTextarea" placeholder="在此输入会议笔记..."></textarea>
@@ -425,11 +527,16 @@
     <div class="mt-card mt-recording" id="mtRecording">
       <div class="mt-rec-header">
         <div class="mt-rec-title-row">
-          <span class="mt-rec-title">新建会议</span>
+          <div class="mt-rec-title-edit">
+            <span class="mt-rec-title">新建会议</span>
+            <button class="mt-rec-edit-btn" id="recTitleEditBtn" type="button" title="重命名">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+            </button>
+          </div>
           <div class="mt-rec-meta">
             <div class="mt-rec-timer">
               <div class="mt-rec-pulse"></div>
-              <span id="recTimer">00:00:00</span>
+              <span id="recTimer">录音中...</span>
             </div>
             <div class="mt-rec-count">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -462,38 +569,7 @@
         </div>
       </div>
     </div>
-  </div>
-</main>
-</div>
-
-<!-- Add Participant Modal -->
-<div class="mt-modal-overlay" id="addModal">
-  <div class="mt-modal">
-    <div class="mt-modal-header">
-      <span class="mt-modal-title">添加参会人</span>
-      <button class="mt-modal-close" id="modalClose">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
-      </button>
-    </div>
-    <div class="mt-modal-body">
-      <div class="mt-modal-field">
-        <label class="mt-modal-label">姓名</label>
-        <input type="text" class="mt-modal-input" id="modalName" placeholder="请输入姓名">
-      </div>
-      <div class="mt-modal-field">
-        <label class="mt-modal-label">职位</label>
-        <input type="text" class="mt-modal-input" id="modalRole" placeholder="请输入职位">
-      </div>
-      <div class="mt-modal-actions">
-        <button class="mt-modal-btn" id="modalCancel">取消</button>
-        <button class="mt-modal-btn primary" id="modalConfirm">添加</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- AI Loading Overlay -->
-<div class="ai-loading-overlay" id="aiLoadingOverlay">
+  <div class="ai-loading-overlay" id="aiLoadingOverlay">
   <div class="ai-particles" id="aiParticles"></div>
   <div class="ai-loading-content">
     <div class="ai-loader-ring">
@@ -519,6 +595,56 @@
     </div>
   </div>
 </div>
+  </div>
+</main>
+<div class="mt-modal-overlay" id="addModal">
+  <div class="mt-modal">
+    <div class="mt-modal-header">
+      <span class="mt-modal-title">添加参会人</span>
+      <button class="mt-modal-close" id="modalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="mt-modal-body">
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">姓名</label>
+        <input type="text" class="mt-modal-input" id="modalName" placeholder="请输入姓名">
+      </div>
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">职位</label>
+        <input type="text" class="mt-modal-input" id="modalRole" placeholder="请输入职位">
+      </div>
+      <div class="mt-modal-actions">
+        <button class="mt-modal-btn" id="modalCancel">取消</button>
+        <button class="mt-modal-btn primary" id="modalConfirm">添加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Members Modal -->
+<div class="mt-modal-overlay" id="membersModal">
+  <div class="mt-modal mt-members-modal">
+    <div class="mt-modal-header">
+      <span class="mt-modal-title">选择人员</span>
+      <button class="mt-modal-close" id="membersModalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="mt-members-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
+      <input type="text" id="membersSearch" placeholder="搜索人员...">
+      <button class="mt-members-clear" id="membersSearchClear" title="清除">×</button>
+    </div>
+    <div class="mt-members-list" id="membersList"></div>
+    <div class="mt-members-footer">
+      <span class="mt-members-selcount" id="membersSelCount">已选 0 人</span>
+      <button class="mt-modal-btn primary" id="membersAddBtn">添加</button>
+    </div>
+  </div>
+</div>
+
+
 
 <script src="js/meeting-common.js"></script>
 <script>
@@ -562,7 +688,6 @@ function formatRecTime(sec) {
 recTimerInterval = setInterval(function() {
   if (!isPaused) {
     recSeconds++;
-    recTimer.textContent = formatRecTime(recSeconds);
   }
 }, 1000);
 
@@ -597,6 +722,42 @@ function typeNext() {
 }
 setTimeout(typeNext, 1500);
 
+// Rename recording title (inline edit)
+var recTitleEl = document.querySelector('.mt-rec-title');
+var recTitleEditBtn = document.getElementById('recTitleEditBtn');
+if (recTitleEditBtn && recTitleEl) {
+  recTitleEditBtn.addEventListener('click', function() {
+    if (recTitleEl.querySelector('input')) return;
+    var current = recTitleEl.textContent.trim();
+    var original = current;
+    recTitleEl.innerHTML = '';
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'mt-rec-title-input';
+    input.value = current;
+    recTitleEl.appendChild(input);
+    input.focus();
+    input.select();
+
+    function commitTitle() {
+      if (!input.parentNode) return;
+      var val = input.value.trim();
+      recTitleEl.textContent = val || original;
+    }
+    function cancelTitle() {
+      if (!input.parentNode) return;
+      input.removeEventListener('blur', commitTitle);
+      recTitleEl.textContent = original;
+    }
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') commitTitle();
+      else if (e.key === 'Escape') cancelTitle();
+    });
+    input.addEventListener('blur', commitTitle);
+  });
+}
+
 // Pause/Resume
 if (pauseBtn) {
   pauseBtn.addEventListener('click', function() {
@@ -622,6 +783,19 @@ if (endRecBtn) {
     clearInterval(recTimerInterval);
     var pulse = document.querySelector('.mt-rec-pulse');
     if (pulse) pulse.style.animationPlayState = 'paused';
+
+    // Recording stopped: allow changing ASR model again
+    var asrBtn = document.getElementById('asrModelBtn');
+    if (asrBtn) {
+      asrBtn.disabled = false;
+      var asrWrap = asrBtn.parentElement;
+      if (asrWrap) asrWrap.classList.remove('is-locked');
+    }
+
+    // 5s loading animation then go to meeting-summary2 (show original text tab)
+    runLoadingAnimation(100, function() {
+      window.location.href = 'meeting-summary2.html?tab=original';
+    });
   });
 }
 
@@ -629,13 +803,24 @@ if (endRecBtn) {
 if (endSummaryBtn) {
   endSummaryBtn.addEventListener('click', function() {
     clearInterval(recTimerInterval);
-    var overlay = document.getElementById('aiLoadingOverlay');
-    var progressBar = document.getElementById('loadingProgressBar');
-    var loadingDesc = document.getElementById('loadingDesc');
-    var steps = document.querySelectorAll('.ai-step');
-    var particlesContainer = document.getElementById('aiParticles');
+    // 15s loading animation then go to meeting-summary
+    runLoadingAnimation(300, function() {
+      window.location.href = 'meeting-summary.html';
+    });
+  });
+}
 
-    // Generate particles
+// Shared AI loading overlay animation
+function runLoadingAnimation(tickMs, onComplete) {
+  var overlay = document.getElementById('aiLoadingOverlay');
+  var progressBar = document.getElementById('loadingProgressBar');
+  var loadingDesc = document.getElementById('loadingDesc');
+  var steps = document.querySelectorAll('.ai-step');
+  var particlesContainer = document.getElementById('aiParticles');
+
+  // Generate particles
+  if (particlesContainer) {
+    particlesContainer.innerHTML = '';
     for (var i = 0; i < 12; i++) {
       var p = document.createElement('div');
       p.className = 'ai-particle';
@@ -651,35 +836,38 @@ if (endSummaryBtn) {
       p.style.animationDelay = (Math.random() * 2) + 's';
       particlesContainer.appendChild(p);
     }
+  }
 
+  if (overlay) {
     overlay.classList.add('show');
+    if (progressBar) progressBar.style.width = '0%';
+  }
 
-    var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
-    var progress = 0;
+  var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
+  var progress = 0;
 
-    function animateLoading() {
-      if (progress >= 100) {
-        window.location.href = 'meeting-summary.html';
-        return;
-      }
-      progress += 2;
-      progressBar.style.width = progress + '%';
+  function animateLoading() {
+    if (progress >= 100) {
+      if (onComplete) onComplete();
+      return;
+    }
+    progress += 2;
+    if (progressBar) progressBar.style.width = progress + '%';
 
-      var stepIndex = Math.floor(progress / 20);
-      if (stepIndex < loadingTexts.length && loadingDesc.textContent !== loadingTexts[stepIndex]) {
-        loadingDesc.textContent = loadingTexts[stepIndex];
-        steps.forEach(function(s, i) {
-          if (i < stepIndex) s.className = 'ai-step done';
-          else if (i === stepIndex) s.className = 'ai-step active';
-          else s.className = 'ai-step';
-        });
-      }
-
-      setTimeout(animateLoading, 100);
+    var stepIndex = Math.floor(progress / 20);
+    if (stepIndex < loadingTexts.length && loadingDesc && loadingDesc.textContent !== loadingTexts[stepIndex]) {
+      loadingDesc.textContent = loadingTexts[stepIndex];
+      steps.forEach(function(s, i) {
+        if (i < stepIndex) s.className = 'ai-step done';
+        else if (i === stepIndex) s.className = 'ai-step active';
+        else s.className = 'ai-step';
+      });
     }
 
-    setTimeout(animateLoading, 500);
-  });
+    setTimeout(animateLoading, tickMs);
+  }
+
+  setTimeout(animateLoading, 500);
 }
 </script>
 </body>

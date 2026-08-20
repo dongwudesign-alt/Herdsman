@@ -1,4 +1,4 @@
-<!-- PAGE_ID: meeting-summary -->
+<!-- PAGE_ID: meeting-summary2 (independent copy of meeting-summary - DO NOT overwrite meeting-summary.html) -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -10,6 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/meeting-common.css">
 <style>
+/* ============================================
+   Summary2 Page Styles (independent copy)
+   Visual clone of meeting-summary page styles.
+   Class names intentionally match the shared
+   design language so the look is pixel-identical.
+   ============================================ */
 /* Right - Summary */
 .mt-summary {
     flex: 1;
@@ -394,9 +400,235 @@
 }
 
 .mt-speed-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+/* Smart Summary Entry (cloned from meeting-home start-recording entry) */
+.mt-sum-empty {
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    position: relative;
+    z-index: 1;
+}
+
+.mt-sum-empty-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.15),
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+.mt-sum-empty-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    animation: recordPulse 2.5s ease-out infinite;
+}
+
+.mt-sum-empty-btn::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    animation: recordPulse 2.5s ease-out infinite 0.8s;
+}
+
+.mt-sum-empty-btn:hover {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.05);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.25),
+      0 12px 48px rgba(0,0,0,0.5),
+      0 0 40px rgba(255,255,255,0.08),
+      inset 0 1px 1px rgba(255,255,255,0.15);
+}
+
+.mt-sum-empty-btn:active { transform: scale(0.96); }
+
+.mt-sum-empty-btn svg { position: relative; z-index: 1; }
+
+.mt-sum-empty-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.mt-sum-empty-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+}
+
+.mt-sum-empty-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    text-align: center;
+    max-width: 280px;
+}
+
+/* AI Loading Overlay (cloned from meeting-recoding) */
+.ai-loading-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 55%, rgba(10,10,14,0.22) 100%),
+      rgba(14,14,18,0.30);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    border-radius: 12px;
+}
+
+.ai-loading-overlay.show {
+    display: flex;
+    animation: fadeIn 0.4s ease;
+}
+
+.ai-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.ai-loader-ring {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.ai-loader-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: rgba(255,255,255,0.4);
+    border-right-color: rgba(255,255,255,0.15);
+    animation: spin 1.2s linear infinite;
+}
+
+.ai-loader-ring::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-bottom-color: rgba(255,255,255,0.3);
+    border-left-color: rgba(255,255,255,0.1);
+    animation: spinReverse 0.8s linear infinite;
+}
+
+.ai-loader-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.ai-loading-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+}
+
+.ai-loading-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.ai-loading-progress {
+    width: 280px;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ai-loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.ai-loading-steps {
+    display: flex;
+    gap: 12px;
+}
+
+.ai-step {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.ai-step.active {
+    background: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    transform: scale(1.2);
+}
+
+.ai-step.done {
+    background: rgba(255,255,255,0.4);
+}
+
+.ai-particles {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.ai-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+}
 </style>
 </head>
-<body class="page-meeting-summary">
+<body class="page-meeting-summary2">
 <div class="app-window">
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
@@ -585,7 +817,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           </button>
           <button class="mt-sum-action-btn" title="下载">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="5" x2="12" y2="15"></line></svg>
           </button>
         </div>
       </div>
@@ -596,13 +828,27 @@
       </div>
 
       <div class="mt-sum-body" id="sumBody">
-        <div class="mt-info-card" id="infoCard">
+        <!-- Smart Summary Entry (shown until summary is generated) -->
+        <div class="mt-sum-empty" id="sumEmpty" style="display:flex;">
+          <button class="mt-sum-empty-btn" id="sumEmptyBtn" title="智能总结">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path>
+              <path d="M19 17l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"></path>
+            </svg>
+          </button>
+          <div class="mt-sum-empty-info">
+            <div class="mt-sum-empty-title">智能总结</div>
+            <div class="mt-sum-empty-desc">点击按钮开始生成会议总结，系统将自动提取主题、要点并整理为结构化纪要</div>
+          </div>
+        </div>
+
+        <div class="mt-info-card hide" id="infoCard">
           <div class="mt-info-item"><span class="mt-info-label">会议主题</span><span class="mt-info-value">产品迭代周会</span></div>
           <div class="mt-info-item"><span class="mt-info-label">参会人员</span><span class="mt-info-value">5 人</span></div>
           <div class="mt-info-item"><span class="mt-info-label">会议时长</span><span class="mt-info-value">45 分钟</span></div>
         </div>
 
-        <div class="mt-topics-wrap" id="topicsWrap">
+        <div class="mt-topics-wrap hide" id="topicsWrap">
           <div class="mt-topics">
             <div class="mt-topic">
               <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
@@ -672,6 +918,34 @@
         </div>
         <button class="mt-speed-btn" id="speedBtn">1.0x</button>
       </div>
+
+      <!-- AI Loading Overlay (shown while generating summary) -->
+      <div class="ai-loading-overlay" id="sumLoadingOverlay">
+        <div class="ai-particles" id="sumParticles"></div>
+        <div class="ai-loading-content">
+          <div class="ai-loader-ring">
+            <div class="ai-loader-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="ai-loading-title">AI 正在总结会议</div>
+          <div class="ai-loading-desc" id="sumLoadingDesc">正在分析会议内容...</div>
+          <div class="ai-loading-progress">
+            <div class="ai-loading-progress-bar" id="sumLoadingProgressBar"></div>
+          </div>
+          <div class="ai-loading-steps" id="sumLoadingSteps">
+            <div class="ai-step active"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -727,200 +1001,306 @@
 
 <script src="js/meeting-common.js"></script>
 <script>
-// Summary page specific logic
-var mainEl = document.querySelector('.main');
-var tabSummary = document.getElementById('tabSummary');
-var tabOriginal = document.getElementById('tabOriginal');
-var infoCard = document.getElementById('infoCard');
-var topicsWrap = document.getElementById('topicsWrap');
-var originalText = document.getElementById('originalText');
-var audioBar = document.getElementById('audioBar');
-var playBtn = document.getElementById('playBtn');
-var progressBar = document.getElementById('progressBar');
-var progressFill = document.getElementById('progressFill');
-var currentTimeEl = document.getElementById('currentTimeEl');
-var totalTimeEl = document.getElementById('totalTimeEl');
-var volumeSlider = document.getElementById('volumeSlider');
-var volumeFill = document.getElementById('volumeFill');
-var volumeIcon = document.getElementById('volumeIcon');
-var speedBtn = document.getElementById('speedBtn');
+// ============================================
+// Summary2 page specific logic (independent
+// namespace from meeting-summary.html)
+// ============================================
+(function() {
+  'use strict';
 
-var totalSeconds = 45 * 60;
-var currentSeconds = 0;
-var isPlaying = false;
-var volume = 0.8;
-var isMuted = false;
-var prevVolume = 0.8;
-var speeds = [0.5, 1.0, 1.5, 2.0];
-var speedIndex = 1;
-var playTimer = null;
+  var sum2Main = document.querySelector('.main');
+  var sum2TabSummary = document.getElementById('tabSummary');
+  var sum2TabOriginal = document.getElementById('tabOriginal');
+  var sum2InfoCard = document.getElementById('infoCard');
+  var sum2TopicsWrap = document.getElementById('topicsWrap');
+  var sum2OriginalText = document.getElementById('originalText');
+  var sum2AudioBar = document.getElementById('audioBar');
+  var sum2PlayBtn = document.getElementById('playBtn');
+  var sum2ProgressBar = document.getElementById('progressBar');
+  var sum2ProgressFill = document.getElementById('progressFill');
+  var sum2CurrentTimeEl = document.getElementById('currentTimeEl');
+  var sum2TotalTimeEl = document.getElementById('totalTimeEl');
+  var sum2VolumeSlider = document.getElementById('volumeSlider');
+  var sum2VolumeFill = document.getElementById('volumeFill');
+  var sum2VolumeIcon = document.getElementById('volumeIcon');
+  var sum2SpeedBtn = document.getElementById('speedBtn');
+  var sum2Empty = document.getElementById('sumEmpty');
+  var sum2EmptyBtn = document.getElementById('sumEmptyBtn');
+  var sum2LoadingOverlay = document.getElementById('sumLoadingOverlay');
+  var sum2ParticlesContainer = document.getElementById('sumParticles');
+  var sum2LoadingDesc = document.getElementById('sumLoadingDesc');
+  var sum2LoadingProgressBar = document.getElementById('sumLoadingProgressBar');
+  var sum2LoadingSteps = document.getElementById('sumLoadingSteps');
 
-function formatTime(sec) {
-  var m = Math.floor(sec / 60);
-  var s = sec % 60;
-  return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-}
+  var sum2Done = false;
+  var sum2LoadingActive = false;
 
-function updateProgress() {
-  var pct = totalSeconds > 0 ? (currentSeconds / totalSeconds) * 100 : 0;
-  progressFill.style.width = pct + '%';
-  currentTimeEl.textContent = formatTime(currentSeconds);
-  totalTimeEl.textContent = formatTime(totalSeconds);
-}
+  var sum2TotalSeconds = 45 * 60;
+  var sum2CurrentSeconds = 0;
+  var sum2IsPlaying = false;
+  var sum2Volume = 0.8;
+  var sum2IsMuted = false;
+  var sum2PrevVolume = 0.8;
+  var sum2Speeds = [0.5, 1.0, 1.5, 2.0];
+  var sum2SpeedIndex = 1;
+  var sum2PlayTimer = null;
 
-function play() {
-  isPlaying = true;
-  var iconPlay = playBtn.querySelector('.icon-play');
-  var iconPause = playBtn.querySelector('.icon-pause');
-  if (iconPlay) iconPlay.style.display = 'none';
-  if (iconPause) iconPause.style.display = 'block';
-  playTimer = setInterval(function() {
-    if (currentSeconds < totalSeconds) {
-      currentSeconds++;
-      updateProgress();
-    } else {
-      pause();
-    }
-  }, 1000 / speeds[speedIndex]);
-}
+  function sum2FormatTime(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+  }
 
-function pause() {
-  isPlaying = false;
-  clearInterval(playTimer);
-  var iconPlay = playBtn.querySelector('.icon-play');
-  var iconPause = playBtn.querySelector('.icon-pause');
-  if (iconPlay) iconPlay.style.display = 'block';
-  if (iconPause) iconPause.style.display = 'none';
-}
+  function sum2UpdateProgress() {
+    var pct = sum2TotalSeconds > 0 ? (sum2CurrentSeconds / sum2TotalSeconds) * 100 : 0;
+    sum2ProgressFill.style.width = pct + '%';
+    sum2CurrentTimeEl.textContent = sum2FormatTime(sum2CurrentSeconds);
+    sum2TotalTimeEl.textContent = sum2FormatTime(sum2TotalSeconds);
+  }
 
-function seekTo(clientX) {
-  var rect = progressBar.getBoundingClientRect();
-  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  currentSeconds = Math.floor(pct * totalSeconds);
-  updateProgress();
-}
-
-function setVolume(v) {
-  volume = Math.max(0, Math.min(1, v));
-  volumeFill.style.width = (volume * 100) + '%';
-}
-
-function seekVolume(clientX) {
-  var rect = volumeSlider.getBoundingClientRect();
-  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  setVolume(pct);
-}
-
-// Tab switching
-if (tabSummary) {
-  tabSummary.addEventListener('click', function() {
-    tabSummary.classList.add('active');
-    tabOriginal.classList.remove('active');
-    if (infoCard) infoCard.classList.remove('hide');
-    if (topicsWrap) topicsWrap.classList.remove('hide');
-    if (originalText) originalText.classList.remove('show');
-    if (audioBar) audioBar.classList.remove('show');
-  });
-}
-
-if (tabOriginal) {
-  tabOriginal.addEventListener('click', function() {
-    tabOriginal.classList.add('active');
-    tabSummary.classList.remove('active');
-    if (infoCard) infoCard.classList.add('hide');
-    if (topicsWrap) topicsWrap.classList.add('hide');
-    if (originalText) originalText.classList.add('show');
-    if (audioBar) audioBar.classList.add('show');
-  });
-}
-
-// Play/Pause
-if (playBtn) {
-  playBtn.addEventListener('click', function() {
-    if (isPlaying) pause(); else play();
-  });
-}
-
-// Progress seek
-if (progressBar) {
-  var isDraggingProgress = false;
-  progressBar.addEventListener('mousedown', function(e) {
-    isDraggingProgress = true;
-    progressBar.classList.add('dragging');
-    seekTo(e.clientX);
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isDraggingProgress) seekTo(e.clientX);
-  });
-  document.addEventListener('mouseup', function() {
-    isDraggingProgress = false;
-    progressBar.classList.remove('dragging');
-  });
-}
-
-// Volume seek
-if (volumeSlider) {
-  var isDraggingVolume = false;
-  volumeSlider.addEventListener('mousedown', function(e) {
-    isDraggingVolume = true;
-    seekVolume(e.clientX);
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isDraggingVolume) seekVolume(e.clientX);
-  });
-  document.addEventListener('mouseup', function() {
-    isDraggingVolume = false;
-  });
-}
-
-// Mute toggle
-if (volumeIcon) {
-  volumeIcon.addEventListener('click', function() {
-    if (isMuted) {
-      isMuted = false;
-      setVolume(prevVolume);
-    } else {
-      isMuted = true;
-      prevVolume = volume;
-      setVolume(0);
-    }
-  });
-}
-
-// Speed toggle
-if (speedBtn) {
-  speedBtn.addEventListener('click', function() {
-    speedIndex = (speedIndex + 1) % speeds.length;
-    speedBtn.textContent = speeds[speedIndex] + 'x';
-    if (isPlaying) {
-      clearInterval(playTimer);
-      playTimer = setInterval(function() {
-        if (currentSeconds < totalSeconds) {
-          currentSeconds++;
-          updateProgress();
-        } else {
-          pause();
-        }
-      }, 1000 / speeds[speedIndex]);
-    }
-  });
-}
-
-// Close sidebar on main click
-if (mainEl) {
-  mainEl.addEventListener('click', function(e) {
-    var sw = document.getElementById('sidebarWrapper');
-    if (sw && sw.classList.contains('expanded')) {
-      if (!sw.contains(e.target) && !e.target.closest('.s-item')) {
-        sw.classList.remove('expanded');
+  function sum2Play() {
+    sum2IsPlaying = true;
+    var iconPlay = sum2PlayBtn.querySelector('.icon-play');
+    var iconPause = sum2PlayBtn.querySelector('.icon-pause');
+    if (iconPlay) iconPlay.style.display = 'none';
+    if (iconPause) iconPause.style.display = 'block';
+    sum2PlayTimer = setInterval(function() {
+      if (sum2CurrentSeconds < sum2TotalSeconds) {
+        sum2CurrentSeconds++;
+        sum2UpdateProgress();
+      } else {
+        sum2Pause();
       }
-    }
-  });
-}
+    }, 1000 / sum2Speeds[sum2SpeedIndex]);
+  }
 
-// Init
-setVolume(volume);
-updateProgress();
+  function sum2Pause() {
+    sum2IsPlaying = false;
+    clearInterval(sum2PlayTimer);
+    var iconPlay = sum2PlayBtn.querySelector('.icon-play');
+    var iconPause = sum2PlayBtn.querySelector('.icon-pause');
+    if (iconPlay) iconPlay.style.display = 'block';
+    if (iconPause) iconPause.style.display = 'none';
+  }
+
+  function sum2SeekTo(clientX) {
+    var rect = sum2ProgressBar.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    sum2CurrentSeconds = Math.floor(pct * sum2TotalSeconds);
+    sum2UpdateProgress();
+  }
+
+  function sum2SetVolume(v) {
+    sum2Volume = Math.max(0, Math.min(1, v));
+    sum2VolumeFill.style.width = (sum2Volume * 100) + '%';
+  }
+
+  function sum2SeekVolume(clientX) {
+    var rect = sum2VolumeSlider.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    sum2SetVolume(pct);
+  }
+
+  // Tab switching
+  function sum2RenderSummaryArea() {
+    var inSummaryTab = sum2TabSummary && sum2TabSummary.classList.contains('active');
+    var showEntry = inSummaryTab && !sum2Done && !sum2LoadingActive;
+    var showContent = inSummaryTab && sum2Done && !sum2LoadingActive;
+    if (sum2Empty) sum2Empty.style.display = showEntry ? 'flex' : 'none';
+    if (sum2InfoCard) sum2InfoCard.classList.toggle('hide', !showContent);
+    if (sum2TopicsWrap) sum2TopicsWrap.classList.toggle('hide', !showContent);
+  }
+
+  if (sum2TabSummary) {
+    sum2TabSummary.addEventListener('click', function() {
+      sum2TabSummary.classList.add('active');
+      sum2TabOriginal.classList.remove('active');
+      if (sum2OriginalText) sum2OriginalText.classList.remove('show');
+      if (sum2AudioBar) sum2AudioBar.classList.remove('show');
+      sum2RenderSummaryArea();
+    });
+  }
+
+  if (sum2TabOriginal) {
+    sum2TabOriginal.addEventListener('click', function() {
+      sum2TabOriginal.classList.add('active');
+      sum2TabSummary.classList.remove('active');
+      if (sum2OriginalText) sum2OriginalText.classList.add('show');
+      if (sum2AudioBar) sum2AudioBar.classList.add('show');
+      sum2RenderSummaryArea();
+    });
+  }
+
+  // Smart Summary generation (15s loading animation cloned from meeting-recoding)
+  if (sum2EmptyBtn) {
+    sum2EmptyBtn.addEventListener('click', function() {
+      if (sum2LoadingActive || sum2Done) return;
+      sum2LoadingActive = true;
+
+      var progress = 0;
+      var pBar = sum2LoadingProgressBar;
+      var pDesc = sum2LoadingDesc;
+      var pSteps = sum2LoadingSteps ? sum2LoadingSteps.querySelectorAll('.ai-step') : [];
+      var overlay = sum2LoadingOverlay;
+
+      // Generate floating particles
+      if (sum2ParticlesContainer) {
+        sum2ParticlesContainer.innerHTML = '';
+        for (var i = 0; i < 12; i++) {
+          var p = document.createElement('div');
+          p.className = 'ai-particle';
+          p.style.left = (50 + (Math.random() - 0.5) * 120) + 'px';
+          p.style.top = (50 + (Math.random() - 0.5) * 120) + 'px';
+          p.style.setProperty('--tx1', (Math.random() * 80 - 40) + 'px');
+          p.style.setProperty('--ty1', (Math.random() * 80 - 40) + 'px');
+          p.style.setProperty('--tx2', (Math.random() * 100 - 50) + 'px');
+          p.style.setProperty('--ty2', (Math.random() * 100 - 50) + 'px');
+          p.style.setProperty('--tx3', (Math.random() * 80 - 40) + 'px');
+          p.style.setProperty('--ty3', (Math.random() * 80 - 40) + 'px');
+          p.style.animation = 'floatParticle ' + (3 + Math.random() * 2) + 's ease-in-out infinite';
+          p.style.animationDelay = (Math.random() * 2) + 's';
+          sum2ParticlesContainer.appendChild(p);
+        }
+      }
+
+      sum2RenderSummaryArea();
+      if (overlay) overlay.classList.add('show');
+
+      var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
+
+      function animateLoading() {
+        if (progress >= 100) {
+          sum2LoadingActive = false;
+          sum2Done = true;
+          if (overlay) overlay.classList.remove('show');
+          sum2RenderSummaryArea();
+          return;
+        }
+        progress += 2;
+        if (pBar) pBar.style.width = progress + '%';
+
+        var stepIndex = Math.floor(progress / 20);
+        if (stepIndex < loadingTexts.length && pDesc && pDesc.textContent !== loadingTexts[stepIndex]) {
+          pDesc.textContent = loadingTexts[stepIndex];
+          pSteps.forEach(function(s, i) {
+            if (i < stepIndex) s.className = 'ai-step done';
+            else if (i === stepIndex) s.className = 'ai-step active';
+            else s.className = 'ai-step';
+          });
+        }
+
+        setTimeout(animateLoading, 300);
+      }
+
+      setTimeout(animateLoading, 500);
+    });
+  }
+
+  // Play/Pause
+  if (sum2PlayBtn) {
+    sum2PlayBtn.addEventListener('click', function() {
+      if (sum2IsPlaying) sum2Pause(); else sum2Play();
+    });
+  }
+
+  // Progress seek
+  if (sum2ProgressBar) {
+    var sum2DraggingProgress = false;
+    sum2ProgressBar.addEventListener('mousedown', function(e) {
+      sum2DraggingProgress = true;
+      sum2ProgressBar.classList.add('dragging');
+      sum2SeekTo(e.clientX);
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (sum2DraggingProgress) sum2SeekTo(e.clientX);
+    });
+    document.addEventListener('mouseup', function() {
+      sum2DraggingProgress = false;
+      sum2ProgressBar.classList.remove('dragging');
+    });
+  }
+
+  // Volume seek
+  if (sum2VolumeSlider) {
+    var sum2DraggingVolume = false;
+    sum2VolumeSlider.addEventListener('mousedown', function(e) {
+      sum2DraggingVolume = true;
+      sum2SeekVolume(e.clientX);
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (sum2DraggingVolume) sum2SeekVolume(e.clientX);
+    });
+    document.addEventListener('mouseup', function() {
+      sum2DraggingVolume = false;
+    });
+  }
+
+  // Mute toggle
+  if (sum2VolumeIcon) {
+    sum2VolumeIcon.addEventListener('click', function() {
+      if (sum2IsMuted) {
+        sum2IsMuted = false;
+        sum2SetVolume(sum2PrevVolume);
+      } else {
+        sum2IsMuted = true;
+        sum2PrevVolume = sum2Volume;
+        sum2SetVolume(0);
+      }
+    });
+  }
+
+  // Speed toggle
+  if (sum2SpeedBtn) {
+    sum2SpeedBtn.addEventListener('click', function() {
+      sum2SpeedIndex = (sum2SpeedIndex + 1) % sum2Speeds.length;
+      sum2SpeedBtn.textContent = sum2Speeds[sum2SpeedIndex] + 'x';
+      if (sum2IsPlaying) {
+        clearInterval(sum2PlayTimer);
+        sum2PlayTimer = setInterval(function() {
+          if (sum2CurrentSeconds < sum2TotalSeconds) {
+            sum2CurrentSeconds++;
+            sum2UpdateProgress();
+          } else {
+            sum2Pause();
+          }
+        }, 1000 / sum2Speeds[sum2SpeedIndex]);
+      }
+    });
+  }
+
+  // Close sidebar on main click
+  if (sum2Main) {
+    sum2Main.addEventListener('click', function(e) {
+      var sw = document.getElementById('sidebarWrapper');
+      if (sw && sw.classList.contains('expanded')) {
+        if (!sw.contains(e.target) && !e.target.closest('.s-item')) {
+          sw.classList.remove('expanded');
+        }
+      }
+    });
+  }
+
+  // Init
+  sum2SetVolume(sum2Volume);
+  sum2UpdateProgress();
+  sum2RenderSummaryArea();
+
+  // If arriving from "结束录音" (?tab=original), show the original text tab by default
+  var qs = window.location.search.substring(1);
+  var params = {};
+  qs.split('&').forEach(function(pair) {
+    if (!pair) return;
+    var kv = pair.split('=');
+    params[decodeURIComponent(kv[0])] = kv.length > 1 ? decodeURIComponent(kv[1]) : '';
+  });
+  if (params.tab === 'original' && sum2TabOriginal) {
+    sum2TabOriginal.classList.add('active');
+    if (sum2TabSummary) sum2TabSummary.classList.remove('active');
+    if (sum2OriginalText) sum2OriginalText.classList.add('show');
+    if (sum2AudioBar) sum2AudioBar.classList.add('show');
+    sum2RenderSummaryArea();
+  }
+})();
 </script>
 </body>
 </html>
