@@ -792,10 +792,8 @@ if (endRecBtn) {
       if (asrWrap) asrWrap.classList.remove('is-locked');
     }
 
-    // 5s loading animation then go to meeting-summary2 (show original text tab)
-    runLoadingAnimation(100, function() {
-      window.location.href = 'meeting-summary2.html?tab=original';
-    });
+    // Direct jump to meeting-summary2 (show original text tab), no loading animation
+    window.location.href = 'meeting-summary2.html?tab=original';
   });
 }
 

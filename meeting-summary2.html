@@ -79,6 +79,157 @@
     color: var(--text);
 }
 
+/* AI magic regenerate button */
+.mt-sum-action-btn.ai-magic-btn {
+    width: auto;
+    height: 30px;
+    padding: 0 8px;
+    gap: 4px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.15), inset 0 0 8px rgba(255,255,255,0.06);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.mt-sum-action-btn.ai-magic-btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 16px rgba(255,255,255,0.5), inset 0 0 8px rgba(255,255,255,0.1);
+}
+
+.mt-sum-action-btn.ai-magic-btn .ai-magic-text {
+    color: #fff;
+}
+
+.mt-sum-action-btn.ai-magic-btn:hover .ai-magic-text {
+    color: #000;
+}
+
+/* Download dropdown menu */
+.mt-download-wrap {
+    position: relative;
+}
+
+.mt-download-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 158px;
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: #0a0a0e;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.96);
+    transform-origin: top right;
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    z-index: 50;
+}
+
+.mt-download-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.mt-dl-head {
+    padding: 5px 10px 7px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+}
+
+.mt-dl-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.mt-dl-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #fff;
+    opacity: 0;
+    transform: scaleY(0);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mt-dl-item:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateX(2px);
+}
+
+.mt-dl-item:hover::before {
+    opacity: 0.9;
+    transform: scaleY(1);
+}
+
+.mt-dl-item svg {
+    color: rgba(255,255,255,0.55);
+    transition: color 0.16s ease;
+    flex-shrink: 0;
+}
+
+.mt-dl-item:hover svg {
+    color: #fff;
+}
+
+.mt-dl-item.open-in {
+    animation: dlItemIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes dlItemIn {
+    0% { opacity: 0; transform: translateX(-8px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Download toast */
+.mt-dl-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 42px;
+    transform: translateX(-50%) translateY(16px);
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: #0a0a0e;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    font-size: 0.8rem;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    z-index: 200;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.mt-dl-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* Tabs */
 .mt-sum-tabs {
     display: flex;
@@ -219,6 +370,58 @@
     font-size: 0.8rem;
     color: var(--text-dim);
     line-height: 1.6;
+}
+
+.type-cursor {
+    display: inline-block;
+    width: 7px;
+    margin-left: 1px;
+    color: rgba(255,255,255,0.85);
+    animation: cursorBlink 0.9s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* "正在生成会议纪要..." hint */
+.mt-gen-hint {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 18px 2px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.03em;
+}
+
+.mt-gen-hint.hide {
+    display: none;
+}
+
+.mt-gen-hint-dots {
+    display: inline-flex;
+    gap: 3px;
+    margin-left: 2px;
+    padding-top: 8px;
+}
+
+.mt-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    animation: dotBlink 1.2s ease-in-out infinite;
+}
+
+.mt-dot:nth-child(2) { animation-delay: 0.2s; }
+.mt-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+    0%, 60%, 100% { opacity: 0.15; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-2px); }
 }
 
 /* Original text */
@@ -816,8 +1019,29 @@
           <button class="mt-sum-action-btn" title="编辑">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           </button>
-          <button class="mt-sum-action-btn" title="下载">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="5" x2="12" y2="15"></line></svg>
+          <div class="mt-download-wrap">
+            <button class="mt-sum-action-btn" id="downloadBtn" title="下载">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="5" x2="12" y2="15"></line></svg>
+            </button>
+            <div class="mt-download-menu" id="downloadMenu">
+              <div class="mt-dl-head">导出</div>
+              <div class="mt-dl-item" data-dl="audio">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                <span>下载音频</span>
+              </div>
+              <div class="mt-dl-item" data-dl="original">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+                <span>原始文本</span>
+              </div>
+              <div class="mt-dl-item" data-dl="summary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><line x1="8" y1="21" x2="12" y2="21"></line><path d="M9 11l1-1 1 1 2-2 2 2" transform="translate(0 8)"></path></svg>
+                <span>会议纪要</span>
+              </div>
+            </div>
+          </div>
+          <button class="mt-sum-action-btn ai-magic-btn" id="regenBtn" title="AI 重新生成总结">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"></path></svg>
+            <span class="ai-magic-text">重新生成</span>
           </button>
         </div>
       </div>
@@ -842,42 +1066,15 @@
           </div>
         </div>
 
-        <div class="mt-info-card hide" id="infoCard">
-          <div class="mt-info-item"><span class="mt-info-label">会议主题</span><span class="mt-info-value">产品迭代周会</span></div>
-          <div class="mt-info-item"><span class="mt-info-label">参会人员</span><span class="mt-info-value">5 人</span></div>
-          <div class="mt-info-item"><span class="mt-info-label">会议时长</span><span class="mt-info-value">45 分钟</span></div>
-        </div>
-
-        <div class="mt-topics-wrap hide" id="topicsWrap">
-          <div class="mt-topics">
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">版本回顾</span><span class="mt-topic-time">00:00 - 08:30</span></div>
-                <div class="mt-topic-text">回顾上个版本的完成情况，整体进度符合预期。后端接口全部完成，正在进行联调测试。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">前端优化</span><span class="mt-topic-time">08:30 - 18:00</span></div>
-                <div class="mt-topic-text">讨论前端响应式适配优化方案，UI设计稿已更新，新版本采用更简洁的风格。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">性能优化</span><span class="mt-topic-time">18:00 - 32:00</span></div>
-                <div class="mt-topic-text">重点关注列表渲染效率，数据库索引优化可提升30%以上查询速度。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">测试与交付</span><span class="mt-topic-time">32:00 - 45:00</span></div>
-                <div class="mt-topic-text">测试环境已准备就绪，明天开始回归测试。交付时间定在月底。</div>
-              </div>
-            </div>
+        <div class="mt-topics-wrap" id="topicsWrap">
+          <div class="mt-gen-hint" id="genHint" style="display:none;">
+            <span class="mt-gen-hint-text">正在生成会议纪要</span>
+            <span class="mt-gen-hint-dots">
+              <span class="mt-dot"></span><span class="mt-dot"></span><span class="mt-dot"></span>
+            </span>
+          </div>
+          <div class="mt-topics" id="topicsList">
+            <!-- 会议纪要内容由 JS 按 会议纪要.md 生成，并以流逝(打字机)动画输出 -->
           </div>
         </div>
 
@@ -1028,12 +1225,16 @@
   var sum2EmptyBtn = document.getElementById('sumEmptyBtn');
   var sum2LoadingOverlay = document.getElementById('sumLoadingOverlay');
   var sum2ParticlesContainer = document.getElementById('sumParticles');
+  var sum2TopicsList = document.getElementById('topicsList');
+  var sum2GenHint = document.getElementById('genHint');
   var sum2LoadingDesc = document.getElementById('sumLoadingDesc');
   var sum2LoadingProgressBar = document.getElementById('sumLoadingProgressBar');
   var sum2LoadingSteps = document.getElementById('sumLoadingSteps');
 
   var sum2Done = false;
   var sum2LoadingActive = false;
+  var sum2TypeTimer = null;
+  var sum2GenHintTimer = null;
 
   var sum2TotalSeconds = 45 * 60;
   var sum2CurrentSeconds = 0;
@@ -1105,7 +1306,7 @@
   function sum2RenderSummaryArea() {
     var inSummaryTab = sum2TabSummary && sum2TabSummary.classList.contains('active');
     var showEntry = inSummaryTab && !sum2Done && !sum2LoadingActive;
-    var showContent = inSummaryTab && sum2Done && !sum2LoadingActive;
+    var showContent = inSummaryTab && (sum2Done || sum2LoadingActive);
     if (sum2Empty) sum2Empty.style.display = showEntry ? 'flex' : 'none';
     if (sum2InfoCard) sum2InfoCard.classList.toggle('hide', !showContent);
     if (sum2TopicsWrap) sum2TopicsWrap.classList.toggle('hide', !showContent);
@@ -1131,68 +1332,236 @@
     });
   }
 
-  // Smart Summary generation (15s loading animation cloned from meeting-recoding)
+  // Smart Summary generation: hint 5s -> typewriter output (no loading overlay)
+  // 会议纪要.md 内容（按段落拆分）
+  var sum2MdSections = [
+    {
+      title: '会议整体复盘',
+      text: '本次会议旨在全面复盘本周产品迭代整体工作，集中同步各业务模块开发、设计、测试进度，梳理迭代过程中出现的各类问题，协调跨团队解决卡点，明确后续工作分工、时间节点与推进标准，保障本次版本迭代高效、稳定落地。本周迭代核心围绕用户体验优化与订单流程升级两大核心目标开展，各团队高效联动推进各项工作。设计团队已100%完成既定工作，顺利落地用户首页界面全新改版全套设计稿件，同时针对订单操作页面、退款弹窗、个人中心界面进行视觉与交互优化，所有设计稿均通过产品审核，完成交付与切图输出，可完全支撑研发开发工作。研发团队聚焦核心功能开发，首页改版、订单主流程优化等核心模块主体开发工作已完成80%，页面布局重构、基础交互逻辑、数据展示功能均已开发完毕。测试团队同步开展并行测试工作，针对已开发完成的功能进行基础功能测试、UI适配测试与兼容性测试，已排查并修复多端UI错位、图标适配异常等基础问题，有效提升页面基础展示效果，为后续全量测试筑牢基础。整体迭代进度基本符合预设排期，未出现大面积延期、功能推翻重做等重大问题。'
+    },
+    {
+      title: '核心问题与整改',
+      text: '结合本周测试反馈与研发自测结果，当前迭代工作仍存在两处核心问题，对版本质量与用户体验存在一定影响，需优先闭环解决。第一，多机型适配性能问题，部分中低端安卓机型在进入首页、订单列表页面时，存在页面加载速度缓慢、首屏渲染延迟的情况，高峰期加载时长超出标准阈值，极易造成用户等待流失，初步判定为页面资源冗余、图片加载逻辑未优化导致。第二，订单退款功能逻辑漏洞，测试过程中发现，用户在未完成订单核销、重复提交退款申请时，弹窗提示逻辑混乱，未做重复操作拦截，且报错提示文案模糊，无法引导用户正确操作，存在操作体验瑕疵与小额逻辑风险。针对以上问题，会议明确专项整改分工：研发团队需在本周内完成问题根源全面排查，优化页面资源加载逻辑、精简冗余代码，新增重复退款操作拦截机制，优化弹窗提示文案；测试团队全程跟进，问题修复后第一时间开展多机型回归测试、边界场景测试，验证修复效果，确保问题彻底闭环，无次生bug产生。同时产品团队同步跟进整改进度，实时对接业务需求，保障修复逻辑贴合用户使用场景。'
+    },
+    {
+      title: '下周工作计划',
+      text: '为保障版本按期高质量上线，下周各团队将聚焦收尾攻坚、测试验收与版本发布工作，有序推进各项迭代收尾任务。研发团队需完成剩余20%功能开发，收尾所有细节交互逻辑，完成本次迭代全部功能的自测自查，杜绝遗留隐性问题。测试团队将开展全流程、全场景压力测试与兼容性测试，覆盖主流机型、不同网络环境，重点验证页面加载性能、订单全流程、退款功能稳定性，输出完整测试报告，同步所有问题整改情况。待功能开发、测试验收全部通过后，完成版本打包、提审与灰度上线工作。版本上线后，产品团队将全面梳理上线后的用户反馈、后台数据、操作留存等核心数据，汇总用户使用痛点、功能优化建议，结合本次迭代的落地效果，复盘本次迭代的优势与不足，初步确定下一轮产品迭代的优化方向与核心需求。同时，各团队需保持高效协同，每日同步工作进度，及时上报卡点问题，做好风险预判与应急预案，全力保障本次迭代版本平稳上线、稳定运行，持续优化产品用户体验，提升产品整体竞争力。'
+    }
+  ];
+
+  function sum2BuildTopicDom(section) {
+    var topic = document.createElement('div');
+    topic.className = 'mt-topic';
+
+    var marker = document.createElement('div');
+    marker.className = 'mt-topic-marker';
+    marker.innerHTML = '<div class="mt-topic-dot"></div><div class="mt-topic-line"></div>';
+
+    var content = document.createElement('div');
+    content.className = 'mt-topic-content';
+
+    var header = document.createElement('div');
+    header.className = 'mt-topic-header';
+    var title = document.createElement('span');
+    title.className = 'mt-topic-title';
+    title.textContent = section.title;
+    header.appendChild(title);
+
+    var text = document.createElement('div');
+    text.className = 'mt-topic-text';
+    var cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    cursor.textContent = '▍';
+
+    content.appendChild(header);
+    content.appendChild(text);
+    topic.appendChild(marker);
+    topic.appendChild(content);
+    return { topic: topic, text: text, cursor: cursor };
+  }
+
+  // 逐段、段内逐字输出的“流逝”动画
+  function sum2TypewriteSections(sections, onDone) {
+    if (!sum2TopicsList) { if (onDone) onDone(); return; }
+    if (sum2TypeTimer) { clearTimeout(sum2TypeTimer); sum2TypeTimer = null; }
+
+    sum2TopicsList.innerHTML = '';
+    var built = sections.map(function(section) { return sum2BuildTopicDom(section); });
+    built.forEach(function(b) { sum2TopicsList.appendChild(b.topic); });
+
+    var sectionIdx = 0;
+    var charIdx = 0;
+    var CHAR_DELAY = 22;
+    var SECTION_DELAY = 300;
+
+    function showCursor(b) {
+      b.cursor.remove();
+      b.text.appendChild(b.cursor);
+    }
+
+    function clearCursor(b) {
+      if (b.cursor.parentNode === b.text) b.cursor.remove();
+    }
+
+    function tick() {
+      if (sectionIdx >= built.length) {
+        if (built.length) clearCursor(built[built.length - 1]);
+        if (onDone) onDone();
+        return;
+      }
+      var b = built[sectionIdx];
+      var text = sections[sectionIdx].text;
+
+      if (charIdx < text.length) {
+        clearCursor(b);
+        b.text.textContent += text.charAt(charIdx);
+        showCursor(b);
+        charIdx++;
+        sum2TypeTimer = setTimeout(tick, CHAR_DELAY);
+      } else {
+        clearCursor(b);
+        sectionIdx++;
+        charIdx = 0;
+        if (sectionIdx < built.length) {
+          sum2TypeTimer = setTimeout(tick, SECTION_DELAY);
+        } else {
+          if (onDone) onDone();
+        }
+      }
+    }
+
+    built.forEach(function(b, i) {
+      if (i === 0) showCursor(b);
+    });
+    sum2TypeTimer = setTimeout(tick, 250);
+  }
+
+  function sum2StartGeneration() {
+    if (sum2LoadingActive) return;
+    sum2LoadingActive = true;
+    sum2Done = false;
+
+    if (sum2GenHintTimer) { clearTimeout(sum2GenHintTimer); sum2GenHintTimer = null; }
+    if (sum2GenHint) sum2GenHint.style.display = 'flex';
+    if (sum2TopicsList) sum2TopicsList.innerHTML = '';
+    sum2RenderSummaryArea();
+
+    sum2GenHintTimer = setTimeout(function() {
+      if (sum2GenHint) sum2GenHint.style.display = 'none';
+      sum2TypewriteSections(sum2MdSections, function() {
+        sum2LoadingActive = false;
+        sum2Done = true;
+        sum2RenderSummaryArea();
+      });
+    }, 5000);
+  }
+
+  function runSum2Generation() {
+    sum2StartGeneration();
+  }
+
   if (sum2EmptyBtn) {
     sum2EmptyBtn.addEventListener('click', function() {
-      if (sum2LoadingActive || sum2Done) return;
-      sum2LoadingActive = true;
+      if (sum2Done) return;
+      runSum2Generation();
+    });
+  }
 
-      var progress = 0;
-      var pBar = sum2LoadingProgressBar;
-      var pDesc = sum2LoadingDesc;
-      var pSteps = sum2LoadingSteps ? sum2LoadingSteps.querySelectorAll('.ai-step') : [];
-      var overlay = sum2LoadingOverlay;
+  // Regenerate summary button
+  var sum2RegenBtn = document.getElementById('regenBtn');
+  if (sum2RegenBtn) {
+    sum2RegenBtn.addEventListener('click', function() {
+      if (sum2LoadingActive) return;
+      sum2Done = false;
+      runSum2Generation();
+    });
+  }
 
-      // Generate floating particles
-      if (sum2ParticlesContainer) {
-        sum2ParticlesContainer.innerHTML = '';
-        for (var i = 0; i < 12; i++) {
-          var p = document.createElement('div');
-          p.className = 'ai-particle';
-          p.style.left = (50 + (Math.random() - 0.5) * 120) + 'px';
-          p.style.top = (50 + (Math.random() - 0.5) * 120) + 'px';
-          p.style.setProperty('--tx1', (Math.random() * 80 - 40) + 'px');
-          p.style.setProperty('--ty1', (Math.random() * 80 - 40) + 'px');
-          p.style.setProperty('--tx2', (Math.random() * 100 - 50) + 'px');
-          p.style.setProperty('--ty2', (Math.random() * 100 - 50) + 'px');
-          p.style.setProperty('--tx3', (Math.random() * 80 - 40) + 'px');
-          p.style.setProperty('--ty3', (Math.random() * 80 - 40) + 'px');
-          p.style.animation = 'floatParticle ' + (3 + Math.random() * 2) + 's ease-in-out infinite';
-          p.style.animationDelay = (Math.random() * 2) + 's';
-          sum2ParticlesContainer.appendChild(p);
-        }
+  // Download dropdown menu
+  var sum2DownloadBtn = document.getElementById('downloadBtn');
+  var sum2DownloadMenu = document.getElementById('downloadMenu');
+  if (sum2DownloadBtn && sum2DownloadMenu) {
+    var sum2ToastTimer = null;
+    var sum2Toast = null;
+
+    function sum2ShowToast(msg) {
+      if (!sum2Toast) {
+        sum2Toast = document.createElement('div');
+        sum2Toast.className = 'mt-dl-toast';
+        document.body.appendChild(sum2Toast);
       }
+      sum2Toast.textContent = msg;
+      sum2Toast.classList.add('show');
+      if (sum2ToastTimer) { clearTimeout(sum2ToastTimer); sum2ToastTimer = null; }
+      sum2ToastTimer = setTimeout(function() {
+        sum2Toast.classList.remove('show');
+      }, 2200);
+    }
 
-      sum2RenderSummaryArea();
-      if (overlay) overlay.classList.add('show');
+    function sum2CloseMenu() {
+      sum2DownloadMenu.classList.remove('open');
+      sum2DownloadMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
+        item.classList.remove('open-in');
+      });
+    }
 
-      var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
+    function sum2DownloadFile(filename, content, mime) {
+      var blob = new Blob([content], { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 300);
+    }
 
-      function animateLoading() {
-        if (progress >= 100) {
-          sum2LoadingActive = false;
-          sum2Done = true;
-          if (overlay) overlay.classList.remove('show');
-          sum2RenderSummaryArea();
-          return;
-        }
-        progress += 2;
-        if (pBar) pBar.style.width = progress + '%';
+    sum2DownloadBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (sum2DownloadMenu.classList.contains('open')) {
+        sum2CloseMenu();
+      } else {
+        sum2DownloadMenu.classList.add('open');
+        var items = sum2DownloadMenu.querySelectorAll('.mt-dl-item');
+        items.forEach(function(item, i) {
+          item.classList.remove('open-in');
+          void item.offsetWidth;
+          item.style.animationDelay = (0.05 + i * 0.05) + 's';
+          item.classList.add('open-in');
+        });
+      }
+    });
 
-        var stepIndex = Math.floor(progress / 20);
-        if (stepIndex < loadingTexts.length && pDesc && pDesc.textContent !== loadingTexts[stepIndex]) {
-          pDesc.textContent = loadingTexts[stepIndex];
-          pSteps.forEach(function(s, i) {
-            if (i < stepIndex) s.className = 'ai-step done';
-            else if (i === stepIndex) s.className = 'ai-step active';
-            else s.className = 'ai-step';
+    sum2DownloadMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var kind = item.getAttribute('data-dl');
+        sum2CloseMenu();
+        if (kind === 'audio') {
+          sum2ShowToast('暂无音频文件可下载');
+        } else if (kind === 'original') {
+          var origEl = document.getElementById('originalText');
+          var origText = origEl ? origEl.innerText.trim() : '';
+          sum2DownloadFile('会议原始文本.txt', origText, 'text/plain;charset=utf-8');
+          sum2ShowToast('原始文本已开始下载');
+        } else if (kind === 'summary') {
+          var mdContent = '# 会议纪要\n\n';
+          sum2MdSections.forEach(function(section) {
+            mdContent += '## ' + section.title + '\n\n' + section.text + '\n\n';
           });
+          sum2DownloadFile('会议纪要.md', mdContent, 'text/markdown;charset=utf-8');
+          sum2ShowToast('会议纪要已开始下载');
         }
+      });
+    });
 
-        setTimeout(animateLoading, 300);
+    document.addEventListener('click', function(e) {
+      if (sum2DownloadMenu.classList.contains('open') &&
+          !sum2DownloadMenu.contains(e.target) &&
+          !sum2DownloadBtn.contains(e.target)) {
+        sum2CloseMenu();
       }
-
-      setTimeout(animateLoading, 500);
     });
   }
 

@@ -177,6 +177,145 @@
     background: rgba(255,255,255,0.08);
     align-self: stretch;
 }
+
+/* AI Loading Overlay */
+.ai-loading-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 55%, rgba(10,10,14,0.30) 100%),
+      rgba(5,5,8,0.72);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(48px) saturate(180%) brightness(0.6);
+    -webkit-backdrop-filter: blur(48px) saturate(180%) brightness(0.6);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ai-loading-overlay.show {
+    display: flex;
+    animation: fadeIn 0.4s ease;
+}
+
+.ai-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.ai-loader-ring {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.ai-loader-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: rgba(255,255,255,0.4);
+    border-right-color: rgba(255,255,255,0.15);
+    animation: spin 1.2s linear infinite;
+}
+
+.ai-loader-ring::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-bottom-color: rgba(255,255,255,0.3);
+    border-left-color: rgba(255,255,255,0.1);
+    animation: spinReverse 0.8s linear infinite;
+}
+
+.ai-loader-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.ai-loading-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+}
+
+.ai-loading-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.ai-loading-progress {
+    width: 280px;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ai-loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.ai-loading-steps {
+    display: flex;
+    gap: 12px;
+}
+
+.ai-step {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.ai-step.active {
+    background: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    transform: scale(1.2);
+}
+
+.ai-step.done {
+    background: rgba(255,255,255,0.4);
+}
+
+.ai-particles {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.ai-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+}
 </style>
 </head>
 <body class="page-meeting-home">
@@ -453,6 +592,34 @@
           </div>
         </div>
       </div>
+
+      <!-- AI Loading Overlay (within start card only) -->
+      <div class="ai-loading-overlay" id="aiLoadingOverlay">
+        <div class="ai-particles" id="aiParticles"></div>
+        <div class="ai-loading-content">
+          <div class="ai-loader-ring">
+            <div class="ai-loader-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="ai-loading-title">正在准备会议录音...</div>
+          <div class="ai-loading-desc" id="loadingDesc">正在初始化录音环境...</div>
+          <div class="ai-loading-progress">
+            <div class="ai-loading-progress-bar" id="loadingProgressBar"></div>
+          </div>
+          <div class="ai-loading-steps" id="loadingSteps">
+            <div class="ai-step active"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -508,11 +675,63 @@
 
 <script src="js/meeting-common.js"></script>
 <script>
-// Start recording - navigate to meeting-recoding.html
+// Start recording - show loading animation then navigate to meeting-recoding.html
 var startRecBtn = document.getElementById('startRecBtn');
 if (startRecBtn) {
   startRecBtn.addEventListener('click', function() {
-    window.location.href = 'meeting-recoding.html';
+    var overlay = document.getElementById('aiLoadingOverlay');
+    var progressBar = document.getElementById('loadingProgressBar');
+    var loadingDesc = document.getElementById('loadingDesc');
+    var steps = document.querySelectorAll('.ai-step');
+    var particlesContainer = document.getElementById('aiParticles');
+
+    // Generate floating particles
+    if (particlesContainer) {
+      particlesContainer.innerHTML = '';
+      for (var i = 0; i < 12; i++) {
+        var p = document.createElement('div');
+        p.className = 'ai-particle';
+        p.style.left = (50 + (Math.random() - 0.5) * 120) + 'px';
+        p.style.top = (50 + (Math.random() - 0.5) * 120) + 'px';
+        p.style.setProperty('--tx1', (Math.random() * 80 - 40) + 'px');
+        p.style.setProperty('--ty1', (Math.random() * 80 - 40) + 'px');
+        p.style.setProperty('--tx2', (Math.random() * 100 - 50) + 'px');
+        p.style.setProperty('--ty2', (Math.random() * 100 - 50) + 'px');
+        p.style.setProperty('--tx3', (Math.random() * 80 - 40) + 'px');
+        p.style.setProperty('--ty3', (Math.random() * 80 - 40) + 'px');
+        p.style.animation = 'floatParticle ' + (3 + Math.random() * 2) + 's ease-in-out infinite';
+        p.style.animationDelay = (Math.random() * 2) + 's';
+        particlesContainer.appendChild(p);
+      }
+    }
+
+    if (overlay) overlay.classList.add('show');
+
+    if (progressBar) progressBar.style.width = '0%';
+    var progress = 0;
+    var loadingTexts = ['正在初始化录音环境...', '正在连接语音引擎...', '正在校验麦克风权限...', '准备实时转录...', '录音就绪，即将进入会议...'];
+
+    function animateLoading() {
+      if (progress >= 100) {
+        window.location.href = 'meeting-recoding.html';
+        return;
+      }
+      progress += 2;
+      if (progressBar) progressBar.style.width = progress + '%';
+
+      var stepIndex = Math.floor(progress / 20);
+      if (stepIndex < loadingTexts.length && loadingDesc && loadingDesc.textContent !== loadingTexts[stepIndex]) {
+        loadingDesc.textContent = loadingTexts[stepIndex];
+        steps.forEach(function(s, i) {
+          if (i < stepIndex) s.className = 'ai-step done';
+          else if (i === stepIndex) s.className = 'ai-step active';
+          else s.className = 'ai-step';
+        });
+      }
+
+      setTimeout(animateLoading, 100);
+    }
+    animateLoading();
   });
 }
 </script>

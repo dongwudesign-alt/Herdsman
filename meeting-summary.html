@@ -17,6 +17,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
 }
 
 .mt-sum-header {
@@ -215,6 +216,58 @@
     line-height: 1.6;
 }
 
+.type-cursor {
+    display: inline-block;
+    width: 7px;
+    margin-left: 1px;
+    color: rgba(255,255,255,0.85);
+    animation: cursorBlink 0.9s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* "正在生成会议纪要..." hint */
+.mt-gen-hint {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 18px 2px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.03em;
+}
+
+.mt-gen-hint.hide {
+    display: none;
+}
+
+.mt-gen-hint-dots {
+    display: inline-flex;
+    gap: 3px;
+    margin-left: 2px;
+    padding-top: 8px;
+}
+
+.mt-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    animation: dotBlink 1.2s ease-in-out infinite;
+}
+
+.mt-dot:nth-child(2) { animation-delay: 0.2s; }
+.mt-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+    0%, 60%, 100% { opacity: 0.15; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-2px); }
+}
+
 /* Original text */
 .mt-original {
     display: none;
@@ -394,6 +447,190 @@
 }
 
 .mt-speed-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+/* AI magic regenerate button (black & white) */
+.mt-sum-action-btn.ai-magic-btn {
+    width: auto;
+    height: 30px;
+    padding: 0 8px;
+    gap: 4px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.15), inset 0 0 8px rgba(255,255,255,0.06);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.mt-sum-action-btn.ai-magic-btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 16px rgba(255,255,255,0.5), inset 0 0 8px rgba(255,255,255,0.1);
+}
+
+.mt-sum-action-btn.ai-magic-btn .ai-magic-text { color: #fff; }
+.mt-sum-action-btn.ai-magic-btn:hover .ai-magic-text { color: #000; }
+
+/* AI loading overlay (regenerate animation) */
+.ai-loading-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 55%, rgba(10,10,14,0.22) 100%),
+      rgba(14,14,18,0.30);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.15);
+    border-radius: 12px;
+}
+
+.ai-loading-overlay.show {
+    display: flex;
+    animation: fadeIn 0.4s ease;
+}
+
+.ai-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+.ai-loader-ring {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.ai-loader-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: rgba(255,255,255,0.4);
+    border-right-color: rgba(255,255,255,0.15);
+    animation: spin 1.2s linear infinite;
+}
+
+.ai-loader-ring::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-bottom-color: rgba(255,255,255,0.3);
+    border-left-color: rgba(255,255,255,0.1);
+    animation: spinReverse 0.8s linear infinite;
+}
+
+.ai-loader-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.ai-loading-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.02em;
+}
+
+.ai-loading-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-align: center;
+    min-height: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.ai-loading-progress {
+    width: 280px;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ai-loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.ai-loading-steps {
+    display: flex;
+    gap: 12px;
+}
+
+.ai-step {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.ai-step.active {
+    background: #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+    transform: scale(1.2);
+}
+
+.ai-step.done {
+    background: rgba(255,255,255,0.4);
+}
+
+.ai-particles {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    pointer-events: none;
+}
+
+.ai-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spinReverse { to { transform: rotate(-360deg); } }
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+}
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes floatParticle {
+    0% { transform: translate(0, 0); opacity: 0.4; }
+    33% { transform: translate(var(--tx1), var(--ty1)); opacity: 0.9; }
+    66% { transform: translate(var(--tx2), var(--ty2)); opacity: 0.6; }
+    100% { transform: translate(var(--tx3), var(--ty3)); opacity: 0.3; }
+}
 </style>
 </head>
 <body class="page-meeting-summary">
@@ -587,6 +824,10 @@
           <button class="mt-sum-action-btn" title="下载">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           </button>
+          <button class="mt-sum-action-btn ai-magic-btn" id="regenBtn" title="AI 重新生成总结">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"></path></svg>
+            <span class="ai-magic-text">重新生成</span>
+          </button>
         </div>
       </div>
 
@@ -596,42 +837,15 @@
       </div>
 
       <div class="mt-sum-body" id="sumBody">
-        <div class="mt-info-card" id="infoCard">
-          <div class="mt-info-item"><span class="mt-info-label">会议主题</span><span class="mt-info-value">产品迭代周会</span></div>
-          <div class="mt-info-item"><span class="mt-info-label">参会人员</span><span class="mt-info-value">5 人</span></div>
-          <div class="mt-info-item"><span class="mt-info-label">会议时长</span><span class="mt-info-value">45 分钟</span></div>
-        </div>
-
         <div class="mt-topics-wrap" id="topicsWrap">
-          <div class="mt-topics">
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">版本回顾</span><span class="mt-topic-time">00:00 - 08:30</span></div>
-                <div class="mt-topic-text">回顾上个版本的完成情况，整体进度符合预期。后端接口全部完成，正在进行联调测试。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">前端优化</span><span class="mt-topic-time">08:30 - 18:00</span></div>
-                <div class="mt-topic-text">讨论前端响应式适配优化方案，UI设计稿已更新，新版本采用更简洁的风格。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div><div class="mt-topic-line"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">性能优化</span><span class="mt-topic-time">18:00 - 32:00</span></div>
-                <div class="mt-topic-text">重点关注列表渲染效率，数据库索引优化可提升30%以上查询速度。</div>
-              </div>
-            </div>
-            <div class="mt-topic">
-              <div class="mt-topic-marker"><div class="mt-topic-dot"></div></div>
-              <div class="mt-topic-content">
-                <div class="mt-topic-header"><span class="mt-topic-title">测试与交付</span><span class="mt-topic-time">32:00 - 45:00</span></div>
-                <div class="mt-topic-text">测试环境已准备就绪，明天开始回归测试。交付时间定在月底。</div>
-              </div>
-            </div>
+          <div class="mt-gen-hint" id="genHint">
+            <span class="mt-gen-hint-text">正在生成会议纪要</span>
+            <span class="mt-gen-hint-dots">
+              <span class="mt-dot"></span><span class="mt-dot"></span><span class="mt-dot"></span>
+            </span>
+          </div>
+          <div class="mt-topics" id="topicsList">
+            <!-- 会议纪要内容由 JS 按 会议纪要.md 生成，并以流逝(打字机)动画输出 -->
           </div>
         </div>
 
@@ -671,6 +885,34 @@
           </div>
         </div>
         <button class="mt-speed-btn" id="speedBtn">1.0x</button>
+      </div>
+
+      <!-- AI Loading Overlay (shown while regenerating summary) -->
+      <div class="ai-loading-overlay" id="sumLoadingOverlay">
+        <div class="ai-particles" id="sumParticles"></div>
+        <div class="ai-loading-content">
+          <div class="ai-loader-ring">
+            <div class="ai-loader-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="22"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="ai-loading-title">AI 正在重新生成总结</div>
+          <div class="ai-loading-desc" id="sumLoadingDesc">正在分析会议内容...</div>
+          <div class="ai-loading-progress">
+            <div class="ai-loading-progress-bar" id="sumLoadingProgressBar"></div>
+          </div>
+          <div class="ai-loading-steps" id="sumLoadingSteps">
+            <div class="ai-step active"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+            <div class="ai-step"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -917,6 +1159,209 @@ if (mainEl) {
     }
   });
 }
+
+// AI regenerate summary (loading animation) + typewriter output
+(function() {
+  var regenBtn = document.getElementById('regenBtn');
+  if (!regenBtn) return;
+
+  var overlay = document.getElementById('sumLoadingOverlay');
+  var pBar = document.getElementById('sumLoadingProgressBar');
+  var pDesc = document.getElementById('sumLoadingDesc');
+  var pSteps = document.getElementById('sumLoadingSteps');
+  var particlesContainer = document.getElementById('sumParticles');
+  var topicsList = document.getElementById('topicsList');
+  var genHint = document.getElementById('genHint');
+  var active = false;
+  var typeTimer = null;
+  var genHintTimer = null;
+
+  var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
+
+  // 会议纪要.md 内容（按段落拆分）
+  var mdSections = [
+    {
+      title: '会议整体复盘',
+      text: '本次会议旨在全面复盘本周产品迭代整体工作，集中同步各业务模块开发、设计、测试进度，梳理迭代过程中出现的各类问题，协调跨团队解决卡点，明确后续工作分工、时间节点与推进标准，保障本次版本迭代高效、稳定落地。本周迭代核心围绕用户体验优化与订单流程升级两大核心目标开展，各团队高效联动推进各项工作。设计团队已100%完成既定工作，顺利落地用户首页界面全新改版全套设计稿件，同时针对订单操作页面、退款弹窗、个人中心界面进行视觉与交互优化，所有设计稿均通过产品审核，完成交付与切图输出，可完全支撑研发开发工作。研发团队聚焦核心功能开发，首页改版、订单主流程优化等核心模块主体开发工作已完成80%，页面布局重构、基础交互逻辑、数据展示功能均已开发完毕。测试团队同步开展并行测试工作，针对已开发完成的功能进行基础功能测试、UI适配测试与兼容性测试，已排查并修复多端UI错位、图标适配异常等基础问题，有效提升页面基础展示效果，为后续全量测试筑牢基础。整体迭代进度基本符合预设排期，未出现大面积延期、功能推翻重做等重大问题。'
+    },
+    {
+      title: '核心问题与整改',
+      text: '结合本周测试反馈与研发自测结果，当前迭代工作仍存在两处核心问题，对版本质量与用户体验存在一定影响，需优先闭环解决。第一，多机型适配性能问题，部分中低端安卓机型在进入首页、订单列表页面时，存在页面加载速度缓慢、首屏渲染延迟的情况，高峰期加载时长超出标准阈值，极易造成用户等待流失，初步判定为页面资源冗余、图片加载逻辑未优化导致。第二，订单退款功能逻辑漏洞，测试过程中发现，用户在未完成订单核销、重复提交退款申请时，弹窗提示逻辑混乱，未做重复操作拦截，且报错提示文案模糊，无法引导用户正确操作，存在操作体验瑕疵与小额逻辑风险。针对以上问题，会议明确专项整改分工：研发团队需在本周内完成问题根源全面排查，优化页面资源加载逻辑、精简冗余代码，新增重复退款操作拦截机制，优化弹窗提示文案；测试团队全程跟进，问题修复后第一时间开展多机型回归测试、边界场景测试，验证修复效果，确保问题彻底闭环，无次生bug产生。同时产品团队同步跟进整改进度，实时对接业务需求，保障修复逻辑贴合用户使用场景。'
+    },
+    {
+      title: '下周工作计划',
+      text: '为保障版本按期高质量上线，下周各团队将聚焦收尾攻坚、测试验收与版本发布工作，有序推进各项迭代收尾任务。研发团队需完成剩余20%功能开发，收尾所有细节交互逻辑，完成本次迭代全部功能的自测自查，杜绝遗留隐性问题。测试团队将开展全流程、全场景压力测试与兼容性测试，覆盖主流机型、不同网络环境，重点验证页面加载性能、订单全流程、退款功能稳定性，输出完整测试报告，同步所有问题整改情况。待功能开发、测试验收全部通过后，完成版本打包、提审与灰度上线工作。版本上线后，产品团队将全面梳理上线后的用户反馈、后台数据、操作留存等核心数据，汇总用户使用痛点、功能优化建议，结合本次迭代的落地效果，复盘本次迭代的优势与不足，初步确定下一轮产品迭代的优化方向与核心需求。同时，各团队需保持高效协同，每日同步工作进度，及时上报卡点问题，做好风险预判与应急预案，全力保障本次迭代版本平稳上线、稳定运行，持续优化产品用户体验，提升产品整体竞争力。'
+    }
+  ];
+
+  function buildTopicDom(section) {
+    var topic = document.createElement('div');
+    topic.className = 'mt-topic';
+
+    var marker = document.createElement('div');
+    marker.className = 'mt-topic-marker';
+    marker.innerHTML = '<div class="mt-topic-dot"></div><div class="mt-topic-line"></div>';
+
+    var content = document.createElement('div');
+    content.className = 'mt-topic-content';
+
+    var header = document.createElement('div');
+    header.className = 'mt-topic-header';
+    var title = document.createElement('span');
+    title.className = 'mt-topic-title';
+    title.textContent = section.title;
+    header.appendChild(title);
+
+    var text = document.createElement('div');
+    text.className = 'mt-topic-text';
+    var cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    cursor.textContent = '▍';
+
+    content.appendChild(header);
+    content.appendChild(text);
+    topic.appendChild(marker);
+    topic.appendChild(content);
+    return { topic: topic, text: text, cursor: cursor };
+  }
+
+  // 逐段、段内逐字输出的“流逝”动画
+  function typewriteSections(sections) {
+    if (!topicsList) return;
+    if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
+
+    topicsList.innerHTML = '';
+    var built = sections.map(function(section) { return buildTopicDom(section); });
+    built.forEach(function(b) { topicsList.appendChild(b.topic); });
+
+    var sectionIdx = 0;
+    var charIdx = 0;
+    var CHAR_DELAY = 22; // 每字毫秒
+    var SECTION_DELAY = 300; // 段落间停顿
+
+    function showCursor(b) {
+      b.cursor.remove();
+      b.text.appendChild(b.cursor);
+    }
+
+    function clearCursor(b) {
+      if (b.cursor.parentNode === b.text) b.cursor.remove();
+    }
+
+    function tick() {
+      if (sectionIdx >= built.length) {
+        if (built.length) clearCursor(built[built.length - 1]);
+        return;
+      }
+      var b = built[sectionIdx];
+      var text = sections[sectionIdx].text;
+
+      if (charIdx < text.length) {
+        // 逐字添加
+        var ch = text.charAt(charIdx);
+        var needsSpace = (b.text.textContent.length > 0) && (ch.charCodeAt(0) > 0x3000 || b.text.textContent.charCodeAt(b.text.textContent.length - 1) > 0x3000);
+        clearCursor(b);
+        b.text.textContent += ch;
+        showCursor(b);
+        charIdx++;
+        typeTimer = setTimeout(tick, CHAR_DELAY);
+      } else {
+        // 本段完成，进入下一段
+        clearCursor(b);
+        sectionIdx++;
+        charIdx = 0;
+        if (sectionIdx < built.length) {
+          typeTimer = setTimeout(tick, SECTION_DELAY);
+        }
+      }
+    }
+
+    built.forEach(function(b, i) {
+      if (i === 0) showCursor(b);
+    });
+    typeTimer = setTimeout(tick, 250);
+  }
+
+  // 先显示“正在生成会议纪要...”闪烁提示 5s，再开始流逝输出
+  function startGeneration() {
+    if (genHintTimer) { clearTimeout(genHintTimer); genHintTimer = null; }
+    if (genHint) genHint.classList.remove('hide');
+
+    genHintTimer = setTimeout(function() {
+      if (genHint) genHint.classList.add('hide');
+      typewriteSections(mdSections);
+    }, 5000);
+  }
+
+  function spawnParticles() {
+    if (!particlesContainer) return;
+    particlesContainer.innerHTML = '';
+    for (var i = 0; i < 12; i++) {
+      var p = document.createElement('div');
+      p.className = 'ai-particle';
+      p.style.left = (50 + (Math.random() - 0.5) * 120) + 'px';
+      p.style.top = (50 + (Math.random() - 0.5) * 120) + 'px';
+      p.style.setProperty('--tx1', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty1', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--tx2', (Math.random() * 100 - 50) + 'px');
+      p.style.setProperty('--ty2', (Math.random() * 100 - 50) + 'px');
+      p.style.setProperty('--tx3', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--ty3', (Math.random() * 80 - 40) + 'px');
+      p.style.animation = 'floatParticle ' + (3 + Math.random() * 2) + 's ease-in-out infinite';
+      p.style.animationDelay = (Math.random() * 2) + 's';
+      particlesContainer.appendChild(p);
+    }
+  }
+
+  function animateLoading(callback) {
+    var progress = 0;
+    if (pBar) pBar.style.width = '0%';
+    if (pDesc) pDesc.textContent = loadingTexts[0];
+    if (pSteps) {
+      var st = pSteps.querySelectorAll('.ai-step');
+      st.forEach(function(s, i) { s.className = i === 0 ? 'ai-step active' : 'ai-step'; });
+    }
+    spawnParticles();
+    if (overlay) overlay.classList.add('show');
+
+    function step() {
+      if (progress >= 100) {
+        if (overlay) overlay.classList.remove('show');
+        if (callback) callback();
+        return;
+      }
+      progress += 4;
+      if (pBar) pBar.style.width = progress + '%';
+
+      var stepIndex = Math.floor(progress / 20);
+      if (stepIndex < loadingTexts.length && pDesc && pDesc.textContent !== loadingTexts[stepIndex]) {
+        pDesc.textContent = loadingTexts[stepIndex];
+        if (pSteps) {
+          var st = pSteps.querySelectorAll('.ai-step');
+          st.forEach(function(s, i) {
+            if (i < stepIndex) s.className = 'ai-step done';
+            else if (i === stepIndex) s.className = 'ai-step active';
+            else s.className = 'ai-step';
+          });
+        }
+      }
+      setTimeout(step, 250);
+    }
+    setTimeout(step, 500);
+  }
+
+  function regenerate() {
+    if (active) return;
+    active = true;
+    startGeneration();
+    active = false;
+  }
+
+  // 初次加载：先显示“正在生成会议纪要...”提示 5s，再以“流逝”动画输出 MD 内容
+  startGeneration();
+
+  regenBtn.addEventListener('click', regenerate);
+})();
 
 // Init
 setVolume(volume);
