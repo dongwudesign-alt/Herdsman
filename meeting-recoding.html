@@ -505,13 +505,17 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
       </div>
+      <div class="mt-participants-info">
+        <div class="mt-participants-info-title">参会人员</div>
+        <div class="mt-participants-info-box"></div>
+      </div>
       <div class="mt-participants-title" style="display:none;">人员列表</div>
       <div class="mt-participants hide" id="participantsList">
-        <div class="mt-participant"><div class="mt-avatar">张</div><div class="mt-participant-info"><div class="mt-participant-name">张三</div><div class="mt-participant-role">产品经理</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">李</div><div class="mt-participant-info"><div class="mt-participant-name">李四</div><div class="mt-participant-role">技术负责人</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">王</div><div class="mt-participant-info"><div class="mt-participant-name">王五</div><div class="mt-participant-role">后端开发</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">赵</div><div class="mt-participant-info"><div class="mt-participant-name">赵六</div><div class="mt-participant-role">前端开发</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
-        <div class="mt-participant"><div class="mt-avatar">陈</div><div class="mt-participant-info"><div class="mt-participant-name">陈七</div><div class="mt-participant-role">UI设计师</div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">张</div><div class="mt-participant-info"><div class="mt-participant-name">张三</div><div class="mt-participant-role">产品经理</div></div><div class="mt-participant-more-wrap"><button class="mt-participant-more" title="更多">···</button><div class="mt-participant-dropdown"><button class="mt-dropdown-item" data-action="edit">编辑</button><button class="mt-dropdown-item danger" data-action="delete">删除</button></div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">李</div><div class="mt-participant-info"><div class="mt-participant-name">李四</div><div class="mt-participant-role">技术负责人</div></div><div class="mt-participant-more-wrap"><button class="mt-participant-more" title="更多">···</button><div class="mt-participant-dropdown"><button class="mt-dropdown-item" data-action="edit">编辑</button><button class="mt-dropdown-item danger" data-action="delete">删除</button></div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">王</div><div class="mt-participant-info"><div class="mt-participant-name">王五</div><div class="mt-participant-role">后端开发</div></div><div class="mt-participant-more-wrap"><button class="mt-participant-more" title="更多">···</button><div class="mt-participant-dropdown"><button class="mt-dropdown-item" data-action="edit">编辑</button><button class="mt-dropdown-item danger" data-action="delete">删除</button></div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">赵</div><div class="mt-participant-info"><div class="mt-participant-name">赵六</div><div class="mt-participant-role">前端开发</div></div><div class="mt-participant-more-wrap"><button class="mt-participant-more" title="更多">···</button><div class="mt-participant-dropdown"><button class="mt-dropdown-item" data-action="edit">编辑</button><button class="mt-dropdown-item danger" data-action="delete">删除</button></div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
+        <div class="mt-participant"><div class="mt-avatar">陈</div><div class="mt-participant-info"><div class="mt-participant-name">陈七</div><div class="mt-participant-role">UI设计师</div></div><div class="mt-participant-more-wrap"><button class="mt-participant-more" title="更多">···</button><div class="mt-participant-dropdown"><button class="mt-dropdown-item" data-action="edit">编辑</button><button class="mt-dropdown-item danger" data-action="delete">删除</button></div></div><button class="mt-participant-select" title="选择"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="16" height="16" rx="4"></rect><path class="mt-check-mark" d="M6 10.5l2.6 2.6L14.6 7"></path></svg></button></div>
         <button class="mt-add-participants-btn" id="addParticipantsBtn" style="display: none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>添加人员</span></button>
       </div>
       <div class="mt-notes" id="notesList">
@@ -617,6 +621,32 @@
       <div class="mt-modal-actions">
         <button class="mt-modal-btn" id="modalCancel">取消</button>
         <button class="mt-modal-btn primary" id="modalConfirm">添加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Participant Modal -->
+<div class="mt-modal-overlay" id="editModal">
+  <div class="mt-modal">
+    <div class="mt-modal-header">
+      <span class="mt-modal-title">编辑人员</span>
+      <button class="mt-modal-close" id="editModalClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="mt-modal-body">
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">姓名</label>
+        <input type="text" class="mt-modal-input" id="editModalName" placeholder="请输入姓名">
+      </div>
+      <div class="mt-modal-field">
+        <label class="mt-modal-label">职位</label>
+        <input type="text" class="mt-modal-input" id="editModalRole" placeholder="请输入职位">
+      </div>
+      <div class="mt-modal-actions">
+        <button class="mt-modal-btn" id="editModalCancel">取消</button>
+        <button class="mt-modal-btn primary" id="editModalConfirm">保存</button>
       </div>
     </div>
   </div>

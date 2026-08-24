@@ -106,10 +106,53 @@
 
   function updateSelectBtn() {
     var btn = document.getElementById('addParticipantsBtn');
-    if (!btn) return;
-    if (participantsConfirmed) { btn.style.display = ''; return; }
-    var hasSel = document.querySelectorAll('.mt-participant.selected').length > 0;
-    btn.style.display = hasSel ? '' : 'none';
+    if (btn) btn.style.display = 'none';
+  }
+
+  function getChipName(chip) {
+    if (!chip) return '';
+    var nameEl = chip.querySelector('span:last-child');
+    return nameEl ? nameEl.textContent.trim() : '';
+  }
+
+  function addChip(name) {
+    var infoBox = document.querySelector('.mt-participants-info-box');
+    if (!infoBox) return;
+    // Don't add duplicate
+    var existing = Array.prototype.slice.call(infoBox.querySelectorAll('.mt-participant-chip'));
+    if (existing.some(function(c) { return getChipName(c) === name; })) return;
+    var avatar = name.charAt(0);
+    var chip = document.createElement('button');
+    chip.className = 'mt-participant-chip';
+    chip.type = 'button';
+    chip.innerHTML = '<span class="chip-avatar">' + avatar + '</span><span class="chip-close">&times;</span><span>' + name + '</span>';
+    infoBox.appendChild(chip);
+  }
+
+  function removeChip(name) {
+    var infoBox = document.querySelector('.mt-participants-info-box');
+    if (!infoBox) return;
+    var chips = infoBox.querySelectorAll('.mt-participant-chip');
+    Array.prototype.forEach.call(chips, function(c) {
+      if (getChipName(c) === name) {
+        c.style.transition = 'all 0.2s ease';
+        c.style.opacity = '0';
+        c.style.transform = 'scale(0.8)';
+        setTimeout(function() { if (c.parentNode) c.remove(); }, 200);
+      }
+    });
+  }
+
+  function syncChipsFromSelection() {
+    var infoBox = document.querySelector('.mt-participants-info-box');
+    if (!infoBox) return;
+    // Remove all chips
+    infoBox.innerHTML = '';
+    // Add chips for all selected participants
+    document.querySelectorAll('.mt-participant.selected').forEach(function(p) {
+      var nameEl = p.querySelector('.mt-participant-name');
+      if (nameEl) addChip(nameEl.textContent.trim());
+    });
   }
 
   function setupSelectButtons() {
@@ -118,7 +161,17 @@
       btn.dataset.bound = 'true';
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        this.closest('.mt-participant').classList.toggle('selected');
+        var card = this.closest('.mt-participant');
+        card.classList.toggle('selected');
+        var nameEl = card.querySelector('.mt-participant-name');
+        if (nameEl) {
+          var name = nameEl.textContent.trim();
+          if (card.classList.contains('selected')) {
+            addChip(name);
+          } else {
+            removeChip(name);
+          }
+        }
         updateSelectBtn();
       });
     });
@@ -321,7 +374,7 @@
         addedCount++;
       });
       if (addedCount && participantsConfirmed) convertToRemoveMode();
-      if (addedCount) updateParticipantCount();
+      if (addedCount) { updateParticipantCount(); setupSelectButtons(); }
       closeMembersModal();
     });
   }
@@ -334,6 +387,7 @@
   var searchWrap = document.getElementById('searchWrap');
   var participantsList = document.getElementById('participantsList');
   var participantsTitle = document.querySelector('.mt-participants-title');
+  var participantsInfo = tabSettings ? document.querySelector('.mt-participants-info') : null;
 
   function switchTab(activeTab) {
     [tabSettings, tabParticipants, tabNotes].forEach(function(tab) {
@@ -352,11 +406,12 @@
     // Notes only on notes tab
     if (notesList) notesList.classList.toggle('show', activeTab === tabNotes);
 
-    // Participants UI (search + list + title) only on participants tab
+    // Participants UI (search + list + title + summary) only on participants tab
     var showParticipants = activeTab === tabParticipants;
     if (searchWrap) searchWrap.classList.toggle('hide', !showParticipants);
     if (participantsList) participantsList.classList.toggle('hide', !showParticipants);
     if (participantsTitle) participantsTitle.style.display = showParticipants ? '' : 'none';
+    if (participantsInfo) participantsInfo.style.display = showParticipants ? '' : 'none';
   }
 
   if (tabSettings) tabSettings.addEventListener('click', function() { switchTab(tabSettings); });
@@ -430,6 +485,153 @@
       }
     }
   });
+
+  // ---- Participant Chip Delete (click × to remove chip + deselect card) ----
+  var infoBox = document.querySelector('.mt-participants-info-box');
+  if (infoBox) {
+    infoBox.addEventListener('click', function(e) {
+      var close = e.target.closest('.chip-close');
+      if (!close) return;
+      var chip = close.closest('.mt-participant-chip');
+      if (!chip) return;
+      var name = getChipName(chip);
+      // Deselect the participant card
+      document.querySelectorAll('.mt-participant').forEach(function(p) {
+        var nameEl = p.querySelector('.mt-participant-name');
+        if (nameEl && nameEl.textContent.trim() === name) {
+          p.classList.remove('selected');
+        }
+      });
+      // Remove chip with animation
+      chip.style.transition = 'all 0.2s ease';
+      chip.style.opacity = '0';
+      chip.style.transform = 'scale(0.8)';
+      setTimeout(function() { if (chip.parentNode) chip.remove(); }, 200);
+    });
+  }
+
+  // ---- Participant More Button Dropdown ----
+  var participantsList = document.getElementById('participantsList');
+  if (participantsList) {
+    participantsList.addEventListener('click', function(e) {
+      var moreBtn = e.target.closest('.mt-participant-more');
+      if (moreBtn) {
+        e.stopPropagation();
+        var wrap = moreBtn.closest('.mt-participant-more-wrap');
+        var dropdown = wrap.querySelector('.mt-participant-dropdown');
+        // Close all other dropdowns
+        document.querySelectorAll('.mt-participant-dropdown.show').forEach(function(d) {
+          if (d !== dropdown) d.classList.remove('show');
+        });
+        dropdown.classList.toggle('show');
+        return;
+      }
+
+      var dropdownItem = e.target.closest('.mt-dropdown-item');
+      if (!dropdownItem) return;
+      var wrap = dropdownItem.closest('.mt-participant-more-wrap');
+      var dropdown = wrap.querySelector('.mt-participant-dropdown');
+      dropdown.classList.remove('show');
+      var card = wrap.closest('.mt-participant');
+      var action = dropdownItem.getAttribute('data-action');
+      var nameEl = card.querySelector('.mt-participant-name');
+      var roleEl = card.querySelector('.mt-participant-role');
+      var avatarEl = card.querySelector('.mt-avatar');
+
+      if (action === 'edit') {
+        // Open edit modal with pre-filled data
+        var editModal = document.getElementById('editModal');
+        var editName = document.getElementById('editModalName');
+        var editRole = document.getElementById('editModalRole');
+        if (editModal && editName && editRole) {
+          editName.value = nameEl ? nameEl.textContent.trim() : '';
+          editRole.value = roleEl ? roleEl.textContent.trim() : '';
+          // Store reference to the card being edited
+          editModal._card = card;
+          editModal._avatarEl = avatarEl;
+          editModal._nameEl = nameEl;
+          editModal._roleEl = roleEl;
+          editModal.classList.add('show');
+        }
+      } else if (action === 'delete') {
+        var name = nameEl ? nameEl.textContent.trim() : '';
+        // Remove chip if exists
+        var chipBox = document.querySelector('.mt-participants-info-box');
+        if (chipBox) {
+          chipBox.querySelectorAll('.mt-participant-chip').forEach(function(c) {
+            if (getChipName(c) === name) {
+              c.style.transition = 'all 0.2s ease';
+              c.style.opacity = '0';
+              c.style.transform = 'scale(0.8)';
+              setTimeout(function() { if (c.parentNode) c.remove(); }, 200);
+            }
+          });
+        }
+        // Remove card with animation
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        setTimeout(function() { if (card.parentNode) card.remove(); }, 300);
+      }
+    });
+  }
+
+  // Close all dropdowns on outside click
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.mt-participant-dropdown.show').forEach(function(d) {
+      d.classList.remove('show');
+    });
+  });
+
+  // ---- Edit Modal Logic ----
+  var editModal = document.getElementById('editModal');
+  if (editModal) {
+    var editModalClose = document.getElementById('editModalClose');
+    var editModalCancel = document.getElementById('editModalCancel');
+    var editModalConfirm = document.getElementById('editModalConfirm');
+    var editModalName = document.getElementById('editModalName');
+    var editModalRole = document.getElementById('editModalRole');
+
+    function closeEditModal() {
+      editModal.classList.remove('show');
+      editModal._card = null;
+    }
+
+    if (editModalClose) editModalClose.addEventListener('click', closeEditModal);
+    if (editModalCancel) editModalCancel.addEventListener('click', closeEditModal);
+    // Close on overlay click
+    editModal.addEventListener('click', function(e) {
+      if (e.target === editModal) closeEditModal();
+    });
+
+    if (editModalConfirm) {
+      editModalConfirm.addEventListener('click', function() {
+        var card = editModal._card;
+        if (!card) return;
+        var newName = editModalName.value.trim();
+        var newRole = editModalRole.value.trim();
+        if (!newName) return;
+        var oldName = editModal._nameEl ? editModal._nameEl.textContent.trim() : '';
+        // Update card
+        if (editModal._nameEl) editModal._nameEl.textContent = newName;
+        if (editModal._roleEl) editModal._roleEl.textContent = newRole;
+        if (editModal._avatarEl) editModal._avatarEl.textContent = newName.charAt(0);
+        // Update chip name if card was selected
+        var chipBox = document.querySelector('.mt-participants-info-box');
+        if (chipBox) {
+          chipBox.querySelectorAll('.mt-participant-chip').forEach(function(c) {
+            if (getChipName(c) === oldName) {
+              var avatarSpan = c.querySelector('.chip-avatar');
+              var nameSpan = c.querySelector('span:last-child');
+              if (avatarSpan) avatarSpan.textContent = newName.charAt(0);
+              if (nameSpan) nameSpan.textContent = newName;
+            }
+          });
+        }
+        closeEditModal();
+      });
+    }
+  }
 
   // ---- Expose public API ----
   window.MeetingCommon = {

@@ -966,6 +966,101 @@ body {
 .mt-participant-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 .mt-participant-role { font-size: 0.74rem; color: var(--text-dim); }
 
+.mt-participants-info {
+    padding: 6px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mt-participants-info-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.mt-participants-info-box {
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 12px;
+    min-height: 48px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.mt-participant-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 4px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    font-size: 0.78rem;
+    font-family: inherit;
+    cursor: default;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+}
+
+.mt-participant-chip:hover {
+    background: rgba(255,255,255,0.14);
+}
+
+.mt-participant-chip .chip-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text);
+    flex-shrink: 0;
+    transition: opacity 0.15s ease;
+}
+
+.mt-participant-chip .chip-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #f87171;
+    flex-shrink: 0;
+    cursor: pointer;
+    background: #2a1a1c;
+    transition: all 0.15s ease;
+    line-height: 1;
+}
+
+.mt-participant-chip .chip-close:hover {
+    background: rgba(248,113,113,0.12);
+    color: #fca5a5;
+}
+
+.mt-participant-chip:hover .chip-avatar {
+    opacity: 0;
+}
+
+.mt-participant-chip:hover .chip-close {
+    display: flex;
+    position: absolute;
+    left: 4px;
+    top: 4px;
+}
+
 .mt-participants-title {
     font-size: 0.8rem;
     font-weight: 600;
@@ -973,6 +1068,8 @@ body {
     letter-spacing: 0.02em;
     padding: 2px 16px 6px;
 }
+
+#addParticipantsBtn { display: none !important; }
 
 .mt-participant-select {
     width: 28px;
@@ -1033,6 +1130,71 @@ body {
 
 .mt-participant:hover .mt-participant-remove { opacity: 1; }
 .mt-participant-remove:hover { background: rgba(255,80,80,0.15); color: rgba(255,120,120,0.9); }
+
+/* Participant More Button & Dropdown */
+.mt-participant-more-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.mt-participant-more {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.mt-participant:hover .mt-participant-more { display: flex; }
+.mt-participant-more:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+.mt-participant-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    min-width: 100px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 50;
+}
+
+.mt-participant-dropdown.show { display: flex; flex-direction: column; gap: 2px; }
+
+.mt-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.mt-dropdown-item:hover { background: rgba(255,255,255,0.08); }
+
+.mt-dropdown-item.danger { color: #f87171; }
+.mt-dropdown-item.danger:hover { background: rgba(248,113,113,0.12); color: #fca5a5; }
 
 /* Notes */
 .mt-notes {
