@@ -32,7 +32,7 @@
     justify-content: space-between;
     flex-shrink: 0;
     position: relative;
-    z-index: 1;
+    z-index: 40;
 }
 
 .mt-sum-title-row {
@@ -161,27 +161,9 @@
     transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
 }
 
-.mt-dl-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #fff;
-    opacity: 0;
-    transform: scaleY(0);
-    transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
 .mt-dl-item:hover {
     background: rgba(255,255,255,0.08);
     transform: translateX(2px);
-}
-
-.mt-dl-item:hover::before {
-    opacity: 0.9;
-    transform: scaleY(1);
 }
 
 .mt-dl-item svg {
@@ -863,9 +845,9 @@
       </a>
     </div>
     <div class="sidebar-group bottom">
-      <div class="s-item">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-      </div>
+      <a class="s-item" href="setting.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
     </div>
   </div>
 </div>
@@ -925,7 +907,7 @@
       <!-- Settings Panel -->
       <div class="mt-settings-panel show" id="settingsPanel">
         <div class="mt-settings-item">
-          <div class="mt-settings-label">ASR 模型</div>
+          <div class="mt-settings-label">语音模型</div>
           <div class="mt-settings-select-wrap">
             <button class="mt-settings-select-btn" id="asrModelBtn" type="button">whisper-large-v3</button>
             <svg class="mt-settings-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -1033,13 +1015,9 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
                 <span>下载音频</span>
               </div>
-              <div class="mt-dl-item" data-dl="original">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-                <span>原始文本</span>
-              </div>
               <div class="mt-dl-item" data-dl="summary">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><line x1="8" y1="21" x2="12" y2="21"></line><path d="M9 11l1-1 1 1 2-2 2 2" transform="translate(0 8)"></path></svg>
-                <span>会议纪要</span>
+                <span>下载总结</span>
               </div>
             </div>
           </div>
@@ -1570,11 +1548,6 @@
         sum2CloseMenu();
         if (kind === 'audio') {
           sum2ShowToast('暂无音频文件可下载');
-        } else if (kind === 'original') {
-          var origEl = document.getElementById('originalText');
-          var origText = origEl ? origEl.innerText.trim() : '';
-          sum2DownloadFile('会议原始文本.txt', origText, 'text/plain;charset=utf-8');
-          sum2ShowToast('原始文本已开始下载');
         } else if (kind === 'summary') {
           var mdContent = '# 会议纪要\n\n';
           sum2MdSections.forEach(function(section) {
@@ -1700,6 +1673,9 @@
     sum2RenderSummaryArea();
   }
 })();
+document.getElementById('newMeetingBtn').addEventListener('click', function() {
+  window.location.href = 'meeting-home.html';
+});
 </script>
 </body>
 </html>

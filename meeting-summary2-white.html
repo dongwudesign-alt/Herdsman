@@ -1,4 +1,4 @@
-<!-- PAGE_ID: meeting-summary -->
+<!-- PAGE_ID: meeting-summary2 (independent copy of meeting-summary - DO NOT overwrite meeting-summary.html) -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -10,6 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/meeting-common.css">
 <style>
+/* ============================================
+   Summary2 Page Styles (independent copy)
+   Visual clone of meeting-summary page styles.
+   Class names intentionally match the shared
+   design language so the look is pixel-identical.
+   ============================================ */
 /* Right - Summary */
 .mt-summary {
     flex: 1;
@@ -17,7 +23,6 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative;
 }
 
 .mt-sum-header {
@@ -72,6 +77,36 @@
 .mt-sum-action-btn:hover {
     background: rgba(255,255,255,0.08);
     color: var(--text);
+}
+
+/* AI magic regenerate button */
+.mt-sum-action-btn.ai-magic-btn {
+    width: auto;
+    height: 30px;
+    padding: 0 8px;
+    gap: 4px;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.15), inset 0 0 8px rgba(255,255,255,0.06);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.mt-sum-action-btn.ai-magic-btn:hover {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+    box-shadow: 0 0 16px rgba(255,255,255,0.5), inset 0 0 8px rgba(255,255,255,0.1);
+}
+
+.mt-sum-action-btn.ai-magic-btn .ai-magic-text {
+    color: #fff;
+}
+
+.mt-sum-action-btn.ai-magic-btn:hover .ai-magic-text {
+    color: #000;
 }
 
 /* Download dropdown menu */
@@ -551,32 +586,95 @@
 
 .mt-speed-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 
-/* AI magic regenerate button (black & white) */
-.mt-sum-action-btn.ai-magic-btn {
-    width: auto;
-    height: 30px;
-    padding: 0 8px;
-    gap: 4px;
-    border: 1px solid rgba(255,255,255,0.35);
+/* Smart Summary Entry (cloned from meeting-home start-recording entry) */
+.mt-sum-empty {
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    position: relative;
+    z-index: 1;
+}
+
+.mt-sum-empty-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: none;
     background: rgba(255,255,255,0.06);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.15), inset 0 0 8px rgba(255,255,255,0.06);
-    font-size: 0.72rem;
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.15),
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+.mt-sum-empty-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    animation: recordPulse 2.5s ease-out infinite;
+}
+
+.mt-sum-empty-btn::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.12);
+    animation: recordPulse 2.5s ease-out infinite 0.8s;
+}
+
+.mt-sum-empty-btn:hover {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.05);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.25),
+      0 12px 48px rgba(0,0,0,0.5),
+      0 0 40px rgba(255,255,255,0.08),
+      inset 0 1px 1px rgba(255,255,255,0.15);
+}
+
+.mt-sum-empty-btn:active { transform: scale(0.96); }
+
+.mt-sum-empty-btn svg { position: relative; z-index: 1; }
+
+.mt-sum-empty-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.mt-sum-empty-title {
+    font-size: 1.05rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    color: var(--text);
+    letter-spacing: 0.02em;
 }
 
-.mt-sum-action-btn.ai-magic-btn:hover {
-    background: #fff;
-    color: #000;
-    border-color: #fff;
-    box-shadow: 0 0 16px rgba(255,255,255,0.5), inset 0 0 8px rgba(255,255,255,0.1);
+.mt-sum-empty-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    text-align: center;
+    max-width: 280px;
 }
 
-.mt-sum-action-btn.ai-magic-btn .ai-magic-text { color: #fff; }
-.mt-sum-action-btn.ai-magic-btn:hover .ai-magic-text { color: #000; }
-
-/* AI loading overlay (regenerate animation) */
+/* AI Loading Overlay (cloned from meeting-recoding) */
 .ai-loading-overlay {
     display: none;
     position: absolute;
@@ -713,30 +811,260 @@
     border-radius: 50%;
     background: rgba(255,255,255,0.6);
 }
-
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes spinReverse { to { transform: rotate(-360deg); } }
-@keyframes pulseGlow {
-    0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
-}
-@keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-@keyframes floatParticle {
-    0% { transform: translate(0, 0); opacity: 0.4; }
-    33% { transform: translate(var(--tx1), var(--ty1)); opacity: 0.9; }
-    66% { transform: translate(var(--tx2), var(--ty2)); opacity: 0.6; }
-    100% { transform: translate(var(--tx3), var(--ty3)); opacity: 0.3; }
-}
 </style>
-</head>
-<body class="page-meeting-summary">
+	<style>
+	/* ============================================
+	   Light Mode Overrides
+	   ============================================ */
+	body.page-meeting-summary2 {
+	  background: #f2f0ed !important;
+	}
+	.app-window {
+	  background: #faf8f6 !important;
+	}
+	.app-window::before {
+	  background: conic-gradient(from 0deg at 50% 50%, rgba(0,0,0,0.06), rgba(0,0,0,0.02), rgba(0,0,0,0.06), rgba(0,0,0,0.02), rgba(0,0,0,0.06)) !important;
+	}
+	.app-window::after {
+	  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.02) 0%, transparent 70%) !important;
+	}
+	.meeting-view { overflow: visible !important; }
+.s-item { color: #8e8e93 !important; }
+	.s-item:hover { background: rgba(0,0,0,0.04) !important; }
+	.s-item.active { color: #1c1c1e !important; }
+
+	/* Cards */
+	.mt-card {
+	  background: rgba(255,255,255,0.7) !important;
+	  backdrop-filter: blur(40px) !important;
+	  -webkit-backdrop-filter: blur(40px) !important;
+	  border: 1px solid rgba(0,0,0,0.06) !important;
+	  box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06) !important;
+	}
+	.mt-card::before {
+	  background: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.04) 0%, transparent 70%) !important;
+	}
+	.mt-card::after {
+	  background: radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.02) 0%, transparent 70%) !important;
+	}
+
+	/* History items */
+	.mt-item { border-bottom-color: rgba(0,0,0,0.04) !important; }
+	.mt-item:hover { background: rgba(0,0,0,0.03) !important; }
+	.mt-item.active { background: rgba(0,0,0,0.04) !important; border-left-color: #1c1c1e !important; }
+	.mt-item-title { color: #1c1c1e !important; }
+	.mt-item-date { color: #8e8e93 !important; }
+	.mt-skill-btn { color: #8e8e93 !important; border-color: rgba(0,0,0,0.06) !important; }
+	.mt-skill-btn svg { color: #8e8e93 !important; }
+	.mt-skill-btn:hover { background: rgba(0,0,0,0.04) !important; color: #1c1c1e !important; border-color: rgba(0,0,0,0.12) !important; }
+	.mt-skill-btn:hover svg { color: #1c1c1e !important; }
+	.mt-skill-btn.active { background: rgba(0,0,0,0.06) !important; border-color: rgba(0,0,0,0.12) !important; color: #1c1c1e !important; }
+	.mt-skill-btn.active svg { color: #1c1c1e !important; }
+	.mt-divider { background: rgba(0,0,0,0.06) !important; }
+	.mt-new-meeting-btn {
+  color: #1c1c1e !important;
+  border: 1px solid rgba(0,0,0,0.12) !important;
+  background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.02) 50%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.05) 100%) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255,255,255,0.6), inset 0 -1px 1px 0 rgba(0,0,0,0.03), 0 4px 20px rgba(0,0,0,0.08), 0 0 24px rgba(0,0,0,0.02) !important;
+  text-shadow: none !important;
+}
+.mt-new-meeting-btn::before { background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0,0,0,0.06), transparent 70%) !important; }
+.mt-new-meeting-btn::after { background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0,0,0,0.04), transparent 70%) !important; }
+.mt-new-meeting-btn:hover {
+  background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.06) 25%, rgba(0,0,0,0.03) 50%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.08) 100%) !important;
+  border-color: rgba(0,0,0,0.18) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255,255,255,0.7), inset 0 -1px 1px 0 rgba(0,0,0,0.05), 0 6px 28px rgba(0,0,0,0.12) !important;
+}
+.mt-new-meeting-btn:hover::before { background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0,0,0,0.10), transparent 70%) !important; }
+.mt-new-meeting-btn:hover::after { background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0,0,0,0.06), transparent 70%) !important; }
+.mt-new-meeting-btn svg { filter: none !important; }
+	.mt-history-title { color: #1c1c1e !important; }
+	.mt-header .mt-title { color: #1c1c1e !important; }
+
+	/* Workbench tabs */
+	.mt-wb-tab { color: #8e8e93 !important; }
+	.mt-wb-tab:hover { background: rgba(0,0,0,0.03) !important; color: #1c1c1e !important; }
+	.mt-wb-tab.active { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #1c1c1e !important; }
+
+	/* Settings */
+	.mt-settings-label { color: #1c1c1e !important; }
+	.mt-settings-select-btn { color: #1c1c1e !important; border-color: rgba(0,0,0,0.1) !important; background: rgba(0,0,0,0.02) !important; }
+	.mt-settings-select-btn:hover { border-color: rgba(0,0,0,0.18) !important; background: rgba(0,0,0,0.04) !important; }
+	.mt-settings-arrow { color: #8e8e93 !important; }
+	.mt-settings-dropdown { background: rgba(255,255,255,0.95) !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
+	.mt-settings-option { color: #1c1c1e !important; }
+	.mt-settings-option:hover { background: rgba(0,0,0,0.04) !important; }
+	.mt-settings-option.selected { background: rgba(0,0,0,0.06) !important; }
+
+	/* Search */
+	.mt-search-icon { color: #8e8e93 !important; }
+	.mt-search-input { color: #1c1c1e !important; background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.08) !important; }
+	.mt-search-input::placeholder { color: #8e8e93 !important; }
+	.mt-add-btn { color: #8e8e93 !important; border-color: rgba(0,0,0,0.1) !important; }
+	.mt-add-btn:hover { background: rgba(0,0,0,0.04) !important; color: #1c1c1e !important; }
+
+	/* Participants */
+	.mt-participants-title { color: #1c1c1e !important; }
+	.mt-participant { background: rgba(0,0,0,0.02) !important; border: 1px solid rgba(0,0,0,0.05) !important; }
+.mt-participant:hover { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.10) !important; }
+.mt-participant.selected { background: rgba(0,0,0,0.06) !important; border-color: rgba(0,0,0,0.18) !important; }
+	.mt-participant-name { color: #1c1c1e !important; }
+	.mt-participant-role { color: #8e8e93 !important; }
+	.mt-avatar { background: linear-gradient(135deg, rgba(0,0,0,0.15), rgba(0,0,0,0.05)) !important; border: 1px solid rgba(0,0,0,0.12) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.5) !important; color: #1c1c1e !important; }
+	.mt-participant-select { color: #8e8e93 !important; border-color: rgba(0,0,0,0.1) !important; }
+	.mt-participant-select:hover { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.18) !important; }
+	.mt-participant-select.selected { background: rgba(0,0,0,0.06) !important; border-color: #1c1c1e !important; color: #1c1c1e !important; }
+	.mt-participant-more { color: #8e8e93 !important; }
+	.mt-participant-dropdown { background: rgba(255,255,255,0.95) !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important; }
+	.mt-dropdown-item { color: #1c1c1e !important; }
+	.mt-dropdown-item:hover { background: rgba(0,0,0,0.04) !important; }
+	.mt-dropdown-item.danger { color: #e74c3c !important; }
+	.mt-participants-info-title { color: #1c1c1e !important; }
+	.mt-participants-info-box { background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.06) !important; }
+	.mt-participant-chip { background: rgba(0,0,0,0.04) !important; border: 1px solid rgba(0,0,0,0.08) !important; color: #1c1c1e !important; }
+	.mt-participant-chip:hover { border-color: rgba(0,0,0,0.16) !important; background: rgba(0,0,0,0.06) !important; }
+	.chip-avatar { background: rgba(0,0,0,0.08) !important; color: #1c1c1e !important; }
+	.chip-close { color: #f87171 !important; background: #2a1a1c !important; }
+
+	/* Notes */
+	.mt-notes-textarea { color: #1c1c1e !important; background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.06) !important; }
+	.mt-notes-textarea::placeholder { color: #8e8e93 !important; }
+	.mt-notes-hint { color: #8e8e93 !important; }
+	.mt-notes-count { color: #8e8e93 !important; }
+	.mt-notes-footer { border-top-color: rgba(0,0,0,0.04) !important; }
+
+	/* Summary area */
+	.mt-sum-title { color: #1c1c1e !important; }
+	.mt-sum-meta { color: #8e8e93 !important; }
+	.mt-sum-action-btn { border-color: rgba(0,0,0,0.08) !important; background: rgba(0,0,0,0.02) !important; color: #8e8e93 !important; }
+	.mt-sum-action-btn:hover { background: rgba(0,0,0,0.04) !important; color: #1c1c1e !important; }
+	.mt-sum-tab { color: #8e8e93 !important; }
+	.mt-sum-tab:hover { background: rgba(0,0,0,0.03) !important; color: #1c1c1e !important; }
+	.mt-sum-tab.active { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.1) !important; color: #1c1c1e !important; }
+	.mt-sum-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08) !important; }
+	.mt-info-card { background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.06) !important; }
+	.mt-info-label { color: #8e8e93 !important; }
+	.mt-info-value { color: #1c1c1e !important; }
+	.mt-topic { border-bottom-color: rgba(0,0,0,0.04) !important; }
+	.mt-topic-dot { background: #1c1c1e !important; box-shadow: 0 0 8px rgba(0,0,0,0.15) !important; }
+	.mt-topic-line { background: rgba(0,0,0,0.06) !important; }
+	.mt-topic-title { color: #1c1c1e !important; }
+	.mt-topic-time { color: #8e8e93 !important; }
+	.mt-topic-text { color: #8e8e93 !important; }
+	.type-cursor { color: rgba(0,0,0,0.85) !important; }
+	.mt-gen-hint { color: #1c1c1e !important; }
+	.mt-dot { background: rgba(0,0,0,0.7) !important; }
+	.mt-original-item { background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.06) !important; }
+	.mt-original-time { color: #8e8e93 !important; }
+	.mt-original-speaker { color: #8e8e93 !important; }
+	.mt-original-text { color: #1c1c1e !important; }
+
+	/* Audio bar */
+	.mt-audio-bar { background: rgba(0,0,0,0.02) !important; border-top-color: rgba(0,0,0,0.06) !important; }
+	.mt-play-btn { border-color: rgba(0,0,0,0.1) !important; background: rgba(0,0,0,0.03) !important; color: #1c1c1e !important; }
+	.mt-play-btn:hover { background: rgba(0,0,0,0.06) !important; border-color: rgba(0,0,0,0.18) !important; }
+	.mt-progress-bar { background: rgba(0,0,0,0.06) !important; }
+	.mt-progress-fill { background: rgba(0,0,0,0.4) !important; }
+	.mt-progress-handle { background: #1c1c1e !important; box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important; }
+	.mt-time-row { color: #8e8e93 !important; }
+	.mt-volume-icon { color: #8e8e93 !important; }
+	.mt-volume-icon:hover { color: #1c1c1e !important; }
+	.mt-volume-slider { background: rgba(0,0,0,0.06) !important; }
+	.mt-volume-fill { background: rgba(0,0,0,0.4) !important; }
+	.mt-speed-btn { border-color: rgba(0,0,0,0.08) !important; color: #8e8e93 !important; }
+	.mt-speed-btn:hover { background: rgba(0,0,0,0.04) !important; color: #1c1c1e !important; }
+
+	/* Smart Summary Entry */
+	.mt-sum-empty-btn {
+	  background: rgba(0,0,0,0.04) !important;
+	  box-shadow: 0 0 0 1px rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+	}
+	.mt-sum-empty-btn::before { border-color: rgba(0,0,0,0.12) !important; }
+	.mt-sum-empty-btn::after { border-color: rgba(0,0,0,0.08) !important; }
+	.mt-sum-empty-btn:hover {
+	  background: rgba(0,0,0,0.08) !important;
+	  box-shadow: 0 0 0 1px rgba(0,0,0,0.18), 0 12px 48px rgba(0,0,0,0.12), 0 0 40px rgba(0,0,0,0.03), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+	}
+	.mt-sum-empty-title { color: #1c1c1e !important; }
+.mt-sum-empty-desc { color: #8e8e93 !important; }
+.mt-sum-empty-btn svg { color: #1c1c1e !important; }
+
+	/* AI magic button */
+	.mt-sum-action-btn.ai-magic-btn {
+	  border-color: rgba(0,0,0,0.2) !important;
+	  background: rgba(0,0,0,0.04) !important;
+	  color: #1c1c1e !important;
+	  box-shadow: 0 0 6px rgba(0,0,0,0.08), inset 0 0 4px rgba(0,0,0,0.03) !important;
+	}
+	.mt-sum-action-btn.ai-magic-btn:hover {
+	  background: #1c1c1e !important;
+	  color: #fff !important;
+	  border-color: #1c1c1e !important;
+	  box-shadow: 0 0 12px rgba(0,0,0,0.2) !important;
+	}
+	.mt-sum-action-btn.ai-magic-btn .ai-magic-text { color: #1c1c1e !important; }
+	.mt-sum-action-btn.ai-magic-btn:hover .ai-magic-text { color: #fff !important; }
+
+	/* AI Loading overlay */
+	.ai-loading-overlay {
+	  background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.01) 55%, rgba(255,255,255,0.5) 100%),
+	    rgba(255,255,255,0.5) !important;
+	  backdrop-filter: blur(18px) saturate(150%) brightness(1.15) !important;
+	  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.15) !important;
+	}
+	.ai-loader-ring::before { border-top-color: rgba(0,0,0,0.3) !important; border-right-color: rgba(0,0,0,0.1) !important; }
+	.ai-loader-ring::after { border-bottom-color: rgba(0,0,0,0.2) !important; border-left-color: rgba(0,0,0,0.08) !important; }
+	.ai-loader-icon { filter: brightness(0.3) !important; }
+	.ai-loading-title { color: #1c1c1e !important; }
+	.ai-loading-desc { color: #8e8e93 !important; }
+	.ai-loading-progress { background: rgba(0,0,0,0.04) !important; }
+	.ai-loading-progress-bar { background: linear-gradient(90deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4), rgba(0,0,0,0.2)) !important; }
+	.ai-step { background: rgba(0,0,0,0.06) !important; }
+	.ai-step.active { background: #1c1c1e !important; box-shadow: 0 0 12px rgba(0,0,0,0.2) !important; }
+	.ai-step.done { background: rgba(0,0,0,0.25) !important; }
+	.ai-particle { background: rgba(0,0,0,0.3) !important; }
+
+	/* Download menu */
+	.mt-download-menu { background: rgba(255,255,255,0.95) !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 12px 32px rgba(0,0,0,0.12) !important; }
+	.mt-dl-head { color: rgba(0,0,0,0.4) !important; }
+	.mt-dl-item { color: #1c1c1e !important; }
+	.mt-dl-item:hover { background: rgba(0,0,0,0.04) !important; }
+	.mt-dl-item svg { color: rgba(0,0,0,0.35) !important; }
+	.mt-dl-item:hover svg { color: #1c1c1e !important; }
+	.mt-dl-toast { background: rgba(255,255,255,0.95) !important; border: 1px solid rgba(0,0,0,0.1) !important; color: #1c1c1e !important; box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important; }
+
+	/* Win buttons */
+	.win-btn { color: rgba(0,0,0,0.35) !important; }
+	.win-btn:hover { background: rgba(0,0,0,0.06) !important; }
+
+	/* Modal */
+	.mt-modal-overlay { background: rgba(0,0,0,0.3) !important; }
+	.mt-modal { background: rgba(255,255,255,0.95) !important; border: 1px solid rgba(0,0,0,0.08) !important; box-shadow: 0 16px 48px rgba(0,0,0,0.15) !important; }
+	.mt-modal-title { color: #1c1c1e !important; }
+	.mt-modal-close { color: #8e8e93 !important; }
+	.mt-modal-close:hover { color: #1c1c1e !important; background: rgba(0,0,0,0.04) !important; }
+	.mt-modal-label { color: #1c1c1e !important; }
+	.mt-modal-input { color: #1c1c1e !important; background: rgba(0,0,0,0.02) !important; border-color: rgba(0,0,0,0.08) !important; }
+	.mt-modal-input::placeholder { color: #8e8e93 !important; }
+	.mt-modal-input:focus { border-color: rgba(0,0,0,0.2) !important; }
+	.mt-modal-btn { color: #1c1c1e !important; border-color: rgba(0,0,0,0.08) !important; }
+	.mt-modal-btn:hover { background: rgba(0,0,0,0.04) !important; }
+	.mt-modal-btn.primary { background: #1c1c1e !important; color: #fff !important; border-color: #1c1c1e !important; }
+	.mt-modal-btn.primary:hover { background: #333 !important; }
+
+	/* Members modal */
+	.mt-members-search svg { color: #8e8e93 !important; }
+	.mt-members-search input { color: #1c1c1e !important; background: rgba(0,0,0,0.02) !important; }
+	.mt-members-search input::placeholder { color: #8e8e93 !important; }
+	.mt-members-clear { color: #8e8e93 !important; }
+	.mt-members-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08) !important; }
+	.mt-members-selcount { color: #8e8e93 !important; }
+
+	/* Scrollbar */
+	.main::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08) !important; }
+	</style>
+	</head>
+	<body class="page-meeting-summary2">
 <div class="app-window">
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
@@ -754,21 +1082,21 @@
   <div class="sidebar" id="primarySidebar">
     <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
     <div class="sidebar-group top">
-      <a class="s-item" id="btnHome" href="index.html">
+      <a class="s-item" id="btnHome" href="index-white.html">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </a>
-      <a class="s-item active" id="btnMeeting" href="meeting-home.html" title="工作台">
+      <a class="s-item active" id="btnMeeting" href="meeting-home-white.html" title="工作台">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
       </a>
-      <a class="s-item" href="model-store.html" title="模型管理">
+      <a class="s-item" href="model-store-white.html" title="模型管理">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
       </a>
-      <a class="s-item" href="Routing policy.html" title="路由策略">
+      <a class="s-item" href="Routing policy-white.html" title="路由策略">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
       </a>
     </div>
     <div class="sidebar-group bottom">
-      <a class="s-item" href="setting.html" title="设置">
+      <a class="s-item" href="setting-white.html" title="设置">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </a>
     </div>
@@ -781,11 +1109,11 @@
     <div class="mt-card mt-history" id="mtHistory">
       <div class="mt-header"><span class="mt-title">智能体</span></div>
       <div class="mt-skills">
-        <a class="mt-skill-btn" href="index.html">
+        <a class="mt-skill-btn" href="index-white.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           对话
         </a>
-        <a class="mt-skill-btn" href="image-gen.html">
+        <a class="mt-skill-btn" href="image-gen-white.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
           图片
         </a>
@@ -930,7 +1258,7 @@
           </button>
           <div class="mt-download-wrap">
             <button class="mt-sum-action-btn" id="downloadBtn" title="下载">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="5" x2="12" y2="15"></line></svg>
             </button>
             <div class="mt-download-menu" id="downloadMenu">
               <div class="mt-dl-head">导出</div>
@@ -957,8 +1285,22 @@
       </div>
 
       <div class="mt-sum-body" id="sumBody">
+        <!-- Smart Summary Entry (shown until summary is generated) -->
+        <div class="mt-sum-empty" id="sumEmpty" style="display:flex;">
+          <button class="mt-sum-empty-btn" id="sumEmptyBtn" title="智能总结">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path>
+              <path d="M19 17l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"></path>
+            </svg>
+          </button>
+          <div class="mt-sum-empty-info">
+            <div class="mt-sum-empty-title">智能总结</div>
+            <div class="mt-sum-empty-desc">点击按钮开始生成会议总结，系统将自动提取主题、要点并整理为结构化纪要</div>
+          </div>
+        </div>
+
         <div class="mt-topics-wrap" id="topicsWrap">
-          <div class="mt-gen-hint" id="genHint">
+          <div class="mt-gen-hint" id="genHint" style="display:none;">
             <span class="mt-gen-hint-text">正在生成会议纪要</span>
             <span class="mt-gen-hint-dots">
               <span class="mt-dot"></span><span class="mt-dot"></span><span class="mt-dot"></span>
@@ -1007,7 +1349,7 @@
         <button class="mt-speed-btn" id="speedBtn">1.0x</button>
       </div>
 
-      <!-- AI Loading Overlay (shown while regenerating summary) -->
+      <!-- AI Loading Overlay (shown while generating summary) -->
       <div class="ai-loading-overlay" id="sumLoadingOverlay">
         <div class="ai-particles" id="sumParticles"></div>
         <div class="ai-loading-content">
@@ -1020,7 +1362,7 @@
               </svg>
             </div>
           </div>
-          <div class="ai-loading-title">AI 正在重新生成总结</div>
+          <div class="ai-loading-title">AI 正在总结会议</div>
           <div class="ai-loading-desc" id="sumLoadingDesc">正在分析会议内容...</div>
           <div class="ai-loading-progress">
             <div class="ai-loading-progress-bar" id="sumLoadingProgressBar"></div>
@@ -1115,217 +1457,143 @@
 
 <script src="js/meeting-common.js"></script>
 <script>
-// Summary page specific logic
-var mainEl = document.querySelector('.main');
-var tabSummary = document.getElementById('tabSummary');
-var tabOriginal = document.getElementById('tabOriginal');
-var infoCard = document.getElementById('infoCard');
-var topicsWrap = document.getElementById('topicsWrap');
-var originalText = document.getElementById('originalText');
-var audioBar = document.getElementById('audioBar');
-var playBtn = document.getElementById('playBtn');
-var progressBar = document.getElementById('progressBar');
-var progressFill = document.getElementById('progressFill');
-var currentTimeEl = document.getElementById('currentTimeEl');
-var totalTimeEl = document.getElementById('totalTimeEl');
-var volumeSlider = document.getElementById('volumeSlider');
-var volumeFill = document.getElementById('volumeFill');
-var volumeIcon = document.getElementById('volumeIcon');
-var speedBtn = document.getElementById('speedBtn');
-
-var totalSeconds = 45 * 60;
-var currentSeconds = 0;
-var isPlaying = false;
-var volume = 0.8;
-var isMuted = false;
-var prevVolume = 0.8;
-var speeds = [0.5, 1.0, 1.5, 2.0];
-var speedIndex = 1;
-var playTimer = null;
-
-function formatTime(sec) {
-  var m = Math.floor(sec / 60);
-  var s = sec % 60;
-  return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
-}
-
-function updateProgress() {
-  var pct = totalSeconds > 0 ? (currentSeconds / totalSeconds) * 100 : 0;
-  progressFill.style.width = pct + '%';
-  currentTimeEl.textContent = formatTime(currentSeconds);
-  totalTimeEl.textContent = formatTime(totalSeconds);
-}
-
-function play() {
-  isPlaying = true;
-  var iconPlay = playBtn.querySelector('.icon-play');
-  var iconPause = playBtn.querySelector('.icon-pause');
-  if (iconPlay) iconPlay.style.display = 'none';
-  if (iconPause) iconPause.style.display = 'block';
-  playTimer = setInterval(function() {
-    if (currentSeconds < totalSeconds) {
-      currentSeconds++;
-      updateProgress();
-    } else {
-      pause();
-    }
-  }, 1000 / speeds[speedIndex]);
-}
-
-function pause() {
-  isPlaying = false;
-  clearInterval(playTimer);
-  var iconPlay = playBtn.querySelector('.icon-play');
-  var iconPause = playBtn.querySelector('.icon-pause');
-  if (iconPlay) iconPlay.style.display = 'block';
-  if (iconPause) iconPause.style.display = 'none';
-}
-
-function seekTo(clientX) {
-  var rect = progressBar.getBoundingClientRect();
-  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  currentSeconds = Math.floor(pct * totalSeconds);
-  updateProgress();
-}
-
-function setVolume(v) {
-  volume = Math.max(0, Math.min(1, v));
-  volumeFill.style.width = (volume * 100) + '%';
-}
-
-function seekVolume(clientX) {
-  var rect = volumeSlider.getBoundingClientRect();
-  var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-  setVolume(pct);
-}
-
-// Tab switching
-if (tabSummary) {
-  tabSummary.addEventListener('click', function() {
-    tabSummary.classList.add('active');
-    tabOriginal.classList.remove('active');
-    if (infoCard) infoCard.classList.remove('hide');
-    if (topicsWrap) topicsWrap.classList.remove('hide');
-    if (originalText) originalText.classList.remove('show');
-    if (audioBar) audioBar.classList.remove('show');
-  });
-}
-
-if (tabOriginal) {
-  tabOriginal.addEventListener('click', function() {
-    tabOriginal.classList.add('active');
-    tabSummary.classList.remove('active');
-    if (infoCard) infoCard.classList.add('hide');
-    if (topicsWrap) topicsWrap.classList.add('hide');
-    if (originalText) originalText.classList.add('show');
-    if (audioBar) audioBar.classList.add('show');
-  });
-}
-
-// Play/Pause
-if (playBtn) {
-  playBtn.addEventListener('click', function() {
-    if (isPlaying) pause(); else play();
-  });
-}
-
-// Progress seek
-if (progressBar) {
-  var isDraggingProgress = false;
-  progressBar.addEventListener('mousedown', function(e) {
-    isDraggingProgress = true;
-    progressBar.classList.add('dragging');
-    seekTo(e.clientX);
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isDraggingProgress) seekTo(e.clientX);
-  });
-  document.addEventListener('mouseup', function() {
-    isDraggingProgress = false;
-    progressBar.classList.remove('dragging');
-  });
-}
-
-// Volume seek
-if (volumeSlider) {
-  var isDraggingVolume = false;
-  volumeSlider.addEventListener('mousedown', function(e) {
-    isDraggingVolume = true;
-    seekVolume(e.clientX);
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (isDraggingVolume) seekVolume(e.clientX);
-  });
-  document.addEventListener('mouseup', function() {
-    isDraggingVolume = false;
-  });
-}
-
-// Mute toggle
-if (volumeIcon) {
-  volumeIcon.addEventListener('click', function() {
-    if (isMuted) {
-      isMuted = false;
-      setVolume(prevVolume);
-    } else {
-      isMuted = true;
-      prevVolume = volume;
-      setVolume(0);
-    }
-  });
-}
-
-// Speed toggle
-if (speedBtn) {
-  speedBtn.addEventListener('click', function() {
-    speedIndex = (speedIndex + 1) % speeds.length;
-    speedBtn.textContent = speeds[speedIndex] + 'x';
-    if (isPlaying) {
-      clearInterval(playTimer);
-      playTimer = setInterval(function() {
-        if (currentSeconds < totalSeconds) {
-          currentSeconds++;
-          updateProgress();
-        } else {
-          pause();
-        }
-      }, 1000 / speeds[speedIndex]);
-    }
-  });
-}
-
-// Close sidebar on main click
-if (mainEl) {
-  mainEl.addEventListener('click', function(e) {
-    var sw = document.getElementById('sidebarWrapper');
-    if (sw && sw.classList.contains('expanded')) {
-      if (!sw.contains(e.target) && !e.target.closest('.s-item')) {
-        sw.classList.remove('expanded');
-      }
-    }
-  });
-}
-
-// AI regenerate summary (loading animation) + typewriter output
+// ============================================
+// Summary2 page specific logic (independent
+// namespace from meeting-summary.html)
+// ============================================
 (function() {
-  var regenBtn = document.getElementById('regenBtn');
-  if (!regenBtn) return;
+  'use strict';
 
-  var overlay = document.getElementById('sumLoadingOverlay');
-  var pBar = document.getElementById('sumLoadingProgressBar');
-  var pDesc = document.getElementById('sumLoadingDesc');
-  var pSteps = document.getElementById('sumLoadingSteps');
-  var particlesContainer = document.getElementById('sumParticles');
-  var topicsList = document.getElementById('topicsList');
-  var genHint = document.getElementById('genHint');
-  var active = false;
-  var typeTimer = null;
-  var genHintTimer = null;
+  var sum2Main = document.querySelector('.main');
+  var sum2TabSummary = document.getElementById('tabSummary');
+  var sum2TabOriginal = document.getElementById('tabOriginal');
+  var sum2InfoCard = document.getElementById('infoCard');
+  var sum2TopicsWrap = document.getElementById('topicsWrap');
+  var sum2OriginalText = document.getElementById('originalText');
+  var sum2AudioBar = document.getElementById('audioBar');
+  var sum2PlayBtn = document.getElementById('playBtn');
+  var sum2ProgressBar = document.getElementById('progressBar');
+  var sum2ProgressFill = document.getElementById('progressFill');
+  var sum2CurrentTimeEl = document.getElementById('currentTimeEl');
+  var sum2TotalTimeEl = document.getElementById('totalTimeEl');
+  var sum2VolumeSlider = document.getElementById('volumeSlider');
+  var sum2VolumeFill = document.getElementById('volumeFill');
+  var sum2VolumeIcon = document.getElementById('volumeIcon');
+  var sum2SpeedBtn = document.getElementById('speedBtn');
+  var sum2Empty = document.getElementById('sumEmpty');
+  var sum2EmptyBtn = document.getElementById('sumEmptyBtn');
+  var sum2LoadingOverlay = document.getElementById('sumLoadingOverlay');
+  var sum2ParticlesContainer = document.getElementById('sumParticles');
+  var sum2TopicsList = document.getElementById('topicsList');
+  var sum2GenHint = document.getElementById('genHint');
+  var sum2LoadingDesc = document.getElementById('sumLoadingDesc');
+  var sum2LoadingProgressBar = document.getElementById('sumLoadingProgressBar');
+  var sum2LoadingSteps = document.getElementById('sumLoadingSteps');
 
-  var loadingTexts = ['正在分析会议内容...', '提取关键信息...', '识别讨论主题...', '生成结构化总结...', '整理会议纪要...'];
+  var sum2Done = false;
+  var sum2LoadingActive = false;
+  var sum2TypeTimer = null;
+  var sum2GenHintTimer = null;
 
+  var sum2TotalSeconds = 45 * 60;
+  var sum2CurrentSeconds = 0;
+  var sum2IsPlaying = false;
+  var sum2Volume = 0.8;
+  var sum2IsMuted = false;
+  var sum2PrevVolume = 0.8;
+  var sum2Speeds = [0.5, 1.0, 1.5, 2.0];
+  var sum2SpeedIndex = 1;
+  var sum2PlayTimer = null;
+
+  function sum2FormatTime(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+  }
+
+  function sum2UpdateProgress() {
+    var pct = sum2TotalSeconds > 0 ? (sum2CurrentSeconds / sum2TotalSeconds) * 100 : 0;
+    sum2ProgressFill.style.width = pct + '%';
+    sum2CurrentTimeEl.textContent = sum2FormatTime(sum2CurrentSeconds);
+    sum2TotalTimeEl.textContent = sum2FormatTime(sum2TotalSeconds);
+  }
+
+  function sum2Play() {
+    sum2IsPlaying = true;
+    var iconPlay = sum2PlayBtn.querySelector('.icon-play');
+    var iconPause = sum2PlayBtn.querySelector('.icon-pause');
+    if (iconPlay) iconPlay.style.display = 'none';
+    if (iconPause) iconPause.style.display = 'block';
+    sum2PlayTimer = setInterval(function() {
+      if (sum2CurrentSeconds < sum2TotalSeconds) {
+        sum2CurrentSeconds++;
+        sum2UpdateProgress();
+      } else {
+        sum2Pause();
+      }
+    }, 1000 / sum2Speeds[sum2SpeedIndex]);
+  }
+
+  function sum2Pause() {
+    sum2IsPlaying = false;
+    clearInterval(sum2PlayTimer);
+    var iconPlay = sum2PlayBtn.querySelector('.icon-play');
+    var iconPause = sum2PlayBtn.querySelector('.icon-pause');
+    if (iconPlay) iconPlay.style.display = 'block';
+    if (iconPause) iconPause.style.display = 'none';
+  }
+
+  function sum2SeekTo(clientX) {
+    var rect = sum2ProgressBar.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    sum2CurrentSeconds = Math.floor(pct * sum2TotalSeconds);
+    sum2UpdateProgress();
+  }
+
+  function sum2SetVolume(v) {
+    sum2Volume = Math.max(0, Math.min(1, v));
+    sum2VolumeFill.style.width = (sum2Volume * 100) + '%';
+  }
+
+  function sum2SeekVolume(clientX) {
+    var rect = sum2VolumeSlider.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    sum2SetVolume(pct);
+  }
+
+  // Tab switching
+  function sum2RenderSummaryArea() {
+    var inSummaryTab = sum2TabSummary && sum2TabSummary.classList.contains('active');
+    var showEntry = inSummaryTab && !sum2Done && !sum2LoadingActive;
+    var showContent = inSummaryTab && (sum2Done || sum2LoadingActive);
+    if (sum2Empty) sum2Empty.style.display = showEntry ? 'flex' : 'none';
+    if (sum2InfoCard) sum2InfoCard.classList.toggle('hide', !showContent);
+    if (sum2TopicsWrap) sum2TopicsWrap.classList.toggle('hide', !showContent);
+  }
+
+  if (sum2TabSummary) {
+    sum2TabSummary.addEventListener('click', function() {
+      sum2TabSummary.classList.add('active');
+      sum2TabOriginal.classList.remove('active');
+      if (sum2OriginalText) sum2OriginalText.classList.remove('show');
+      if (sum2AudioBar) sum2AudioBar.classList.remove('show');
+      sum2RenderSummaryArea();
+    });
+  }
+
+  if (sum2TabOriginal) {
+    sum2TabOriginal.addEventListener('click', function() {
+      sum2TabOriginal.classList.add('active');
+      sum2TabSummary.classList.remove('active');
+      if (sum2OriginalText) sum2OriginalText.classList.add('show');
+      if (sum2AudioBar) sum2AudioBar.classList.add('show');
+      sum2RenderSummaryArea();
+    });
+  }
+
+  // Smart Summary generation: hint 5s -> typewriter output (no loading overlay)
   // 会议纪要.md 内容（按段落拆分）
-  var mdSections = [
+  var sum2MdSections = [
     {
       title: '会议整体复盘',
       text: '本次会议旨在全面复盘本周产品迭代整体工作，集中同步各业务模块开发、设计、测试进度，梳理迭代过程中出现的各类问题，协调跨团队解决卡点，明确后续工作分工、时间节点与推进标准，保障本次版本迭代高效、稳定落地。本周迭代核心围绕用户体验优化与订单流程升级两大核心目标开展，各团队高效联动推进各项工作。设计团队已100%完成既定工作，顺利落地用户首页界面全新改版全套设计稿件，同时针对订单操作页面、退款弹窗、个人中心界面进行视觉与交互优化，所有设计稿均通过产品审核，完成交付与切图输出，可完全支撑研发开发工作。研发团队聚焦核心功能开发，首页改版、订单主流程优化等核心模块主体开发工作已完成80%，页面布局重构、基础交互逻辑、数据展示功能均已开发完毕。测试团队同步开展并行测试工作，针对已开发完成的功能进行基础功能测试、UI适配测试与兼容性测试，已排查并修复多端UI错位、图标适配异常等基础问题，有效提升页面基础展示效果，为后续全量测试筑牢基础。整体迭代进度基本符合预设排期，未出现大面积延期、功能推翻重做等重大问题。'
@@ -1340,7 +1608,7 @@ if (mainEl) {
     }
   ];
 
-  function buildTopicDom(section) {
+  function sum2BuildTopicDom(section) {
     var topic = document.createElement('div');
     topic.className = 'mt-topic';
 
@@ -1372,18 +1640,18 @@ if (mainEl) {
   }
 
   // 逐段、段内逐字输出的“流逝”动画
-  function typewriteSections(sections) {
-    if (!topicsList) return;
-    if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
+  function sum2TypewriteSections(sections, onDone) {
+    if (!sum2TopicsList) { if (onDone) onDone(); return; }
+    if (sum2TypeTimer) { clearTimeout(sum2TypeTimer); sum2TypeTimer = null; }
 
-    topicsList.innerHTML = '';
-    var built = sections.map(function(section) { return buildTopicDom(section); });
-    built.forEach(function(b) { topicsList.appendChild(b.topic); });
+    sum2TopicsList.innerHTML = '';
+    var built = sections.map(function(section) { return sum2BuildTopicDom(section); });
+    built.forEach(function(b) { sum2TopicsList.appendChild(b.topic); });
 
     var sectionIdx = 0;
     var charIdx = 0;
-    var CHAR_DELAY = 22; // 每字毫秒
-    var SECTION_DELAY = 300; // 段落间停顿
+    var CHAR_DELAY = 22;
+    var SECTION_DELAY = 300;
 
     function showCursor(b) {
       b.cursor.remove();
@@ -1397,27 +1665,26 @@ if (mainEl) {
     function tick() {
       if (sectionIdx >= built.length) {
         if (built.length) clearCursor(built[built.length - 1]);
+        if (onDone) onDone();
         return;
       }
       var b = built[sectionIdx];
       var text = sections[sectionIdx].text;
 
       if (charIdx < text.length) {
-        // 逐字添加
-        var ch = text.charAt(charIdx);
-        var needsSpace = (b.text.textContent.length > 0) && (ch.charCodeAt(0) > 0x3000 || b.text.textContent.charCodeAt(b.text.textContent.length - 1) > 0x3000);
         clearCursor(b);
-        b.text.textContent += ch;
+        b.text.textContent += text.charAt(charIdx);
         showCursor(b);
         charIdx++;
-        typeTimer = setTimeout(tick, CHAR_DELAY);
+        sum2TypeTimer = setTimeout(tick, CHAR_DELAY);
       } else {
-        // 本段完成，进入下一段
         clearCursor(b);
         sectionIdx++;
         charIdx = 0;
         if (sectionIdx < built.length) {
-          typeTimer = setTimeout(tick, SECTION_DELAY);
+          sum2TypeTimer = setTimeout(tick, SECTION_DELAY);
+        } else {
+          if (onDone) onDone();
         }
       }
     }
@@ -1425,180 +1692,241 @@ if (mainEl) {
     built.forEach(function(b, i) {
       if (i === 0) showCursor(b);
     });
-    typeTimer = setTimeout(tick, 250);
+    sum2TypeTimer = setTimeout(tick, 250);
   }
 
-  // 先显示“正在生成会议纪要...”闪烁提示 5s，再开始流逝输出
-  function startGeneration() {
-    if (genHintTimer) { clearTimeout(genHintTimer); genHintTimer = null; }
-    if (genHint) genHint.classList.remove('hide');
+  function sum2StartGeneration() {
+    if (sum2LoadingActive) return;
+    sum2LoadingActive = true;
+    sum2Done = false;
 
-    genHintTimer = setTimeout(function() {
-      if (genHint) genHint.classList.add('hide');
-      typewriteSections(mdSections);
+    if (sum2GenHintTimer) { clearTimeout(sum2GenHintTimer); sum2GenHintTimer = null; }
+    if (sum2GenHint) sum2GenHint.style.display = 'flex';
+    if (sum2TopicsList) sum2TopicsList.innerHTML = '';
+    sum2RenderSummaryArea();
+
+    sum2GenHintTimer = setTimeout(function() {
+      if (sum2GenHint) sum2GenHint.style.display = 'none';
+      sum2TypewriteSections(sum2MdSections, function() {
+        sum2LoadingActive = false;
+        sum2Done = true;
+        sum2RenderSummaryArea();
+      });
     }, 5000);
   }
 
-  function spawnParticles() {
-    if (!particlesContainer) return;
-    particlesContainer.innerHTML = '';
-    for (var i = 0; i < 12; i++) {
-      var p = document.createElement('div');
-      p.className = 'ai-particle';
-      p.style.left = (50 + (Math.random() - 0.5) * 120) + 'px';
-      p.style.top = (50 + (Math.random() - 0.5) * 120) + 'px';
-      p.style.setProperty('--tx1', (Math.random() * 80 - 40) + 'px');
-      p.style.setProperty('--ty1', (Math.random() * 80 - 40) + 'px');
-      p.style.setProperty('--tx2', (Math.random() * 100 - 50) + 'px');
-      p.style.setProperty('--ty2', (Math.random() * 100 - 50) + 'px');
-      p.style.setProperty('--tx3', (Math.random() * 80 - 40) + 'px');
-      p.style.setProperty('--ty3', (Math.random() * 80 - 40) + 'px');
-      p.style.animation = 'floatParticle ' + (3 + Math.random() * 2) + 's ease-in-out infinite';
-      p.style.animationDelay = (Math.random() * 2) + 's';
-      particlesContainer.appendChild(p);
-    }
+  function runSum2Generation() {
+    sum2StartGeneration();
   }
 
-  function animateLoading(callback) {
-    var progress = 0;
-    if (pBar) pBar.style.width = '0%';
-    if (pDesc) pDesc.textContent = loadingTexts[0];
-    if (pSteps) {
-      var st = pSteps.querySelectorAll('.ai-step');
-      st.forEach(function(s, i) { s.className = i === 0 ? 'ai-step active' : 'ai-step'; });
-    }
-    spawnParticles();
-    if (overlay) overlay.classList.add('show');
-
-    function step() {
-      if (progress >= 100) {
-        if (overlay) overlay.classList.remove('show');
-        if (callback) callback();
-        return;
-      }
-      progress += 4;
-      if (pBar) pBar.style.width = progress + '%';
-
-      var stepIndex = Math.floor(progress / 20);
-      if (stepIndex < loadingTexts.length && pDesc && pDesc.textContent !== loadingTexts[stepIndex]) {
-        pDesc.textContent = loadingTexts[stepIndex];
-        if (pSteps) {
-          var st = pSteps.querySelectorAll('.ai-step');
-          st.forEach(function(s, i) {
-            if (i < stepIndex) s.className = 'ai-step done';
-            else if (i === stepIndex) s.className = 'ai-step active';
-            else s.className = 'ai-step';
-          });
-        }
-      }
-      setTimeout(step, 250);
-    }
-    setTimeout(step, 500);
-  }
-
-  function regenerate() {
-    if (active) return;
-    active = true;
-    startGeneration();
-    active = false;
-  }
-
-  // 初次加载：先显示“正在生成会议纪要...”提示 5s，再以“流逝”动画输出 MD 内容
-  startGeneration();
-
-  regenBtn.addEventListener('click', regenerate);
-})();
-
-// Init
-setVolume(volume);
-updateProgress();
-document.getElementById('newMeetingBtn').addEventListener('click', function() {
-  window.location.href = 'meeting-home.html';
-});
-
-// Download dropdown menu
-var dlBtn = document.getElementById('downloadBtn');
-var dlMenu = document.getElementById('downloadMenu');
-if (dlBtn && dlMenu) {
-  var dlToastTimer = null;
-  var dlToast = null;
-
-  function showDlToast(msg) {
-    if (!dlToast) {
-      dlToast = document.createElement('div');
-      dlToast.className = 'mt-dl-toast';
-      document.body.appendChild(dlToast);
-    }
-    dlToast.textContent = msg;
-    dlToast.classList.add('show');
-    if (dlToastTimer) { clearTimeout(dlToastTimer); dlToastTimer = null; }
-    dlToastTimer = setTimeout(function() {
-      dlToast.classList.remove('show');
-    }, 2200);
-  }
-
-  function closeDlMenu() {
-    dlMenu.classList.remove('open');
-    dlMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
-      item.classList.remove('open-in');
+  if (sum2EmptyBtn) {
+    sum2EmptyBtn.addEventListener('click', function() {
+      if (sum2Done) return;
+      runSum2Generation();
     });
   }
 
-  function downloadFile(filename, content, mime) {
-    var blob = new Blob([content], { type: mime });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function() { URL.revokeObjectURL(url); }, 300);
+  // Regenerate summary button
+  var sum2RegenBtn = document.getElementById('regenBtn');
+  if (sum2RegenBtn) {
+    sum2RegenBtn.addEventListener('click', function() {
+      if (sum2LoadingActive) return;
+      sum2Done = false;
+      runSum2Generation();
+    });
   }
 
-  dlBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    if (dlMenu.classList.contains('open')) {
-      closeDlMenu();
-    } else {
-      dlMenu.classList.add('open');
-      var items = dlMenu.querySelectorAll('.mt-dl-item');
-      items.forEach(function(item, i) {
+  // Download dropdown menu
+  var sum2DownloadBtn = document.getElementById('downloadBtn');
+  var sum2DownloadMenu = document.getElementById('downloadMenu');
+  if (sum2DownloadBtn && sum2DownloadMenu) {
+    var sum2ToastTimer = null;
+    var sum2Toast = null;
+
+    function sum2ShowToast(msg) {
+      if (!sum2Toast) {
+        sum2Toast = document.createElement('div');
+        sum2Toast.className = 'mt-dl-toast';
+        document.body.appendChild(sum2Toast);
+      }
+      sum2Toast.textContent = msg;
+      sum2Toast.classList.add('show');
+      if (sum2ToastTimer) { clearTimeout(sum2ToastTimer); sum2ToastTimer = null; }
+      sum2ToastTimer = setTimeout(function() {
+        sum2Toast.classList.remove('show');
+      }, 2200);
+    }
+
+    function sum2CloseMenu() {
+      sum2DownloadMenu.classList.remove('open');
+      sum2DownloadMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
         item.classList.remove('open-in');
-        void item.offsetWidth;
-        item.style.animationDelay = (0.05 + i * 0.05) + 's';
-        item.classList.add('open-in');
       });
     }
-  });
 
-  dlMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
-    item.addEventListener('click', function(e) {
+    function sum2DownloadFile(filename, content, mime) {
+      var blob = new Blob([content], { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function() { URL.revokeObjectURL(url); }, 300);
+    }
+
+    sum2DownloadBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      var kind = item.getAttribute('data-dl');
-      closeDlMenu();
-      if (kind === 'audio') {
-        showDlToast('暂无音频文件可下载');
-      } else if (kind === 'summary') {
-        var mdContent = '# 会议纪要\n\n';
-        var sections = document.querySelectorAll('.mt-topics-wrap .mt-topic');
-        sections.forEach(function(section) {
-          var t = section.querySelector('.mt-topic-title');
-          var txt = section.querySelector('.mt-topic-text');
-          if (t && txt) mdContent += '## ' + t.textContent + '\n\n' + txt.textContent + '\n\n';
+      if (sum2DownloadMenu.classList.contains('open')) {
+        sum2CloseMenu();
+      } else {
+        sum2DownloadMenu.classList.add('open');
+        var items = sum2DownloadMenu.querySelectorAll('.mt-dl-item');
+        items.forEach(function(item, i) {
+          item.classList.remove('open-in');
+          void item.offsetWidth;
+          item.style.animationDelay = (0.05 + i * 0.05) + 's';
+          item.classList.add('open-in');
         });
-        downloadFile('会议纪要.md', mdContent, 'text/markdown;charset=utf-8');
-        showDlToast('会议纪要已开始下载');
       }
     });
-  });
 
-  document.addEventListener('click', function(e) {
-    if (!dlMenu.contains(e.target) && !dlBtn.contains(e.target)) {
-      closeDlMenu();
-    }
+    sum2DownloadMenu.querySelectorAll('.mt-dl-item').forEach(function(item) {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var kind = item.getAttribute('data-dl');
+        sum2CloseMenu();
+        if (kind === 'audio') {
+          sum2ShowToast('暂无音频文件可下载');
+        } else if (kind === 'summary') {
+          var mdContent = '# 会议纪要\n\n';
+          sum2MdSections.forEach(function(section) {
+            mdContent += '## ' + section.title + '\n\n' + section.text + '\n\n';
+          });
+          sum2DownloadFile('会议纪要.md', mdContent, 'text/markdown;charset=utf-8');
+          sum2ShowToast('会议纪要已开始下载');
+        }
+      });
+    });
+
+    document.addEventListener('click', function(e) {
+      if (sum2DownloadMenu.classList.contains('open') &&
+          !sum2DownloadMenu.contains(e.target) &&
+          !sum2DownloadBtn.contains(e.target)) {
+        sum2CloseMenu();
+      }
+    });
+  }
+
+  // Play/Pause
+  if (sum2PlayBtn) {
+    sum2PlayBtn.addEventListener('click', function() {
+      if (sum2IsPlaying) sum2Pause(); else sum2Play();
+    });
+  }
+
+  // Progress seek
+  if (sum2ProgressBar) {
+    var sum2DraggingProgress = false;
+    sum2ProgressBar.addEventListener('mousedown', function(e) {
+      sum2DraggingProgress = true;
+      sum2ProgressBar.classList.add('dragging');
+      sum2SeekTo(e.clientX);
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (sum2DraggingProgress) sum2SeekTo(e.clientX);
+    });
+    document.addEventListener('mouseup', function() {
+      sum2DraggingProgress = false;
+      sum2ProgressBar.classList.remove('dragging');
+    });
+  }
+
+  // Volume seek
+  if (sum2VolumeSlider) {
+    var sum2DraggingVolume = false;
+    sum2VolumeSlider.addEventListener('mousedown', function(e) {
+      sum2DraggingVolume = true;
+      sum2SeekVolume(e.clientX);
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (sum2DraggingVolume) sum2SeekVolume(e.clientX);
+    });
+    document.addEventListener('mouseup', function() {
+      sum2DraggingVolume = false;
+    });
+  }
+
+  // Mute toggle
+  if (sum2VolumeIcon) {
+    sum2VolumeIcon.addEventListener('click', function() {
+      if (sum2IsMuted) {
+        sum2IsMuted = false;
+        sum2SetVolume(sum2PrevVolume);
+      } else {
+        sum2IsMuted = true;
+        sum2PrevVolume = sum2Volume;
+        sum2SetVolume(0);
+      }
+    });
+  }
+
+  // Speed toggle
+  if (sum2SpeedBtn) {
+    sum2SpeedBtn.addEventListener('click', function() {
+      sum2SpeedIndex = (sum2SpeedIndex + 1) % sum2Speeds.length;
+      sum2SpeedBtn.textContent = sum2Speeds[sum2SpeedIndex] + 'x';
+      if (sum2IsPlaying) {
+        clearInterval(sum2PlayTimer);
+        sum2PlayTimer = setInterval(function() {
+          if (sum2CurrentSeconds < sum2TotalSeconds) {
+            sum2CurrentSeconds++;
+            sum2UpdateProgress();
+          } else {
+            sum2Pause();
+          }
+        }, 1000 / sum2Speeds[sum2SpeedIndex]);
+      }
+    });
+  }
+
+  // Close sidebar on main click
+  if (sum2Main) {
+    sum2Main.addEventListener('click', function(e) {
+      var sw = document.getElementById('sidebarWrapper');
+      if (sw && sw.classList.contains('expanded')) {
+        if (!sw.contains(e.target) && !e.target.closest('.s-item')) {
+          sw.classList.remove('expanded');
+        }
+      }
+    });
+  }
+
+  // Init
+  sum2SetVolume(sum2Volume);
+  sum2UpdateProgress();
+  sum2RenderSummaryArea();
+
+  // If arriving from "结束录音" (?tab=original), show the original text tab by default
+  var qs = window.location.search.substring(1);
+  var params = {};
+  qs.split('&').forEach(function(pair) {
+    if (!pair) return;
+    var kv = pair.split('=');
+    params[decodeURIComponent(kv[0])] = kv.length > 1 ? decodeURIComponent(kv[1]) : '';
   });
-}
+  if (params.tab === 'original' && sum2TabOriginal) {
+    sum2TabOriginal.classList.add('active');
+    if (sum2TabSummary) sum2TabSummary.classList.remove('active');
+    if (sum2OriginalText) sum2OriginalText.classList.add('show');
+    if (sum2AudioBar) sum2AudioBar.classList.add('show');
+    sum2RenderSummaryArea();
+  }
+})();
+document.getElementById('newMeetingBtn').addEventListener('click', function() {
+  window.location.href = 'meeting-home-white.html';
+});
 </script>
 </body>
 </html>
