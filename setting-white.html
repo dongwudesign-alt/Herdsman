@@ -818,13 +818,277 @@
 
   /* Section label */
 	  .setting-section-label {
-	    font-size: 0.74rem;
-	    font-weight: 600;
-	    color: var(--text-dim);
-	    text-transform: uppercase;
-	    letter-spacing: 0.06em;
-	    padding: 14px 20px 8px;
-	  }
+		    font-size: 0.74rem;
+		    font-weight: 600;
+		    color: var(--text-dim);
+		    text-transform: uppercase;
+		    letter-spacing: 0.06em;
+		    padding: 14px 20px 8px;
+		  }
+
+		  /* Storage Path Row */
+		  .storage-path-row {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		    padding: 6px 20px 14px;
+		  }
+
+		  .storage-path-display {
+		    display: flex;
+		    align-items: center;
+		    gap: 8px;
+		    padding: 8px 14px;
+		    background: rgba(0,0,0,0.03);
+		    border: 1px solid rgba(0,0,0,0.08);
+		    border-radius: 8px;
+		    font-size: 0.82rem;
+		    color: var(--text);
+		    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+		    min-width: 0;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		  }
+
+		  .storage-path-display svg {
+		    color: var(--text-dim);
+		    flex-shrink: 0;
+		  }
+
+		  .storage-path-display span {
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		  }
+
+		  .storage-folder-btn {
+		    flex-shrink: 0;
+		    padding: 8px 16px;
+		    background: rgba(0,0,0,0.05);
+		    border: 1px solid rgba(0,0,0,0.1);
+		    border-radius: 8px;
+		    color: var(--text);
+		    font-family: inherit;
+		    font-size: 0.78rem;
+		    font-weight: 600;
+		    cursor: pointer;
+		    transition: all 0.2s ease;
+		    white-space: nowrap;
+		  }
+
+		  .storage-folder-btn:hover {
+		    background: rgba(0,0,0,0.09);
+		    border-color: rgba(0,0,0,0.16);
+		  }
+
+		  .storage-fixed-tag {
+		    flex-shrink: 0;
+		    padding: 4px 10px;
+		    background: rgba(0,0,0,0.03);
+		    border: 1px solid rgba(0,0,0,0.08);
+		    border-radius: 6px;
+		    font-size: 0.7rem;
+		    color: var(--text-dim);
+		    font-weight: 500;
+		    white-space: nowrap;
+		  }
+
+		  .storage-hint {
+		    display: flex;
+		    align-items: flex-start;
+		    gap: 6px;
+		    padding: 0 20px 14px;
+		    font-size: 0.72rem;
+		    color: var(--text-dim);
+		    line-height: 1.5;
+		  }
+
+		  .storage-hint svg {
+		    flex-shrink: 0;
+		    margin-top: 2px;
+		    color: var(--text-dim);
+		    opacity: 0.6;
+		  }
+
+		  .storage-migrate-btn {
+		    width: 100%;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    gap: 8px;
+		    padding: 13px 20px;
+		    background: rgba(59,130,246,0.08);
+		    border: 1px solid rgba(59,130,246,0.2);
+		    border-radius: 12px;
+		    color: #2563eb;
+		    font-size: 0.88rem;
+		    font-weight: 600;
+		    font-family: inherit;
+		    cursor: pointer;
+		    transition: all 0.2s ease;
+		    margin-bottom: 24px;
+		  }
+
+		  .storage-migrate-btn:hover {
+		    background: rgba(59,130,246,0.14);
+		    border-color: rgba(59,130,246,0.3);
+		  }
+
+		  .storage-migrate-btn:active {
+		    transform: scale(0.98);
+		  }
+
+		  /* GPU Select Area */
+		  .gpu-select-area {
+		    padding: 0 20px 16px;
+		  }
+
+		  .gpu-select-header {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    margin-bottom: 10px;
+		  }
+
+		  .gpu-select-label {
+		    font-size: 0.78rem;
+		    font-weight: 600;
+		    color: var(--text);
+		  }
+
+		  .gpu-select-hint {
+		    font-size: 0.7rem;
+		    color: var(--text-dim);
+		  }
+
+		  .gpu-select-list {
+		    display: flex;
+		    flex-direction: column;
+		    gap: 4px;
+		    background: rgba(0,0,0,0.02);
+		    border: 1px solid rgba(0,0,0,0.06);
+		    border-radius: 10px;
+		    padding: 4px;
+		  }
+
+		  .gpu-select-item {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		    padding: 10px 12px;
+		    border-radius: 8px;
+		    cursor: pointer;
+		    transition: background 0.15s ease;
+		    position: relative;
+		  }
+
+		  .gpu-select-item:hover {
+		    background: rgba(0,0,0,0.03);
+		  }
+
+		  .gpu-checkbox {
+		    position: absolute;
+		    opacity: 0;
+		    pointer-events: none;
+		  }
+
+		  .gpu-checkbox-mark {
+		    width: 18px;
+		    height: 18px;
+		    border-radius: 4px;
+		    border: 1.5px solid rgba(0,0,0,0.15);
+		    background: rgba(0,0,0,0.03);
+		    flex-shrink: 0;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    transition: all 0.2s ease;
+		  }
+
+		  .gpu-checkbox-mark::after {
+		    content: '';
+		    width: 10px;
+		    height: 10px;
+		    border-radius: 2px;
+		    background: #2563eb;
+		    opacity: 0;
+		    transform: scale(0.5);
+		    transition: all 0.2s ease;
+		  }
+
+		  .gpu-checkbox:checked + .gpu-checkbox-mark {
+		    border-color: rgba(37,99,235,0.5);
+		    background: rgba(37,99,235,0.08);
+		  }
+
+		  .gpu-checkbox:checked + .gpu-checkbox-mark::after {
+		    opacity: 1;
+		    transform: scale(1);
+		  }
+
+		  .gpu-item-name {
+		    flex: 1;
+		    font-size: 0.82rem;
+		    color: var(--text);
+		    font-weight: 500;
+		  }
+
+		  .gpu-item-info {
+		    font-size: 0.72rem;
+		    color: var(--text-dim);
+		    flex-shrink: 0;
+		  }
+
+		  /* Port Stepper */
+		  .port-stepper {
+		    display: flex;
+		    align-items: center;
+		    gap: 0;
+		    background: rgba(0,0,0,0.03);
+		    border: 1px solid rgba(0,0,0,0.08);
+		    border-radius: 8px;
+		    overflow: hidden;
+		  }
+
+		  .port-btn {
+		    width: 34px;
+		    height: 34px;
+		    display: flex;
+		    align-items: center;
+		    justify-content: center;
+		    background: transparent;
+		    border: none;
+		    color: var(--text);
+		    font-size: 1rem;
+		    font-weight: 600;
+		    font-family: inherit;
+		    cursor: pointer;
+		    transition: background 0.15s ease;
+		  }
+
+		  .port-btn:hover {
+		    background: rgba(0,0,0,0.05);
+		  }
+
+		  .port-btn:active {
+		    background: rgba(0,0,0,0.08);
+		  }
+
+		  .port-value {
+		    min-width: 56px;
+		    text-align: center;
+		    font-size: 0.88rem;
+		    font-weight: 600;
+		    color: var(--text);
+		    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+		    border-left: 1px solid rgba(0,0,0,0.06);
+		    border-right: 1px solid rgba(0,0,0,0.06);
+		    padding: 0 4px;
+		    line-height: 34px;
+		    -webkit-user-select: none;
+		    user-select: none;
+		  }
 
 	  /* Custom Modal */
 	  .modal-overlay {
@@ -1327,120 +1591,241 @@
         </div>
 
         <!-- 外观页面 -->
-        <div class="setting-page" id="page-appearance" style="display:none;">
-          <div class="setting-section">
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">界面语言</div>
-                <div class="setting-row-desc">选择整个应用界面使用的语言。</div>
-              </div>
-              <div class="setting-row-right">
-                <div class="segment-group">
-                  <button class="segment-btn active" data-lang="zh">中文</button>
-                  <button class="segment-btn" data-lang="en">English</button>
-                </div>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">主题</div>
-                <div class="setting-row-desc">选择浅色或深色界面主题。</div>
-              </div>
-              <div class="setting-row-right">
-                <div class="theme-group">
-                  <button class="theme-btn active" data-theme="light" id="lightModeBtn">
-                    <span class="theme-dot light"></span>
-                    浅色模式
-                  </button>
-                  <button class="theme-btn" data-theme="dark" id="darkModeBtn">
-                    <span class="theme-dot dark"></span>
-                    深色模式
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+	        <div class="setting-page" id="page-appearance" style="display:none;">
+	          <!-- 界面语言 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">界面语言</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+	                  界面语言
+	                </div>
+	                <div class="setting-row-desc">选择整个应用界面显示的语言</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <div class="segment-group">
+	                  <button class="segment-btn active" data-lang="zh">中文</button>
+	                  <button class="segment-btn" data-lang="en">English</button>
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <!-- 主题 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">主题</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+	                  主题
+	                </div>
+	                <div class="setting-row-desc">选择应用界面的配色方案</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <div class="theme-group">
+	                  <button class="theme-btn active" data-theme="light" id="themeLightBtn">
+	                    <span class="theme-dot light"></span>
+	                    浅色模式
+	                  </button>
+	                  <button class="theme-btn" data-theme="dark" id="themeDarkBtn">
+	                    <span class="theme-dot dark"></span>
+	                    深色模式
+	                  </button>
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
 
         <!-- 存储页面 -->
-        <div class="setting-page" id="page-storage" style="display:none;">
-          <div class="setting-section">
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">缓存大小</div>
-                <div class="setting-row-desc">当前缓存占用 128 MB</div>
-              </div>
-              <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">清除缓存</button>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">自动清理</div>
-                <div class="setting-row-desc">定期自动清理过期缓存文件</div>
-              </div>
-              <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
-                  <span class="toggle-knob"></span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+	        <div class="setting-page" id="page-storage" style="display:none;">
+	          <!-- 模型 / 运行时存储目录 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">模型 / 运行时存储目录</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">存储根目录</div>
+	                <div class="setting-row-desc">模型存放于 <strong>models</strong> 子目录，运行时存放于 <strong>runtimes</strong> 子目录</div>
+	              </div>
+	            </div>
+	            <div class="storage-path-row">
+	              <div class="storage-path-display">
+	                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+	                <span id="storagePathDisplay">C:/Users/Flowy/herdsman</span>
+	              </div>
+	              <button class="storage-folder-btn" id="selectFolderBtn">选择文件夹</button>
+	            </div>
+	            <div class="storage-hint">
+	              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+	              <span>目标文件夹必须为空；应用数据、缓存目录不会跟随迁移</span>
+	            </div>
+	          </div>
+
+	          <!-- 缓存目录 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">缓存目录</div>
+	            <div class="storage-path-row" style="padding: 14px 20px;">
+	              <div class="storage-path-display" style="flex:1;">
+	                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+	                <span>C:/Users/Flowy/cache/herdsman</span>
+	              </div>
+	              <span class="storage-fixed-tag">系统固定</span>
+	            </div>
+	            <div class="storage-hint">
+	              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+	              <span>缓存目录由系统固定管理，不支持手动更换</span>
+	            </div>
+	          </div>
+
+	          <!-- 迁移按钮 -->
+	          <button class="storage-migrate-btn" id="migrateBtn">
+	            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+	            迁移模型和运行时
+	          </button>
+	        </div>
 
         <!-- 推理设置页面 -->
-        <div class="setting-page" id="page-inference" style="display:none;">
-          <div class="setting-section">
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">推理加速</div>
-                <div class="setting-row-desc">使用 GPU 加速模型推理过程</div>
-              </div>
-              <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
-                  <span class="toggle-knob"></span>
-                </button>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">量化精度</div>
-                <div class="setting-row-desc">选择模型量化精度以平衡速度与质量</div>
-              </div>
-              <div class="setting-row-right">
-                <div class="segment-group">
-                  <button class="segment-btn" data-quant="int4">INT4</button>
-                  <button class="segment-btn active" data-quant="int8">INT8</button>
-                  <button class="segment-btn" data-quant="fp16">FP16</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+	        <div class="setting-page" id="page-inference" style="display:none;">
+	          <!-- 显卡使用方式 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">显卡使用方式</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+	                  推理硬件
+	                </div>
+	                <div class="setting-row-desc">选择模型推理使用的硬件设备</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <div class="segment-group" id="gpuModeGroup">
+	                  <button class="segment-btn active" data-mode="auto">自动选择</button>
+	                  <button class="segment-btn" data-mode="cpu">仅 CPU</button>
+	                  <button class="segment-btn" data-mode="gpu">指定显卡</button>
+	                </div>
+	              </div>
+	            </div>
+	            <!-- GPU multi-select -->
+	            <div class="gpu-select-area" id="gpuSelectArea" style="display:none;">
+	              <div class="gpu-select-header">
+	                <span class="gpu-select-label">选择显卡设备</span>
+	                <span class="gpu-select-hint">未勾选任何设备时回退至自动选择</span>
+	              </div>
+	              <div class="gpu-select-list" id="gpuSelectList">
+	                <label class="gpu-select-item">
+	                  <input type="checkbox" class="gpu-checkbox" data-gpu="0" checked>
+	                  <span class="gpu-checkbox-mark"></span>
+	                  <span class="gpu-item-name">NVIDIA GeForce RTX 4090</span>
+	                  <span class="gpu-item-info">24GB</span>
+	                </label>
+	                <label class="gpu-select-item">
+	                  <input type="checkbox" class="gpu-checkbox" data-gpu="1">
+	                  <span class="gpu-checkbox-mark"></span>
+	                  <span class="gpu-item-name">NVIDIA GeForce RTX 3080</span>
+	                  <span class="gpu-item-info">10GB</span>
+	                </label>
+	                <label class="gpu-select-item">
+	                  <input type="checkbox" class="gpu-checkbox" data-gpu="2">
+	                  <span class="gpu-checkbox-mark"></span>
+	                  <span class="gpu-item-name">Intel Arc A770</span>
+	                  <span class="gpu-item-info">16GB</span>
+	                </label>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
 
-        <!-- API 页面 -->
-        <div class="setting-page" id="page-api" style="display:none;">
-          <div class="setting-section">
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">API 端点</div>
-                <div class="setting-row-desc">配置外部 API 服务地址</div>
-              </div>
-              <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">管理端点</button>
-              </div>
-            </div>
-            <div class="setting-row">
-              <div class="setting-row-left">
-                <div class="setting-row-title">API 密钥</div>
-                <div class="setting-row-desc">管理各服务的 API 密钥与鉴权信息</div>
-              </div>
-              <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">管理密钥</button>
-              </div>
-            </div>
-          </div>
-        </div>
+	        <!-- API 页面 -->
+	        <div class="setting-page" id="page-api" style="display:none;">
+	          <!-- 局域网访问 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">网络</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>
+	                  局域网访问
+	                </div>
+	                <div class="setting-row-desc">允许局域网其他设备访问本应用 API 服务</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <button class="toggle-switch" data-switch>
+	                  <span class="toggle-knob"></span>
+	                </button>
+	              </div>
+	            </div>
+	          </div>
+
+	          <!-- 端口 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">服务端口</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+	                  API 服务端口
+	                </div>
+	                <div class="setting-row-desc">设置 API 服务的监听端口号</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <div class="port-stepper">
+	                  <button class="port-btn" id="portMinus">−</button>
+	                  <span class="port-value" id="portValue">8084</span>
+	                  <button class="port-btn" id="portPlus">+</button>
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <!-- MinerU 默认解析模式 -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">解析设置</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+	                  MinerU 默认解析模式
+	                </div>
+	                <div class="setting-row-desc">用于 /file_parse 未显式指定 backend 的请求，修改后立即生效</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <div class="segment-group">
+	                  <button class="segment-btn active" data-mineru="pipeline">Pipeline</button>
+	                  <button class="segment-btn" data-mineru="hybrid">Hybrid</button>
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <!-- 打印最终请求 Payload -->
+	          <div class="setting-section">
+	            <div class="setting-section-label">调试</div>
+	            <div class="setting-row">
+	              <div class="setting-row-left">
+	                <div class="setting-row-title">
+	                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+	                  打印最终请求 Payload
+	                </div>
+	                <div class="setting-row-desc">输出日志到 api‑payload.log，记录请求完整文本、图片、音频</div>
+	              </div>
+	              <div class="setting-row-right">
+	                <button class="toggle-switch" data-switch>
+	                  <span class="toggle-knob"></span>
+	                </button>
+	              </div>
+	            </div>
+	            <div class="setting-row" style="padding-top:0;border:none;">
+	              <div class="setting-row-left">
+	                <div class="setting-row-desc" style="color:var(--text-dim);font-size:0.72rem;display:flex;align-items:center;gap:5px;">
+	                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+	                  启用后会占用较多磁盘空间
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
 
         <!-- Work 页面 -->
         <div class="setting-page" id="page-work" style="display:none;">
@@ -1828,6 +2213,86 @@
     // Simulate login success
     closeLoginModal();
     restoreLoggedInState();
+  });
+
+  // ===== Storage Page =====
+  var selectFolderBtn = document.getElementById('selectFolderBtn');
+  var storagePathDisplay = document.getElementById('storagePathDisplay');
+  var migrateBtn = document.getElementById('migrateBtn');
+
+  selectFolderBtn.addEventListener('click', function() {
+    var fakePath = 'C:/Users/Flowy/herdsman';
+    var newPath = prompt('输入新的存储根目录路径：', fakePath);
+    if (newPath && newPath.trim()) {
+      storagePathDisplay.textContent = newPath.trim();
+    }
+  });
+
+  migrateBtn.addEventListener('click', function() {
+    migrateBtn.textContent = '迁移中...';
+    migrateBtn.disabled = true;
+    migrateBtn.style.opacity = '0.6';
+    setTimeout(function() {
+      migrateBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> 迁移完成';
+      migrateBtn.style.background = 'rgba(34,197,94,0.08)';
+      migrateBtn.style.borderColor = 'rgba(34,197,94,0.2)';
+      migrateBtn.style.color = '#16a34a';
+      migrateBtn.disabled = false;
+      migrateBtn.style.opacity = '1';
+    }, 2000);
+  });
+
+  // ===== Appearance Page =====
+  document.getElementById('themeDarkBtn').addEventListener('click', function() {
+    window.location.href = 'setting.html';
+  });
+
+  document.querySelectorAll('#page-appearance .segment-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#page-appearance .segment-btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      this.classList.add('active');
+    });
+  });
+
+  // ===== Inference Page =====
+  document.querySelectorAll('#gpuModeGroup .segment-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var mode = this.dataset.mode;
+      var gpuArea = document.getElementById('gpuSelectArea');
+      if (mode === 'gpu') {
+        gpuArea.style.display = 'block';
+        // Ensure the parent page is visible
+        document.getElementById('page-inference').style.display = '';
+      } else {
+        gpuArea.style.display = 'none';
+      }
+    });
+  });
+
+  document.querySelectorAll('.gpu-checkbox').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var checked = document.querySelectorAll('.gpu-checkbox:checked').length;
+      if (checked === 0) {
+        document.querySelectorAll('#gpuModeGroup .segment-btn').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        document.querySelector('#gpuModeGroup .segment-btn[data-mode="auto"]').classList.add('active');
+        document.getElementById('gpuSelectArea').style.display = 'none';
+      }
+    });
+  });
+
+  // ===== API Page =====
+  var portValue = document.getElementById('portValue');
+  document.getElementById('portMinus').addEventListener('click', function() {
+    var val = parseInt(portValue.textContent, 10);
+    if (val > 1024) portValue.textContent = val - 1;
+  });
+  document.getElementById('portPlus').addEventListener('click', function() {
+    var val = parseInt(portValue.textContent, 10);
+    if (val < 65535) portValue.textContent = val + 1;
   });
 </script>
 
