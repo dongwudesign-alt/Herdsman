@@ -817,14 +817,362 @@
   }
 
   /* Section label */
-  .setting-section-label {
-    font-size: 0.74rem;
-    font-weight: 600;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 14px 20px 8px;
-  }
+	  .setting-section-label {
+	    font-size: 0.74rem;
+	    font-weight: 600;
+	    color: var(--text-dim);
+	    text-transform: uppercase;
+	    letter-spacing: 0.06em;
+	    padding: 14px 20px 8px;
+	  }
+
+	  /* Custom Modal */
+	  .modal-overlay {
+	    display: none;
+	    position: fixed;
+	    inset: 0;
+	    z-index: 9999;
+	    background: rgba(0,0,0,0.3);
+	    backdrop-filter: blur(6px);
+	    -webkit-backdrop-filter: blur(6px);
+	    align-items: center;
+	    justify-content: center;
+	  }
+
+	  .modal-overlay.show {
+	    display: flex;
+	  }
+
+	  .modal-box {
+	    background: rgba(255,255,255,0.92);
+	    backdrop-filter: blur(40px) saturate(140%);
+	    -webkit-backdrop-filter: blur(40px) saturate(140%);
+	    border: 1px solid rgba(0,0,0,0.10);
+	    border-radius: 16px;
+	    padding: 28px 32px 24px;
+	    width: 360px;
+	    max-width: 90vw;
+	    box-shadow: 0 16px 64px rgba(0,0,0,0.12);
+	    text-align: center;
+	  }
+
+	  .modal-icon {
+	    width: 48px;
+	    height: 48px;
+	    border-radius: 50%;
+	    background: rgba(0,0,0,0.06);
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    margin: 0 auto 16px;
+	    color: #1c1c1e;
+	  }
+
+	  .modal-title {
+	    font-size: 1.05rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 8px;
+	  }
+
+	  .modal-desc {
+	    font-size: 0.82rem;
+	    color: var(--text-dim);
+	    margin-bottom: 24px;
+	    line-height: 1.5;
+	  }
+
+	  .modal-actions {
+	    display: flex;
+	    gap: 10px;
+	    justify-content: center;
+	  }
+
+	  .modal-btn {
+	    flex: 1;
+	    padding: 10px 0;
+	    border-radius: 10px;
+	    border: 1px solid rgba(0,0,0,0.10);
+	    font-family: inherit;
+	    font-size: 0.85rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .modal-btn.cancel {
+	    background: rgba(0,0,0,0.04);
+	    color: var(--text);
+	  }
+
+	  .modal-btn.cancel:hover {
+	    background: rgba(0,0,0,0.08);
+	  }
+
+	  .modal-btn.confirm {
+	    background: rgba(220,38,38,0.08);
+	    border-color: rgba(220,38,38,0.2);
+	    color: #dc2626;
+	  }
+
+	  .modal-btn.confirm:hover {
+	    background: rgba(220,38,38,0.14);
+	    border-color: rgba(220,38,38,0.35);
+	  }
+
+	  /* Login Modal */
+	  .login-modal-overlay {
+	    display: none;
+	    position: fixed;
+	    inset: 0;
+	    z-index: 10000;
+	    background: rgba(0,0,0,0.3);
+	    backdrop-filter: blur(6px);
+	    -webkit-backdrop-filter: blur(6px);
+	    align-items: center;
+	    justify-content: center;
+	  }
+
+	  .login-modal-overlay.show {
+	    display: flex;
+	  }
+
+	  .login-modal-box {
+	    background: rgba(255,255,255,0.92);
+	    backdrop-filter: blur(40px) saturate(140%);
+	    -webkit-backdrop-filter: blur(40px) saturate(140%);
+	    border: 1px solid rgba(0,0,0,0.10);
+	    border-radius: 20px;
+	    width: 420px;
+	    max-width: 90vw;
+	    box-shadow: 0 20px 80px rgba(0,0,0,0.12);
+	    overflow: hidden;
+	    position: relative;
+	  }
+
+	  .login-modal-close {
+	    position: absolute;
+	    top: 12px;
+	    right: 12px;
+	    width: 32px;
+	    height: 32px;
+	    border-radius: 8px;
+	    border: none;
+	    background: transparent;
+	    color: var(--text-dim);
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    z-index: 10;
+	  }
+
+	  .login-modal-close:hover {
+	    background: rgba(0,0,0,0.06);
+	    color: var(--text);
+	  }
+
+	  .login-modal-header {
+	    padding: 28px 28px 20px;
+	    text-align: center;
+	  }
+
+	  .login-modal-title {
+	    font-size: 1.25rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 20px;
+	  }
+
+	  .login-tabs {
+	    display: flex;
+	    gap: 4px;
+	    padding: 4px;
+	    background: rgba(0,0,0,0.04);
+	    border-radius: 10px;
+	    margin-bottom: 0;
+	  }
+
+	  .login-tab-btn {
+	    flex: 1;
+	    padding: 10px 0;
+	    border-radius: 8px;
+	    border: 1px solid transparent;
+	    background: transparent;
+	    color: var(--text-dim);
+	    font: inherit;
+	    font-size: 0.85rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .login-tab-btn:hover {
+	    color: var(--text);
+	    background: rgba(0,0,0,0.03);
+	  }
+
+	  .login-tab-btn.active {
+	    background: rgba(255,255,255,0.9);
+	    border-color: rgba(0,0,0,0.10);
+	    color: var(--text);
+	    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+	  }
+
+	  .login-tab-content {
+	    display: none;
+	    padding: 8px 28px 28px;
+	    min-height: 290px;
+	  }
+
+	  .login-tab-content.active {
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: flex-start;
+	  }
+
+	  /* WeChat QR Code */
+	  .qrcode-wrapper {
+	    text-align: center;
+	  }
+
+	  .qrcode-box {
+	    width: 200px;
+	    height: 200px;
+	    margin: 0 auto 16px;
+	    background: #fff;
+	    border-radius: 12px;
+	    padding: 10px;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    border: 1px solid rgba(0,0,0,0.08);
+	  }
+
+	  .qrcode-placeholder {
+	    width: 100%;
+	    height: 100%;
+	    background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+	    border-radius: 6px;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    color: #1c1c1e;
+	  }
+
+	  .qrcode-title {
+	    font-size: 0.95rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 6px;
+	  }
+
+	  .qrcode-source {
+	    font-size: 0.78rem;
+	    color: var(--text-dim);
+	    margin-bottom: 12px;
+	  }
+
+	  .qrcode-desc {
+	    font-size: 0.82rem;
+	    color: var(--text-dim);
+	    line-height: 1.6;
+	  }
+
+	  /* Email Login */
+	  .login-form-group {
+	    margin-bottom: 16px;
+	  }
+
+	  .login-form-label {
+	    display: block;
+	    font-size: 0.82rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 6px;
+	  }
+
+	  .login-form-input {
+	    width: 100%;
+	    height: 40px;
+	    padding: 0 14px;
+	    background: rgba(255,255,255,0.8);
+	    border: 1px solid rgba(0,0,0,0.10);
+	    border-radius: 10px;
+	    color: var(--text);
+	    font-family: inherit;
+	    font-size: 0.85rem;
+	    transition: all 0.2s ease;
+	    outline: none;
+	  }
+
+	  .login-form-input:focus {
+	    border-color: rgba(59,130,246,0.5);
+	    background: rgba(255,255,255,0.95);
+	    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+	  }
+
+	  .login-form-input::placeholder {
+	    color: var(--text-dim);
+	  }
+
+	  .login-code-row {
+	    display: flex;
+	    gap: 10px;
+	    align-items: flex-end;
+	  }
+
+	  .login-code-row .login-form-group {
+	    flex: 1;
+	    margin-bottom: 0;
+	  }
+
+	  .send-code-btn {
+	    width: 140px;
+	    height: 40px;
+	    white-space: nowrap;
+	    background: rgba(0,0,0,0.05);
+	    border: 1px solid rgba(0,0,0,0.12);
+	    border-radius: 10px;
+	    color: #1c1c1e;
+	    font-family: inherit;
+	    font-size: 0.82rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    flex-shrink: 0;
+	  }
+
+	  .send-code-btn:hover:not(:disabled) {
+	    background: rgba(0,0,0,0.09);
+	    border-color: rgba(0,0,0,0.2);
+	  }
+
+	  .send-code-btn:disabled {
+	    opacity: 0.5;
+	    cursor: not-allowed;
+	  }
+
+	  .login-submit-btn {
+	    width: 100%;
+	    height: 42px;
+	    margin-top: auto;
+	    background: rgba(0,0,0,0.07);
+	    border: 1px solid rgba(0,0,0,0.15);
+	    border-radius: 10px;
+	    color: #1c1c1e;
+	    font-family: inherit;
+	    font-size: 0.92rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .login-submit-btn:hover {
+	    background: rgba(0,0,0,0.12);
+	    border-color: rgba(0,0,0,0.25);
+	  }
 </style>
 </head>
 <body>
@@ -1222,6 +1570,62 @@
   </div>
 </div>
 
+<!-- Logout Confirm Modal -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+    </div>
+    <div class="modal-title">是否退出登录？</div>
+    <div class="modal-desc">退出后需要重新登录才能使用完整功能。</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modalCancel">取消</button>
+      <button class="modal-btn confirm" id="modalConfirm">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="login-modal-overlay" id="loginModal">
+  <div class="login-modal-box">
+    <button class="login-modal-close" id="loginModalClose">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <div class="login-modal-header">
+      <div class="login-modal-title">登录</div>
+      <div class="login-tabs">
+        <button class="login-tab-btn active" data-tab="wechat">微信扫码</button>
+        <button class="login-tab-btn" data-tab="email">邮箱登录</button>
+      </div>
+    </div>
+    <div class="login-tab-content active" id="tabWechat">
+      <div class="qrcode-wrapper">
+        <div class="qrcode-box">
+          <div class="qrcode-placeholder">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9"></rect><rect x="13" y="2" width="9" height="9"></rect><rect x="2" y="13" width="9" height="9"></rect><path d="M13 13h3v2h-3zM13 18h3v2h-3zM18 13h2v2h-2zM18 18h2v2h-2z"></path></svg>
+          </div>
+        </div>
+        <div class="qrcode-title">使用微信扫一扫登录</div>
+        
+      </div>
+    </div>
+    <div class="login-tab-content" id="tabEmail">
+      <div class="login-form-group">
+        <label class="login-form-label">邮箱地址</label>
+        <input class="login-form-input" type="email" placeholder="请输入邮箱地址" id="loginEmail">
+      </div>
+      <div class="login-code-row">
+        <div class="login-form-group">
+          <label class="login-form-label">验证码</label>
+          <input class="login-form-input" type="text" placeholder="请输入验证码" id="loginCode">
+        </div>
+        <button class="send-code-btn" id="sendCodeBtn">发送验证码</button>
+      </div>
+      <button class="login-submit-btn" id="loginSubmitBtn">登录</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Nav item switching
   document.querySelectorAll('.ms-nav-item').forEach(item => {
@@ -1282,11 +1686,148 @@
     window.location.href = 'Routing policy-white.html';
   });
 
-  // Logout button
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (confirm('确定要退出登录吗？')) {
-      window.location.href = 'index-white.html';
+  // Logout button - custom modal
+  var logoutBtn = document.getElementById('logoutBtn');
+  var logoutModal = document.getElementById('logoutModal');
+  var modalCancel = document.getElementById('modalCancel');
+  var modalConfirm = document.getElementById('modalConfirm');
+
+  logoutBtn.addEventListener('click', () => {
+    // If already logged out, open login modal
+    if (logoutBtn.dataset.loggedOut === 'true') {
+      openLoginModal();
+      return;
     }
+    logoutModal.classList.add('show');
+  });
+
+  modalCancel.addEventListener('click', () => {
+    logoutModal.classList.remove('show');
+  });
+
+  modalConfirm.addEventListener('click', () => {
+    logoutModal.classList.remove('show');
+    // Hide WeChat and email account rows
+    document.querySelectorAll('#page-account .setting-section .setting-row').forEach(function(row) {
+      row.style.display = 'none';
+    });
+    // Change status to 未登录
+    document.querySelector('.account-desc').textContent = '未登录';
+    // Change button to 登录
+    logoutBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg> 登录';
+    logoutBtn.style.background = 'rgba(59,130,246,0.08)';
+    logoutBtn.style.borderColor = 'rgba(59,130,246,0.2)';
+    logoutBtn.style.color = '#2563eb';
+    logoutBtn.dataset.loggedOut = 'true';
+  });
+
+  // Close modal on overlay click
+  logoutModal.addEventListener('click', function(e) {
+    if (e.target === this) logoutModal.classList.remove('show');
+  });
+
+  // ===== Login Modal =====
+  var loginModal = document.getElementById('loginModal');
+  var loginModalClose = document.getElementById('loginModalClose');
+  var loginTabs = document.querySelectorAll('.login-tab-btn');
+  var loginTabContents = {
+    wechat: document.getElementById('tabWechat'),
+    email: document.getElementById('tabEmail')
+  };
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var loginEmail = document.getElementById('loginEmail');
+  var loginCode = document.getElementById('loginCode');
+  var loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  var codeTimer = null;
+  var codeCountdown = 0;
+
+  function openLoginModal() {
+    loginModal.classList.add('show');
+  }
+
+  function closeLoginModal() {
+    loginModal.classList.remove('show');
+  }
+
+  loginModalClose.addEventListener('click', closeLoginModal);
+  loginModal.addEventListener('click', function(e) {
+    if (e.target === this) closeLoginModal();
+  });
+
+  // Tab switching
+  loginTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      loginTabs.forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      var tabName = this.dataset.tab;
+      Object.keys(loginTabContents).forEach(function(k) {
+        loginTabContents[k].classList.toggle('active', k === tabName);
+      });
+    });
+  });
+
+  // Send verification code
+  sendCodeBtn.addEventListener('click', function() {
+    var email = loginEmail.value.trim();
+    if (!email || !email.includes('@')) {
+      loginEmail.style.borderColor = 'rgba(239,68,68,0.5)';
+      setTimeout(function() { loginEmail.style.borderColor = ''; }, 2000);
+      return;
+    }
+    if (codeCountdown > 0) return;
+    codeCountdown = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = codeCountdown + 's';
+    codeTimer = setInterval(function() {
+      codeCountdown--;
+      sendCodeBtn.textContent = codeCountdown + 's';
+      if (codeCountdown <= 0) {
+        clearInterval(codeTimer);
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = '发送验证码';
+      }
+    }, 1000);
+  });
+
+  // WeChat QR code click to simulate login
+  document.querySelector('.qrcode-box').addEventListener('click', function() {
+    closeLoginModal();
+    restoreLoggedInState();
+  });
+
+  function restoreLoggedInState() {
+    // Show WeChat and email account rows
+    document.querySelectorAll('#page-account .setting-section .setting-row').forEach(function(row) {
+      row.style.display = '';
+    });
+    // Change status to 已登录
+    document.querySelector('.account-desc').textContent = '本地管理员 · 已登录';
+    // Change button back to 退出登录
+    logoutBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> 退出登录';
+    logoutBtn.style.background = '';
+    logoutBtn.style.borderColor = '';
+    logoutBtn.style.color = '';
+    logoutBtn.dataset.loggedOut = '';
+    // Clear inputs
+    loginEmail.value = '';
+    loginCode.value = '';
+    // Reset send code
+    if (codeTimer) { clearInterval(codeTimer); codeTimer = null; }
+    sendCodeBtn.disabled = false;
+    sendCodeBtn.textContent = '发送验证码';
+    codeCountdown = 0;
+  }
+
+  // Login submit
+  loginSubmitBtn.addEventListener('click', function() {
+    var email = loginEmail.value.trim();
+    var code = loginCode.value.trim();
+    if (!email || !email.includes('@') || !code) {
+      return;
+    }
+    // Simulate login success
+    closeLoginModal();
+    restoreLoggedInState();
   });
 </script>
 

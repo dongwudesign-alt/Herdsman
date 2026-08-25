@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>系统设置 - AI Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="laser-flow.css">
 <script type="importmap">
 {
@@ -811,29 +810,375 @@
   }
 
   /* Section label */
-  .setting-section-label {
-    font-size: 0.74rem;
-    font-weight: 600;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 14px 20px 8px;
-  }
+	  .setting-section-label {
+	    font-size: 0.74rem;
+	    font-weight: 600;
+	    color: var(--text-dim);
+	    text-transform: uppercase;
+	    letter-spacing: 0.06em;
+	    padding: 14px 20px 8px;
+	  }
+
+	  /* Custom Modal */
+	  .modal-overlay {
+	    display: none;
+	    position: fixed;
+	    inset: 0;
+	    z-index: 9999;
+	    background: rgba(0,0,0,0.5);
+	    backdrop-filter: blur(6px);
+	    -webkit-backdrop-filter: blur(6px);
+	    align-items: center;
+	    justify-content: center;
+	  }
+
+	  .modal-overlay.show {
+	    display: flex;
+	  }
+
+	  .modal-box {
+	    background: rgba(20,20,22,0.92);
+	    backdrop-filter: blur(40px) saturate(140%);
+	    -webkit-backdrop-filter: blur(40px) saturate(140%);
+	    border: 1px solid rgba(255,255,255,0.18);
+	    border-radius: 16px;
+	    padding: 28px 32px 24px;
+	    width: 360px;
+	    max-width: 90vw;
+	    box-shadow: 0 16px 64px rgba(0,0,0,0.6);
+	    text-align: center;
+	  }
+
+	  .modal-icon {
+	    width: 48px;
+	    height: 48px;
+	    border-radius: 50%;
+	    background: rgba(255,255,255,0.08);
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    margin: 0 auto 16px;
+	    color: #ececec;
+	  }
+
+	  .modal-title {
+	    font-size: 1.05rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 8px;
+	  }
+
+	  .modal-desc {
+	    font-size: 0.82rem;
+	    color: var(--text-dim);
+	    margin-bottom: 24px;
+	    line-height: 1.5;
+	  }
+
+	  .modal-actions {
+	    display: flex;
+	    gap: 10px;
+	    justify-content: center;
+	  }
+
+	  .modal-btn {
+	    flex: 1;
+	    padding: 10px 0;
+	    border-radius: 10px;
+	    border: 1px solid rgba(255,255,255,0.12);
+	    font-family: inherit;
+	    font-size: 0.85rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .modal-btn.cancel {
+	    background: rgba(255,255,255,0.06);
+	    color: var(--text);
+	  }
+
+	  .modal-btn.cancel:hover {
+	    background: rgba(255,255,255,0.10);
+	  }
+
+	  .modal-btn.confirm {
+	    background: rgba(239,68,68,0.12);
+	    border-color: rgba(239,68,68,0.3);
+	    color: #f87171;
+	  }
+
+	  .modal-btn.confirm:hover {
+	    background: rgba(239,68,68,0.2);
+	    border-color: rgba(239,68,68,0.45);
+	  }
+
+	  /* Login Modal */
+	  .login-modal-overlay {
+	    display: none;
+	    position: fixed;
+	    inset: 0;
+	    z-index: 10000;
+	    background: rgba(0,0,0,0.5);
+	    backdrop-filter: blur(6px);
+	    -webkit-backdrop-filter: blur(6px);
+	    align-items: center;
+	    justify-content: center;
+	  }
+
+	  .login-modal-overlay.show {
+	    display: flex;
+	  }
+
+	  .login-modal-box {
+	    background: rgba(20,20,22,0.92);
+	    backdrop-filter: blur(40px) saturate(140%);
+	    -webkit-backdrop-filter: blur(40px) saturate(140%);
+	    border: 1px solid rgba(255,255,255,0.18);
+	    border-radius: 20px;
+	    width: 420px;
+	    max-width: 90vw;
+	    box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+	    overflow: hidden;
+	    position: relative;
+	  }
+
+	  .login-modal-close {
+	    position: absolute;
+	    top: 12px;
+	    right: 12px;
+	    width: 32px;
+	    height: 32px;
+	    border-radius: 8px;
+	    border: none;
+	    background: transparent;
+	    color: var(--text-dim);
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    z-index: 10;
+	  }
+
+	  .login-modal-close:hover {
+	    background: rgba(255,255,255,0.08);
+	    color: var(--text);
+	  }
+
+	  .login-modal-header {
+	    padding: 28px 28px 20px;
+	    text-align: center;
+	  }
+
+	  .login-modal-title {
+	    font-size: 1.25rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 20px;
+	  }
+
+	  .login-tabs {
+	    display: flex;
+	    gap: 4px;
+	    padding: 4px;
+	    background: rgba(255,255,255,0.06);
+	    border-radius: 10px;
+	    margin-bottom: 0;
+	  }
+
+	  .login-tab-btn {
+	    flex: 1;
+	    padding: 10px 0;
+	    border-radius: 8px;
+	    border: 1px solid transparent;
+	    background: transparent;
+	    color: var(--text-dim);
+	    font: inherit;
+	    font-size: 0.85rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .login-tab-btn:hover {
+	    color: var(--text);
+	    background: rgba(255,255,255,0.04);
+	  }
+
+	  .login-tab-btn.active {
+	    background: rgba(255,255,255,0.12);
+	    border-color: rgba(255,255,255,0.16);
+	    color: var(--text);
+	  }
+
+	  .login-tab-content {
+	    display: none;
+	    padding: 8px 28px 28px;
+	    min-height: 290px;
+	  }
+
+	  .login-tab-content.active {
+	    display: flex;
+	    flex-direction: column;
+	    justify-content: flex-start;
+	  }
+
+	  /* WeChat QR Code */
+	  .qrcode-wrapper {
+	    text-align: center;
+	  }
+
+	  .qrcode-box {
+	    width: 200px;
+	    height: 200px;
+	    margin: 0 auto 16px;
+	    background: #fff;
+	    border-radius: 12px;
+	    padding: 10px;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	  }
+
+	  .qrcode-placeholder {
+	    width: 100%;
+	    height: 100%;
+	    background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+	    border-radius: 6px;
+	    display: flex;
+	    align-items: center;
+	    justify-content: center;
+	    color: #1c1c1e;
+	  }
+
+	  .qrcode-title {
+	    font-size: 0.95rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 6px;
+	  }
+
+	  .qrcode-source {
+	    font-size: 0.78rem;
+	    color: var(--text-dim);
+	    margin-bottom: 12px;
+	  }
+
+	  .qrcode-desc {
+	    font-size: 0.82rem;
+	    color: var(--text-dim);
+	    line-height: 1.6;
+	  }
+
+	  /* Email Login */
+	  .login-form-group {
+	    margin-bottom: 16px;
+	  }
+
+	  .login-form-label {
+	    display: block;
+	    font-size: 0.82rem;
+	    font-weight: 600;
+	    color: var(--text);
+	    margin-bottom: 6px;
+	  }
+
+	  .login-form-input {
+	    width: 100%;
+	    height: 40px;
+	    padding: 0 14px;
+	    background: rgba(255,255,255,0.06);
+	    border: 1px solid rgba(255,255,255,0.12);
+	    border-radius: 10px;
+	    color: var(--text);
+	    font-family: inherit;
+	    font-size: 0.85rem;
+	    transition: all 0.2s ease;
+	    outline: none;
+	  }
+
+	  .login-form-input:focus {
+	    border-color: rgba(59,130,246,0.5);
+	    background: rgba(255,255,255,0.08);
+	    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+	  }
+
+	  .login-form-input::placeholder {
+	    color: var(--text-dim);
+	  }
+
+	  .login-code-row {
+	    display: flex;
+	    gap: 10px;
+	    align-items: flex-end;
+	  }
+
+	  .login-code-row .login-form-group {
+	    flex: 1;
+	    margin-bottom: 0;
+	  }
+
+	  .send-code-btn {
+	    width: 140px;
+	    height: 40px;
+	    white-space: nowrap;
+	    background: rgba(255,255,255,0.08);
+	    border: 1px solid rgba(255,255,255,0.15);
+	    border-radius: 10px;
+	    color: #ececec;
+	    font-family: inherit;
+	    font-size: 0.82rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	    flex-shrink: 0;
+	  }
+
+	  .send-code-btn:hover:not(:disabled) {
+	    background: rgba(255,255,255,0.14);
+	    border-color: rgba(255,255,255,0.25);
+	  }
+
+	  .send-code-btn:disabled {
+	    opacity: 0.5;
+	    cursor: not-allowed;
+	  }
+
+	  .login-submit-btn {
+	    width: 100%;
+	    height: 42px;
+	    margin-top: auto;
+	    background: rgba(255,255,255,0.10);
+	    border: 1px solid rgba(255,255,255,0.2);
+	    border-radius: 10px;
+	    color: #ececec;
+	    font-family: inherit;
+	    font-size: 0.92rem;
+	    font-weight: 600;
+	    cursor: pointer;
+	    transition: all 0.2s ease;
+	  }
+
+	  .login-submit-btn:hover {
+	    background: rgba(255,255,255,0.18);
+	    border-color: rgba(255,255,255,0.3);
+	  }
 </style>
 </head>
 <body>
 
 <div class="app-window">
-  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
+  <div class="laser-flow-container" id="laserFlowMount" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(270deg); z-index: 0; display: none; width: 897px; height: 1107px;"><canvas data-engine="three.js r169" width="1" height="1" style="display: block; width: 100%; height: 100%;"></canvas></div>
   <div class="window-controls">
     <button class="win-btn minimize" title="最小化">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"></line></svg>
     </button>
     <button class="win-btn maximize" title="全屏">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"></rect></svg>
     </button>
     <button class="win-btn close" title="关闭">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"></line><line x1="20" y1="4" x2="4" y2="20"></line></svg>
     </button>
   </div>
 
@@ -843,21 +1188,21 @@
 
     <div class="sidebar-group top">
       <a class="s-item" href="index.html" title="首页">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </a>
       <a class="s-item" href="image-gen.html" title="工作台">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
       </a>
       <a class="s-item" href="model-store.html" title="模型管理">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
       </a>
       <a class="s-item" href="Routing policy.html" title="路由策略">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"></circle><circle cx="6" cy="6" r="3"></circle><path d="M6 21V9a9 9 0 0 0 9 9"></path></svg>
       </a>
     </div>
     <div class="sidebar-group bottom">
       <a class="s-item active" href="setting.html" title="设置">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </a>
     </div>
   </div>
@@ -872,43 +1217,43 @@
       </div>
       <div class="ms-nav-list">
         <div class="ms-nav-item active" data-page="account">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
           账户
         </div>
         <div class="ms-nav-item" data-page="appearance">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M21 15l-5-5L5 21"></path></svg>
           外观
         </div>
         <div class="ms-nav-item" data-page="storage">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
           存储
         </div>
         <div class="ms-nav-item" data-page="inference">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
           推理设置
         </div>
         <div class="ms-nav-item" data-page="api">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
           API
         </div>
         <div class="ms-nav-item" data-page="work">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
           Work
         </div>
         <div class="ms-nav-item" data-page="notification">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
           系统通知
         </div>
         <div class="ms-nav-item" data-page="logs">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           日志
         </div>
         <div class="ms-nav-item" data-page="about">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           关于
         </div>
         <div class="ms-nav-item" data-page="licenses">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
           开源库声明
         </div>
       </div>
@@ -921,7 +1266,7 @@
           <div class="ms-page-title" id="mainPageTitle">账户</div>
         </div>
         <button class="ms-close-btn" id="closeBtn" title="关闭">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
         </button>
       </div>
 
@@ -931,7 +1276,7 @@
         <div class="setting-page" id="page-account">
           <div class="setting-section account-hero">
             <div class="account-avatar">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
             <div class="account-hero-info">
               <div class="account-name">Herdsman 用户</div>
@@ -947,7 +1292,7 @@
               </div>
               <div class="setting-row-right">
                 <div class="account-method">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z"></path></svg>
                   <span>herdsman_app</span>
                 </div>
               </div>
@@ -959,7 +1304,7 @@
               </div>
               <div class="setting-row-right">
                 <div class="account-method">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-10 6L2 7"></path></svg>
                   <span>herdsman@app.local</span>
                 </div>
               </div>
@@ -967,7 +1312,7 @@
           </div>
 
           <button class="account-logout" id="logoutBtn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             退出登录
           </button>
         </div>
@@ -1026,7 +1371,7 @@
                 <div class="setting-row-desc">定期自动清理过期缓存文件</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1043,7 +1388,7 @@
                 <div class="setting-row-desc">使用 GPU 加速模型推理过程</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1106,7 +1451,7 @@
                 <div class="setting-row-desc">定时自动保存工作区状态</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1123,7 +1468,7 @@
                 <div class="setting-row-desc">允许应用发送桌面通知</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1134,7 +1479,7 @@
                 <div class="setting-row-desc">收到通知时播放提示音</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch" data-switch>
+                <button class="toggle-switch" data-switch="">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1191,20 +1536,20 @@
           <div class="setting-section">
             <a class="setting-link" href="#">
               <div class="setting-link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
               </div>
               <span class="setting-link-text">Three.js</span>
               <span class="setting-link-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </span>
             </a>
             <a class="setting-link" href="#">
               <div class="setting-link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
               </div>
               <span class="setting-link-text">Outfit Font (Google Fonts)</span>
               <span class="setting-link-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
               </span>
             </a>
           </div>
@@ -1213,6 +1558,62 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Logout Confirm Modal -->
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+    </div>
+    <div class="modal-title">是否退出登录？</div>
+    <div class="modal-desc">退出后需要重新登录才能使用完整功能。</div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modalCancel">取消</button>
+      <button class="modal-btn confirm" id="modalConfirm">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login Modal -->
+<div class="login-modal-overlay" id="loginModal">
+  <div class="login-modal-box">
+    <button class="login-modal-close" id="loginModalClose">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <div class="login-modal-header">
+      <div class="login-modal-title">登录</div>
+      <div class="login-tabs">
+        <button class="login-tab-btn active" data-tab="wechat">微信扫码</button>
+        <button class="login-tab-btn" data-tab="email">邮箱登录</button>
+      </div>
+    </div>
+    <div class="login-tab-content active" id="tabWechat">
+      <div class="qrcode-wrapper">
+        <div class="qrcode-box">
+          <div class="qrcode-placeholder">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#1c1c1e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9"></rect><rect x="13" y="2" width="9" height="9"></rect><rect x="2" y="13" width="9" height="9"></rect><path d="M13 13h3v2h-3zM13 18h3v2h-3zM18 13h2v2h-2zM18 18h2v2h-2z"></path></svg>
+          </div>
+        </div>
+        <div class="qrcode-title">使用微信扫一扫登录</div>
+        
+      </div>
+    </div>
+    <div class="login-tab-content" id="tabEmail">
+      <div class="login-form-group">
+        <label class="login-form-label">邮箱地址</label>
+        <input class="login-form-input" type="email" placeholder="请输入邮箱地址" id="loginEmail">
+      </div>
+      <div class="login-code-row">
+        <div class="login-form-group">
+          <label class="login-form-label">验证码</label>
+          <input class="login-form-input" type="text" placeholder="请输入验证码" id="loginCode">
+        </div>
+        <button class="send-code-btn" id="sendCodeBtn">发送验证码</button>
+      </div>
+      <button class="login-submit-btn" id="loginSubmitBtn">登录</button>
+    </div>
   </div>
 </div>
 
@@ -1280,11 +1681,148 @@
     window.location.href = 'Routing policy.html';
   });
 
-  // Logout button
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (confirm('确定要退出登录吗？')) {
-      window.location.href = 'index.html';
+  // Logout button - custom modal
+  var logoutBtn = document.getElementById('logoutBtn');
+  var logoutModal = document.getElementById('logoutModal');
+  var modalCancel = document.getElementById('modalCancel');
+  var modalConfirm = document.getElementById('modalConfirm');
+
+  logoutBtn.addEventListener('click', () => {
+    // If already logged out, open login modal
+    if (logoutBtn.dataset.loggedOut === 'true') {
+      openLoginModal();
+      return;
     }
+    logoutModal.classList.add('show');
+  });
+
+  modalCancel.addEventListener('click', () => {
+    logoutModal.classList.remove('show');
+  });
+
+  modalConfirm.addEventListener('click', () => {
+    logoutModal.classList.remove('show');
+    // Hide WeChat and email account rows
+    document.querySelectorAll('#page-account .setting-section .setting-row').forEach(function(row) {
+      row.style.display = 'none';
+    });
+    // Change status to 未登录
+    document.querySelector('.account-desc').textContent = '未登录';
+    // Change button to 登录
+    logoutBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg> 登录';
+    logoutBtn.style.background = 'rgba(59,130,246,0.1)';
+    logoutBtn.style.borderColor = 'rgba(59,130,246,0.25)';
+    logoutBtn.style.color = '#60a5fa';
+    logoutBtn.dataset.loggedOut = 'true';
+  });
+
+  // Close modal on overlay click
+  logoutModal.addEventListener('click', function(e) {
+    if (e.target === this) logoutModal.classList.remove('show');
+  });
+
+  // ===== Login Modal =====
+  var loginModal = document.getElementById('loginModal');
+  var loginModalClose = document.getElementById('loginModalClose');
+  var loginTabs = document.querySelectorAll('.login-tab-btn');
+  var loginTabContents = {
+    wechat: document.getElementById('tabWechat'),
+    email: document.getElementById('tabEmail')
+  };
+  var sendCodeBtn = document.getElementById('sendCodeBtn');
+  var loginEmail = document.getElementById('loginEmail');
+  var loginCode = document.getElementById('loginCode');
+  var loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  var codeTimer = null;
+  var codeCountdown = 0;
+
+  function openLoginModal() {
+    loginModal.classList.add('show');
+  }
+
+  function closeLoginModal() {
+    loginModal.classList.remove('show');
+  }
+
+  loginModalClose.addEventListener('click', closeLoginModal);
+  loginModal.addEventListener('click', function(e) {
+    if (e.target === this) closeLoginModal();
+  });
+
+  // Tab switching
+  loginTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      loginTabs.forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      var tabName = this.dataset.tab;
+      Object.keys(loginTabContents).forEach(function(k) {
+        loginTabContents[k].classList.toggle('active', k === tabName);
+      });
+    });
+  });
+
+  // Send verification code
+  sendCodeBtn.addEventListener('click', function() {
+    var email = loginEmail.value.trim();
+    if (!email || !email.includes('@')) {
+      loginEmail.style.borderColor = 'rgba(239,68,68,0.5)';
+      setTimeout(function() { loginEmail.style.borderColor = ''; }, 2000);
+      return;
+    }
+    if (codeCountdown > 0) return;
+    codeCountdown = 60;
+    sendCodeBtn.disabled = true;
+    sendCodeBtn.textContent = codeCountdown + 's';
+    codeTimer = setInterval(function() {
+      codeCountdown--;
+      sendCodeBtn.textContent = codeCountdown + 's';
+      if (codeCountdown <= 0) {
+        clearInterval(codeTimer);
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.textContent = '发送验证码';
+      }
+    }, 1000);
+  });
+
+  // WeChat QR code click to simulate login
+  document.querySelector('.qrcode-box').addEventListener('click', function() {
+    closeLoginModal();
+    restoreLoggedInState();
+  });
+
+  function restoreLoggedInState() {
+    // Show WeChat and email account rows
+    document.querySelectorAll('#page-account .setting-section .setting-row').forEach(function(row) {
+      row.style.display = '';
+    });
+    // Change status to 已登录
+    document.querySelector('.account-desc').textContent = '本地管理员 · 已登录';
+    // Change button back to 退出登录
+    logoutBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> 退出登录';
+    logoutBtn.style.background = '';
+    logoutBtn.style.borderColor = '';
+    logoutBtn.style.color = '';
+    logoutBtn.dataset.loggedOut = '';
+    // Clear inputs
+    loginEmail.value = '';
+    loginCode.value = '';
+    // Reset send code
+    if (codeTimer) { clearInterval(codeTimer); codeTimer = null; }
+    sendCodeBtn.disabled = false;
+    sendCodeBtn.textContent = '发送验证码';
+    codeCountdown = 0;
+  }
+
+  // Login submit
+  loginSubmitBtn.addEventListener('click', function() {
+    var email = loginEmail.value.trim();
+    var code = loginCode.value.trim();
+    if (!email || !email.includes('@') || !code) {
+      return;
+    }
+    // Simulate login success
+    closeLoginModal();
+    restoreLoggedInState();
   });
 </script>
 
@@ -1319,5 +1857,6 @@
     verticalBeamOffset: -0.5
   });
 </script>
-</body>
-</html>
+
+
+</body></html>
