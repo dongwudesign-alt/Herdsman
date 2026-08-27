@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>记忆 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f0ed;
+    --panel: rgba(0, 0, 0, 0.02);
+    --glass: rgba(255, 255, 255, 0.5);
+    --glass-hover: rgba(255, 255, 255, 0.7);
+    --border: rgba(0, 0, 0, 0.06);
+    --border-hover: rgba(0, 0, 0, 0.12);
+    --text: #1c1c1e;
+    --text-dim: #8e8e93;
+    --accent-glow: rgba(0, 0, 0, 0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f2f0ed;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #faf8f6;
+    border: 1.5px solid rgba(0, 0, 0, 0.08);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.04),
+      0 24px 80px rgba(0,0,0,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.6);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(130, 130, 138, 0.10) 30deg,
+      rgba(0, 0, 0, 0.14) 45deg,
+      rgba(130, 130, 138, 0.10) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(130, 130, 138, 0.08) 210deg,
+      rgba(0, 0, 0, 0.10) 225deg,
+      rgba(130, 130, 138, 0.08) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: normal;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(0, 0, 0, 0.03) 0%,
+      rgba(0, 0, 0, 0.015) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.5;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #1c1c1e;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Sidebar wrapper */
+  .sidebar-wrapper {
+    display: flex;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-wrapper.expanded .secondary-sidebar {
+    width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Secondary sidebar */
+  .secondary-sidebar {
+    width: 240px;
+    height: calc(100% - 60px);
+    margin: 48px 0 12px 0;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    pointer-events: auto;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.04),
+      0 16px 48px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+    position: relative;
+  }
+
+  .secondary-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .secondary-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.45) 0%,
+      rgba(95, 95, 110, 0.28) 18%,
+      rgba(65, 65, 78, 0.14) 38%,
+      rgba(35, 35, 48, 0.06) 58%,
+      rgba(20, 20, 30, 0.02) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sec-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-title-header {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 4px 2px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sec-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .sec-close:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .sec-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #1c1c1e;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    text-decoration: none;
+  }
+
+  .sec-action:hover {
+    background: rgba(0,0,0,0.05);
+    color: #1c1c1e;
+  }
+
+  .sec-action.active {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .sec-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 4px 0 6px;
+    flex-shrink: 0;
+  }
+
+  .sec-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sec-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+  }
+
+  .sec-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sec-item:hover {
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  .sec-item.active {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .sec-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+  }
+
+  .sec-item:hover .sec-title,
+  .sec-item.active .sec-title {
+    color: var(--text);
+  }
+
+  .sec-more {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: auto;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  .sec-item:hover .sec-more {
+    opacity: 1;
+  }
+
+  .sec-more:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .sec-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    transform: none;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    min-width: 80px;
+  }
+
+  .sec-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sec-menu-item {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sec-menu-item:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .sec-menu-item.delete:hover {
+    background: rgba(255, 60, 60, 0.12);
+    color: rgba(255, 120, 120, 0.9);
+  }
+
+  /* ========== Route View ========== */
+  .route-view {
+    position: absolute;
+    top: 48px;
+    left: 320px;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    padding: 0 12px 12px 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* ========== Main Content Card ========== */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.04),
+      0 16px 48px rgba(0,0,0,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  .ms-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .ms-close-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 20px;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 3px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.22);
+  }
+
+  .ms-content-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
+  }
+
+  /* ========== Setting Sections ========== */
+  .setting-section {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .setting-section:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 记忆列表卡片：跟随内容区自适应撑满/收缩 */
+  .ms-content-scroll > .setting-section:not(.memory-list-section) {
+    flex-shrink: 0;
+  }
+
+  .memory-list-section {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .memory-list-section > .setting-row {
+    flex-shrink: 0;
+  }
+
+  .memory-table-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .memory-table-wrap::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .memory-table-wrap::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 3px;
+  }
+
+  .memory-table-wrap::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+  }
+
+  .memory-table-wrap::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.22);
+  }
+
+  .setting-section-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 14px 20px 0;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .setting-row:last-child {
+    border-bottom: none;
+  }
+
+  .setting-row-left {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .setting-row-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .setting-row-title svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .setting-row-desc {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  .setting-row-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ========== Toggle Switch ========== */
+  .toggle-switch {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: rgba(0, 0, 0, 0.10);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch.on {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .toggle-switch.on .toggle-knob {
+    left: 20px;
+    background: #fff;
+  }
+
+  /* ========== Number Stepper ========== */
+  .num-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 34px;
+  }
+
+  .num-btn {
+    width: 32px;
+    height: 34px;
+    border: none;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .num-btn:hover {
+    background: rgba(0, 0, 0, 0.10);
+  }
+
+  .num-value {
+    width: 48px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.06);
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 0 4px;
+    font-family: inherit;
+    height: 34px;
+  }
+
+  .num-value:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  /* ========== Filter Bar ========== */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .filter-scope {
+    display: flex;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 8px;
+    padding: 2px;
+    gap: 0;
+  }
+
+  .scope-btn {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .scope-btn:hover {
+    color: var(--text);
+  }
+
+  .scope-btn.active {
+    background: rgba(0, 0, 0, 0.10);
+    color: var(--text);
+  }
+
+  .filter-search {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 0 10px;
+    height: 34px;
+  }
+
+  .filter-search svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .filter-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    outline: none;
+    height: 100%;
+  }
+
+  .filter-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .filter-dropdown {
+    position: relative;
+  }
+
+  .filter-dropdown-trigger {
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .filter-dropdown-trigger:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .filter-dropdown-trigger svg {
+    transition: transform 0.2s ease;
+  }
+
+  .filter-dropdown.open .filter-dropdown-trigger svg {
+    transform: rotate(180deg);
+  }
+
+  .filter-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 140px;
+    background: rgba(20,20,22,0.95);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+  }
+
+  .filter-dropdown.open .filter-dropdown-menu {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .filter-dropdown-item {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  .filter-dropdown-item:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .filter-dropdown-item.active {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  /* ========== Add Button ========== */
+  .add-btn {
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .add-btn:hover {
+    background: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+
+  /* ========== Memory Table ========== */
+  .memory-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .memory-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .memory-table td {
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: var(--text);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    vertical-align: middle;
+  }
+
+  .memory-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .memory-table tr:hover td {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .memory-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
+
+  .memory-tag.fact,
+  .memory-tag.episode,
+  .memory-tag.user,
+  .memory-tag.workspace,
+  .memory-tag.auto {
+    background: rgba(0, 0, 0, 0.08);
+    color: #d4d4d8;
+  }
+
+  .memory-tag.manual {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-dim);
+  }
+
+  .memory-tag.pinned,
+  .memory-tag.active {
+    background: rgba(0, 0, 0, 0.10);
+    color: #fafafa;
+  }
+
+  .memory-tag.deleted {
+    background: rgba(0, 0, 0, 0.04);
+    color: #71717a;
+  }
+
+  .memory-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .memory-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .memory-action-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .memory-action-btn.delete:hover {
+    background: rgba(239,68,68,0.12);
+    color: #f87171;
+  }
+
+  .memory-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+
+  .memory-empty svg {
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+
+  /* ========== Modal ========== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-box {
+    background: rgba(25, 25, 28, 0.97);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 18px;
+    padding: 24px;
+    width: 460px;
+    max-width: 90vw;
+    box-shadow: 0 16px 64px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .modal-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.4) 0%,
+      rgba(140, 140, 160, 0.15) 25%,
+      rgba(80, 80, 95, 0.04) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .modal-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .modal-close-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .modal-form-group {
+    margin-bottom: 16px;
+  }
+
+  .modal-form-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .modal-form-input {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .modal-form-input:focus {
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-form-textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.15s ease;
+  }
+
+  .modal-form-textarea:focus {
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+
+  .modal-radio-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-radio-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .modal-radio-btn:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--text);
+  }
+
+  .modal-radio-btn.active {
+    border-color: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .modal-type-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .modal-type-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .modal-type-btn:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    color: var(--text);
+  }
+
+  .modal-type-btn.active {
+    border-color: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text);
+  }
+
+  .modal-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-toggle-label {
+    font-size: 0.85rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  .modal-btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .modal-btn.cancel {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-dim);
+  }
+
+  .modal-btn.cancel:hover {
+    background: rgba(0, 0, 0, 0.10);
+    color: var(--text);
+  }
+
+  .modal-btn.save {
+    background: rgba(0, 0, 0, 0.12);
+    color: var(--text);
+  }
+
+  .modal-btn.save:hover {
+    background: rgba(0, 0, 0, 0.18);
+  }
+
+  /* ========== Noise overlay ========== */
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+  }
+
+  /* ========== Responsive ========== */
+  @media (max-height: 750px) {
+    .app-window {
+      max-height: none;
+      height: calc(100vh - 40px);
+    }
+  }
+/* ================= 浅色模式（Light Mode）适配补充 ================= */
+  .segment-btn.active {
+    background: #fff;
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  }
+
+  .scope-btn.active {
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+  }
+
+  /* Toggle：开启态保留微量蓝色 */
+  .toggle-switch {
+    background: rgba(0,0,0,0.08);
+    border-color: rgba(0,0,0,0.15);
+  }
+  .toggle-switch .toggle-knob {
+    background: rgba(0,0,0,0.55);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on {
+    background: rgba(59,130,246,0.16);
+    border-color: rgba(59,130,246,0.35);
+  }
+  .toggle-switch.on .toggle-knob {
+    background: #fff;
+  }
+
+  /* 弹层：白玻璃 + 浅阴影 */
+  .filter-dropdown-menu {
+    background: rgba(255,255,255,0.97);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  }
+
+  .modal-overlay {
+    background: rgba(26,26,30,0.32);
+  }
+
+  .modal-box {
+    background: rgba(255,255,255,0.98);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+  }
+
+  /* 记忆标签：黑白配色（浅色可读性） */
+  .memory-tag.fact, .memory-tag.episode, .memory-tag.user,
+  .memory-tag.workspace, .memory-tag.auto {
+    background: rgba(0,0,0,0.06);
+    color: #55555a;
+  }
+  .memory-tag.manual {
+    background: rgba(0,0,0,0.06);
+    color: var(--text-dim);
+  }
+  .memory-tag.pinned, .memory-tag.active {
+    background: rgba(0,0,0,0.10);
+    color: #1c1c1e;
+  }
+  .memory-tag.deleted {
+    color: #71717a;
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar-wrapper" id="sidebarWrapper">
+    <div class="sidebar" id="primarySidebar">
+      <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+      <div class="sidebar-group top">
+        <a class="s-item" href="index-white.html" title="首页">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </a>
+        <a class="s-item" href="image-gen-white.html" title="工作台">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </a>
+        <a class="s-item" href="model-store-white.html" title="模型管理">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        </a>
+        <a class="s-item" href="route-white.html" title="路由策略">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+        </a>
+      </div>
+      <div class="sidebar-group bottom">
+        <a class="s-item" href="setting-white.html" title="设置">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="secondary-sidebar" id="secondarySidebar">
+      <div class="sec-header">
+        <div class="sec-title-header">
+          <span>工作</span>
+          <button class="sec-close" id="btnCloseSidebar" title="收起">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+          </button>
+        </div>
+        <a class="sec-action active" href="memory-white.html" id="btnMemory">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          记忆
+        </a>
+        <a class="sec-action" href="skill-white.html" id="btnSkill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          技能
+        </a>
+        <a class="sec-action" id="btnNewChat" href="index-white.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          新对话
+        </a>
+        <div class="sec-divider"></div>
+        <div class="sec-title-header">
+          <span>历史对话</span>
+        </div>
+      </div>
+      <div class="sec-list">
+        <div class="sec-item active">
+          <div class="sec-title">背景改左上角渐浅蓝色系...</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">去除文字背景框</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">四种风格行业去向分布图...</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">企业微信图标3D风格设计</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">AgestraAI文字logo设计...</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">保留UI格中英文英文</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">拒绝中文及英文请求</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">图片清晰扩展至2K</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">插画式3D立体风格</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+        <div class="sec-item">
+          <div class="sec-title">四角宽亮渐金色</div>
+          <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+          <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Route View -->
+  <div class="route-view" id="routeView">
+    <!-- Right: Main Area -->
+    <div class="ms-main">
+      <div class="ms-main-header">
+        <div>
+          <div class="ms-page-title">记忆</div>
+        </div>
+        <button class="ms-close-btn" id="closeBtn" title="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="ms-content-scroll" id="mainContent">
+
+        <!-- 记忆策略 -->
+        <div class="setting-section">
+          <div class="setting-section-label">记忆策略</div>
+          <div class="setting-row">
+            <div class="setting-row-left">
+              <div class="setting-row-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                启用长期记忆
+              </div>
+              <div class="setting-row-desc">全局开关，控制记忆功能总开关</div>
+            </div>
+            <div class="setting-row-right">
+              <button class="toggle-switch on" data-switch="longterm">
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-row-left">
+              <div class="setting-row-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                成功任务后自动抽取
+              </div>
+              <div class="setting-row-desc">任务执行成功后自动生成记忆片段</div>
+            </div>
+            <div class="setting-row-right">
+              <button class="toggle-switch on" data-switch="autoextract">
+                <span class="toggle-knob"></span>
+              </button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="setting-row-left">
+              <div class="setting-row-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                每轮预加载数量
+              </div>
+              <div class="setting-row-desc">每轮对话前置读取记忆条数，默认 12</div>
+            </div>
+            <div class="setting-row-right">
+              <div class="num-stepper">
+                <button class="num-btn" id="preloadMinus">−</button>
+                <input class="num-value" id="preloadValue" type="text" value="12" readonly>
+                <button class="num-btn" id="preloadPlus">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 记忆列表 -->
+        <div class="setting-section memory-list-section">
+          <div class="setting-section-label">记忆列表</div>
+          <div class="setting-row" style="flex-direction:column;align-items:stretch;gap:12px;padding:14px 20px;">
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+              <div class="filter-scope">
+                <button class="scope-btn active" data-scope="all">全部</button>
+                <button class="scope-btn" data-scope="user">User</button>
+                <button class="scope-btn" data-scope="workspace">Workspace</button>
+              </div>
+              <div class="filter-search">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" placeholder="搜索记忆内容..." id="searchInput">
+              </div>
+              <div class="filter-dropdown" id="statusFilter">
+                <button class="filter-dropdown-trigger">
+                  状态
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="filter-dropdown-menu">
+                  <button class="filter-dropdown-item active" data-value="all">全部</button>
+                  <button class="filter-dropdown-item" data-value="active">有效</button>
+                  <button class="filter-dropdown-item" data-value="deleted">已删除</button>
+                </div>
+              </div>
+              <div class="filter-dropdown" id="typeFilter">
+                <button class="filter-dropdown-trigger">
+                  类型
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="filter-dropdown-menu">
+                  <button class="filter-dropdown-item active" data-value="all">全部类型</button>
+                  <button class="filter-dropdown-item" data-value="fact">Fact</button>
+                  <button class="filter-dropdown-item" data-value="episode">Episode</button>
+                </div>
+              </div>
+              <div class="filter-dropdown" id="sourceFilter">
+                <button class="filter-dropdown-trigger">
+                  来源
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="filter-dropdown-menu">
+                  <button class="filter-dropdown-item active" data-value="all">全部来源</button>
+                  <button class="filter-dropdown-item" data-value="manual">手动</button>
+                  <button class="filter-dropdown-item" data-value="auto">自动抽取</button>
+                </div>
+              </div>
+              <button class="add-btn" id="addMemoryBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                新增
+              </button>
+            </div>
+          </div>
+
+          <!-- 记忆表格 -->
+          <div class="memory-table-wrap">
+            <table class="memory-table">
+              <thead>
+                <tr>
+                  <th style="width:40%;">内容</th>
+                  <th style="width:10%;">作用域</th>
+                  <th style="width:10%;">类型</th>
+                  <th style="width:10%;">来源</th>
+                  <th style="width:10%;">状态</th>
+                  <th style="width:10%;">时间</th>
+                  <th style="width:10%;">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">用户偏好使用深色模式界面，字体大小为中等</td>
+                  <td><span class="memory-tag user">User</span></td>
+                  <td><span class="memory-tag fact">Fact</span></td>
+                  <td><span class="memory-tag auto">自动抽取</span></td>
+                  <td><span class="memory-tag active">有效</span></td>
+                  <td style="font-size:0.75rem;color:var(--text-dim);">08-25 14:30</td>
+                  <td>
+                    <div class="memory-actions">
+                      <button class="memory-action-btn" title="置顶">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                      </button>
+                      <button class="memory-action-btn delete" title="删除">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">项目中使用 React 18 和 TypeScript 开发</td>
+                  <td><span class="memory-tag workspace">Workspace</span></td>
+                  <td><span class="memory-tag episode">Episode</span></td>
+                  <td><span class="memory-tag auto">自动抽取</span></td>
+                  <td><span class="memory-tag active">有效</span></td>
+                  <td style="font-size:0.75rem;color:var(--text-dim);">08-24 09:15</td>
+                  <td>
+                    <div class="memory-actions">
+                      <button class="memory-action-btn" title="置顶">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                      </button>
+                      <button class="memory-action-btn delete" title="删除">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">用户习惯使用快捷键 Ctrl+K 打开命令面板</td>
+                  <td><span class="memory-tag user">User</span></td>
+                  <td><span class="memory-tag fact">Fact</span></td>
+                  <td><span class="memory-tag manual">手动</span></td>
+                  <td><span class="memory-tag active">有效</span></td>
+                  <td style="font-size:0.75rem;color:var(--text-dim);">08-23 16:42</td>
+                  <td>
+                    <div class="memory-actions">
+                      <button class="memory-action-btn" title="置顶">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                      </button>
+                      <button class="memory-action-btn delete" title="删除">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">后端 API 部署在阿里云 ECS 上海区域</td>
+                  <td><span class="memory-tag workspace">Workspace</span></td>
+                  <td><span class="memory-tag fact">Fact</span></td>
+                  <td><span class="memory-tag auto">自动抽取</span></td>
+                  <td><span class="memory-tag deleted">已删除</span></td>
+                  <td style="font-size:0.75rem;color:var(--text-dim);">08-22 11:08</td>
+                  <td>
+                    <div class="memory-actions">
+                      <button class="memory-action-btn" title="置顶">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                      </button>
+                      <button class="memory-action-btn" title="恢复">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增记忆弹窗 -->
+<div class="modal-overlay" id="addMemoryModal">
+  <div class="modal-box">
+    <button class="modal-close-btn" id="modalCloseBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <div class="modal-title">新增记忆</div>
+
+    <div class="modal-form-group">
+      <label class="modal-form-label">作用域</label>
+      <div class="modal-radio-group">
+        <button class="modal-radio-btn active" data-scope="user">User</button>
+        <button class="modal-radio-btn" data-scope="workspace">Workspace</button>
+      </div>
+    </div>
+
+    <div class="modal-form-group">
+      <label class="modal-form-label">内容</label>
+      <textarea class="modal-form-textarea" placeholder="输入记忆内容..." id="memoryContentInput"></textarea>
+    </div>
+
+    <div class="modal-form-group">
+      <label class="modal-form-label">主题（逗号分隔）</label>
+      <input class="modal-form-input" type="text" placeholder="例如: 偏好, 设置" id="memoryTopicsInput">
+    </div>
+
+    <div class="modal-form-group">
+      <label class="modal-form-label">记忆类型</label>
+      <div class="modal-type-group">
+        <button class="modal-type-btn active" data-type="fact">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          Fact（事实）
+        </button>
+        <button class="modal-type-btn" data-type="episode">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          Episode（事件片段）
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-form-group">
+      <div class="modal-toggle-row">
+        <span class="modal-toggle-label">置顶</span>
+        <button class="toggle-switch" data-switch="pin">
+          <span class="toggle-knob"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modalCancelBtn">取消</button>
+      <button class="modal-btn save" id="modalSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== Sidebar toggle ==========
+  document.getElementById('btnCloseSidebar').addEventListener('click', function() {
+    window.location.href = 'index-white.html';
+  });
+
+  // ========== 历史记录更多菜单 ==========
+  const moreBtns = document.querySelectorAll('.sec-more');
+  let activeMenu = null;
+
+  moreBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var menu = btn.nextElementSibling;
+      if (activeMenu && activeMenu !== menu) {
+        activeMenu.classList.remove('show');
+      }
+      menu.classList.toggle('show');
+      activeMenu = menu.classList.contains('show') ? menu : null;
+    });
+  });
+
+  document.addEventListener('click', function() {
+    if (activeMenu) {
+      activeMenu.classList.remove('show');
+      activeMenu = null;
+    }
+  });
+
+  // 菜单项点击
+  const menuItems = document.querySelectorAll('.sec-menu-item');
+  menuItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.textContent.trim();
+      var secItem = item.closest('.sec-item');
+      if (action === '置顶') {
+        var list = document.querySelector('.sec-list');
+        list.insertBefore(secItem, list.firstChild);
+      } else if (action === '删除') {
+        secItem.remove();
+      }
+      if (activeMenu) {
+        activeMenu.classList.remove('show');
+        activeMenu = null;
+      }
+    });
+  });
+
+  // ========== Close button ==========
+  document.getElementById('closeBtn').addEventListener('click', function() {
+    window.location.href = 'index-white.html';
+  });
+
+  // ========== Toggle switches ==========
+  document.querySelectorAll('[data-switch]').forEach(function(sw) {
+    sw.addEventListener('click', function(e) {
+      e.stopPropagation();
+      this.classList.toggle('on');
+    });
+  });
+
+  // ========== Number stepper ==========
+  var preloadValue = document.getElementById('preloadValue');
+  document.getElementById('preloadMinus').addEventListener('click', function() {
+    var val = parseInt(preloadValue.value) || 12;
+    if (val > 1) { val--; }
+    preloadValue.value = val;
+  });
+  document.getElementById('preloadPlus').addEventListener('click', function() {
+    var val = parseInt(preloadValue.value) || 12;
+    if (val < 100) { val++; }
+    preloadValue.value = val;
+  });
+
+  // ========== Scope buttons ==========
+  document.querySelectorAll('.scope-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.scope-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  // ========== Filter dropdowns ==========
+  document.querySelectorAll('.filter-dropdown').forEach(function(dropdown) {
+    var trigger = dropdown.querySelector('.filter-dropdown-trigger');
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Close other dropdowns
+      document.querySelectorAll('.filter-dropdown.open').forEach(function(d) {
+        if (d !== dropdown) d.classList.remove('open');
+      });
+      dropdown.classList.toggle('open');
+    });
+    var items = dropdown.querySelectorAll('.filter-dropdown-item');
+    items.forEach(function(item) {
+      item.addEventListener('click', function() {
+        items.forEach(function(i) { i.classList.remove('active'); });
+        this.classList.add('active');
+        // Update trigger text
+        trigger.childNodes[0].textContent = this.textContent.trim();
+        dropdown.classList.remove('open');
+      });
+    });
+  });
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.filter-dropdown.open').forEach(function(d) {
+      d.classList.remove('open');
+    });
+  });
+
+  // ========== Add memory modal ==========
+  var addMemoryBtn = document.getElementById('addMemoryBtn');
+  var addMemoryModal = document.getElementById('addMemoryModal');
+  var modalCloseBtn = document.getElementById('modalCloseBtn');
+  var modalCancelBtn = document.getElementById('modalCancelBtn');
+
+  function openModal() {
+    addMemoryModal.classList.add('show');
+  }
+
+  function closeModal() {
+    addMemoryModal.classList.remove('show');
+  }
+
+  addMemoryBtn.addEventListener('click', openModal);
+  modalCloseBtn.addEventListener('click', closeModal);
+  modalCancelBtn.addEventListener('click', closeModal);
+  addMemoryModal.addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ========== Modal radio buttons ==========
+  document.querySelectorAll('.modal-radio-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var parent = this.parentElement;
+      parent.querySelectorAll('.modal-radio-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  // ========== Modal type buttons ==========
+  document.querySelectorAll('.modal-type-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var parent = this.parentElement;
+      parent.querySelectorAll('.modal-type-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  // ========== Save memory ==========
+  document.getElementById('modalSaveBtn').addEventListener('click', function() {
+    closeModal();
+    // Show a simple feedback (could be enhanced)
+    document.getElementById('memoryContentInput').value = '';
+    document.getElementById('memoryTopicsInput').value = '';
+  });
+</script>
+
+</body>
+</html>
