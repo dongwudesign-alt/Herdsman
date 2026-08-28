@@ -717,38 +717,52 @@
 
   /* ========== Toggle Switch ========== */
   .toggle-switch {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background: rgba(0, 0, 0, 0.10);
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: #e5e5e5;
+    border: 1px solid #d4d4d4;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     padding: 0;
     flex-shrink: 0;
   }
 
   .toggle-switch.on {
-    background: rgba(0, 0, 0, 0.25);
-    border-color: rgba(0, 0, 0, 0.3);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
   }
 
   .toggle-knob {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    transition: all 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background: #1a1a1a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
 
   .toggle-switch.on .toggle-knob {
-    left: 20px;
-    background: #fff;
+    left: 22px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .toggle-switch.flipping .toggle-knob {
+    animation: none;
+  }
+
+  .toggle-switch:active .toggle-knob {
+    width: 22px;
+  }
+
+  .toggle-switch.on:active .toggle-knob {
+    left: 18px;
   }
 
   /* ========== Segment Group ========== */
@@ -1108,7 +1122,7 @@
     height: 34px;
     padding: 0 16px;
     border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(0, 0, 0, 0.10);
     color: var(--text);
     font-family: inherit;
     font-size: 0.82rem;
@@ -1118,24 +1132,24 @@
     transition: all 0.25s ease;
     /* 毛玻璃渐变基底（对齐 image-gen 生成按钮） */
     background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0.16) 0%,
-      rgba(0, 0, 0, 0.08) 25%,
-      rgba(0, 0, 0, 0.04) 50%,
-      rgba(0, 0, 0, 0.06) 75%,
-      rgba(0, 0, 0, 0.10) 100%
+      rgba(255, 255, 255, 0.92) 0%,
+      rgba(255, 255, 255, 0.78) 25%,
+      rgba(255, 255, 255, 0.60) 50%,
+      rgba(255, 255, 255, 0.70) 75%,
+      rgba(255, 255, 255, 0.85) 100%
     );
     backdrop-filter: blur(24px) saturate(1.3);
     -webkit-backdrop-filter: blur(24px) saturate(1.3);
     /* 玻璃内部漫反射 */
     box-shadow:
-      inset 0 1px 1px 0 rgba(0, 0, 0, 0.22),
-      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.06),
-      inset 1px 0 0 0 rgba(0, 0, 0, 0.10),
-      inset -1px 0 0 0 rgba(0, 0, 0, 0.10),
-      inset 0 0 14px 0 rgba(0, 0, 0, 0.05),
-      0 3px 16px rgba(0,0,0,0.25),
-      0 0 20px rgba(0, 0, 0, 0.06);
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.14);
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02),
+      inset 1px 0 0 0 rgba(255, 255, 255, 0.5),
+      inset -1px 0 0 0 rgba(255, 255, 255, 0.5),
+      inset 0 0 14px 0 rgba(255, 255, 255, 0.35),
+      0 3px 16px rgba(0, 0, 0, 0.10),
+      0 0 20px rgba(0, 0, 0, 0.03);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
   }
 
   /* 顶部强光晕 */
@@ -1146,7 +1160,7 @@
     left: 10%;
     right: 10%;
     height: 12px;
-    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0, 0, 0, 0.22), transparent 70%);
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255, 255, 255, 0.65), transparent 70%);
     pointer-events: none;
     filter: blur(2px);
   }
@@ -1159,46 +1173,46 @@
     left: 15%;
     right: 15%;
     height: 10px;
-    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0, 0, 0, 0.12), transparent 70%);
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255, 255, 255, 0.4), transparent 70%);
     pointer-events: none;
     filter: blur(3px);
   }
 
   .sk-policy-btn:hover {
     background: linear-gradient(180deg,
-      rgba(0, 0, 0, 0.24) 0%,
-      rgba(0, 0, 0, 0.13) 25%,
-      rgba(0, 0, 0, 0.07) 50%,
-      rgba(0, 0, 0, 0.09) 75%,
-      rgba(0, 0, 0, 0.15) 100%
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.88) 25%,
+      rgba(255, 255, 255, 0.72) 50%,
+      rgba(255, 255, 255, 0.82) 75%,
+      rgba(255, 255, 255, 0.95) 100%
     );
-    border-color: rgba(0, 0, 0, 0.30);
+    border-color: rgba(0, 0, 0, 0.16);
     box-shadow:
-      inset 0 1px 1px 0 rgba(0, 0, 0, 0.32),
-      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.10),
-      inset 1px 0 0 0 rgba(0, 0, 0, 0.16),
-      inset -1px 0 0 0 rgba(0, 0, 0, 0.16),
-      inset 0 0 18px 0 rgba(0, 0, 0, 0.07),
-      0 5px 22px rgba(0,0,0,0.32),
-      0 0 28px rgba(0, 0, 0, 0.10);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.22);
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.02),
+      inset 1px 0 0 0 rgba(255, 255, 255, 0.6),
+      inset -1px 0 0 0 rgba(255, 255, 255, 0.6),
+      inset 0 0 18px 0 rgba(255, 255, 255, 0.45),
+      0 5px 22px rgba(0, 0, 0, 0.14),
+      0 0 28px rgba(0, 0, 0, 0.04);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.7);
   }
 
   .sk-policy-btn:hover::before {
-    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0, 0, 0, 0.32), transparent 70%);
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255, 255, 255, 0.85), transparent 70%);
   }
 
   .sk-policy-btn:hover::after {
-    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0, 0, 0, 0.18), transparent 70%);
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255, 255, 255, 0.55), transparent 70%);
   }
 
   .sk-policy-btn svg {
-    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.22));
+    filter: drop-shadow(0 1px 1px rgba(255, 255, 255, 0.6));
     transition: filter 0.25s ease;
   }
 
   .sk-policy-btn:hover svg {
-    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.38));
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.8));
   }
 
   .sk-policy-btn:active {
@@ -1453,30 +1467,30 @@
     display: inline-block;
     padding: 2px 8px;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.08);
-    color: #d4d4d8;
+    background: rgba(0, 0, 0, 0.06);
+    color: #6b7280;
     font-size: 0.68rem;
     font-weight: 500;
     white-space: nowrap;
   }
 
-  .sk-tag.user { background: rgba(96,165,250,0.12); color: #93c5fd; }
-  .sk-tag.workspace { background: rgba(45,212,191,0.10); color: #5eead4; }
-  .sk-tag.bundled { background: rgba(0, 0, 0, 0.08); color: #d4d4d8; }
-  .sk-tag.hub { background: rgba(167,139,250,0.12); color: #c4b5fd; }
-  .sk-tag.custom { background: rgba(0, 0, 0, 0.06); color: var(--text-dim); }
-  .sk-tag.warn { background: rgba(251,191,36,0.12); color: #fcd34d; }
-  .sk-tag.bad { background: rgba(239,68,68,0.10); color: #fca5a5; }
+  .sk-tag.user { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
+  .sk-tag.workspace { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
+  .sk-tag.bundled { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
+  .sk-tag.hub { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
+  .sk-tag.custom { background: rgba(0, 0, 0, 0.04); color: #9ca3af; }
+  .sk-tag.warn { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
+  .sk-tag.bad { background: rgba(0, 0, 0, 0.06); color: #6b7280; }
 
   /* 本地技能卡片：标签统一黑白配色 */
   #localGrid .sk-tag {
-    background: rgba(0, 0, 0, 0.08);
-    color: #d4d4d8;
+    background: rgba(0, 0, 0, 0.06);
+    color: #6b7280;
   }
 
   .sk-card-desc {
     font-size: 0.74rem;
-    color: var(--text-dim);
+    color: #6b7280;
     line-height: 1.5;
     flex: 1;
     min-height: 0;
@@ -1497,38 +1511,40 @@
 
   /* Small toggle for cards */
   .sk-toggle-sm {
-    width: 32px;
-    height: 18px;
-    border-radius: 9px;
-    background: rgba(0, 0, 0, 0.10);
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: #e5e5e5;
+    border: 1px solid #d4d4d4;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     padding: 0;
     flex-shrink: 0;
   }
 
   .sk-toggle-sm.on {
-    background: rgba(0, 0, 0, 0.25);
-    border-color: rgba(0, 0, 0, 0.3);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
   }
 
   .sk-toggle-sm .toggle-knob {
     top: 2px;
     left: 2px;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    transition: all 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background: #1a1a1a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
     position: absolute;
   }
 
   .sk-toggle-sm.on .toggle-knob {
-    left: 16px;
-    background: #fff;
+    left: 18px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
 
   /* ========== Market Card ========== */
@@ -1559,15 +1575,15 @@
     gap: 4px;
   }
 
-  .sk-meta-item .star { color: #fbbf24; }
-  .sk-meta-item .dl { color: #60a5fa; }
+  .sk-meta-item .star { color: #1c1c1e; }
+  .sk-meta-item .dl { color: #1c1c1e; }
 
   .sk-install-btn {
     padding: 6px 16px;
     border-radius: 7px;
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    background: rgba(0, 0, 0, 0.09);
-    color: var(--text);
+    border: 1px solid #1a1a1e;
+    background: #1a1a1e;
+    color: #ffffff;
     font-family: inherit;
     font-size: 0.76rem;
     font-weight: 600;
@@ -1575,41 +1591,114 @@
     transition: all 0.2s ease;
     white-space: nowrap;
     margin-left: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .sk-install-btn:hover {
-    background: rgba(96,165,250,0.16);
-    border-color: rgba(96,165,250,0.45);
-    color: #93c5fd;
+    background: #2c2c30;
+    border-color: #2c2c30;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+    transform: translateY(-1px);
+  }
+
+  .sk-install-btn:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .sk-install-btn.installed {
-    background: rgba(74,222,128,0.12);
-    border-color: rgba(74,222,128,0.3);
-    color: #4ade80;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px dashed rgba(0, 0, 0, 0.18);
+    color: #9ca3af;
+    box-shadow: none;
     cursor: default;
     pointer-events: none;
   }
 
-  .sk-hub-link {
+  /* 技能广场：页码标签（兼容海量页数，省略号折叠 + 快速跳转） */
+  .sk-pager {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.8rem;
-    color: #60a5fa;
-    text-decoration: none;
-    font-weight: 500;
-    white-space: nowrap;
-    padding: 0 4px;
-  }
-
-  .sk-hub-link:hover {
-    text-decoration: underline;
-  }
-
-  /* 技能广场：SkillHub 链接与分类标签同排，靠右对齐 */
-  .sk-filter-row .sk-hub-link {
+    gap: 6px;
     margin-left: auto;
+    flex-wrap: nowrap;
+    max-width: 100%;
+  }
+  .sk-pager-info {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    margin-right: 2px;
+  }
+  .sk-pager-tags {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sk-pager-btn {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.10);
+    background: rgba(0,0,0,0.04);
+    color: var(--text-dim);
+    font-size: 0.74rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .sk-pager-btn:hover {
+    background: rgba(0,0,0,0.07);
+    color: var(--text);
+    border-color: rgba(0,0,0,0.16);
+  }
+  .sk-pager-btn.active {
+    background: rgba(59,130,246,0.12);
+    border-color: rgba(59,130,246,0.35);
+    color: #2563eb;
+    cursor: default;
+    pointer-events: none;
+  }
+  .sk-pager-btn.dots {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+    pointer-events: none;
+    color: var(--text-dim);
+  }
+  .sk-pager-btn:disabled,
+  .sk-pager-btn.disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+  }
+  .sk-pager-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 2px;
+  }
+  .sk-pager-jump input {
+    width: 56px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+    font-size: 0.74rem;
+    text-align: center;
+    outline: none;
+    font-family: inherit;
+  }
+  .sk-pager-jump input:focus {
+    border-color: rgba(59,130,246,0.5);
   }
 
   /* ========== Modal ========== */
@@ -2069,11 +2158,11 @@
   }
 
   .mkt-stat .mkt-star {
-    color: #f59e0b;
+    color: #1c1c1e;
   }
 
   .mkt-stat .mkt-dl {
-    color: #93c5fd;
+    color: #1c1c1e;
   }
 
   .mkt-tags {
@@ -2204,25 +2293,26 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.10);
   }
 
-  /* Toggle：开启态保留微量蓝色 */
+  /* Toggle：反色黑白 */
   .toggle-switch,
   .sk-toggle-sm {
-    background: rgba(0,0,0,0.08);
-    border-color: rgba(0,0,0,0.15);
+    background: #e5e5e5;
+    border-color: #d4d4d4;
   }
   .toggle-switch .toggle-knob,
   .sk-toggle-sm .toggle-knob {
-    background: rgba(0,0,0,0.55);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    background: #1a1a1a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
   .toggle-switch.on,
   .sk-toggle-sm.on {
-    background: rgba(59,130,246,0.16);
-    border-color: rgba(59,130,246,0.35);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
   }
   .toggle-switch.on .toggle-knob,
   .sk-toggle-sm.on .toggle-knob {
     background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
 
   /* 弹层：白玻璃 + 浅阴影 */
@@ -2248,17 +2338,17 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   }
 
-  /* 标签：统一黑白配色（浅色可读性） */
+  /* 标签：统一黑白配色 */
   .sk-tag, .sk-tag.user, .sk-tag.workspace, .sk-tag.bundled, .sk-tag.hub,
   .sk-tag.custom, .sk-tag.warn, .sk-tag.bad,
   .mkt-sec, .mkt-sec.ok, .mkt-sec.warn {
     background: rgba(0,0,0,0.06);
-    color: #55555a;
+    color: #6b7280;
   }
 
-  .sk-install-btn:hover { color: #2563eb; }
-  .sk-install-btn.installed { color: #15803d; }
-  .mkt-stat .mkt-dl { color: #2563eb; }
+  .sk-install-btn:hover { color: #ffffff; }
+  .sk-install-btn.installed { color: #9ca3af; }
+  .mkt-stat .mkt-dl { color: #1c1c1e; }
   .sk-card:hover { border-color: rgba(0,0,0,0.16); }
 </style>
 </head>
@@ -2474,7 +2564,7 @@
                 </div>
                 <button class="add-btn" id="refreshSkillBtn">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                  <span class="sk-refresh-label">刷新</span>
+                  <span class="sk-refresh-label">重置</span>
                 </button>
               </div>
             </div>
@@ -2483,9 +2573,6 @@
           <!-- Runtime 运行时信息栏 -->
           <div class="setting-row sk-runbar">
             <div class="sk-runbar-label">Runtime 运行时</div>
-            <button class="sk-icon-btn" id="refreshRunBtn" title="刷新">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-            </button>
             <div class="sk-run-chips" id="runChips">
               <div class="sk-run-chip" data-tool="uv"><span class="sk-run-name">uv</span><span class="sk-run-ver">0.5.21</span></div>
               <div class="sk-run-chip" data-tool="node"><span class="sk-run-name">node</span><span class="sk-run-ver">v22.14.0</span></div>
@@ -2493,6 +2580,9 @@
               <div class="sk-run-chip" data-tool="git"><span class="sk-run-name">git</span><span class="sk-run-ver">2.47.1</span></div>
               <div class="sk-run-chip" data-tool="ffmpeg"><span class="sk-run-name">ffmpeg</span><span class="sk-run-ver">7.0.2</span></div>
             </div>
+            <button class="sk-icon-btn" id="refreshRunBtn" title="刷新">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </button>
           </div>
 
           <!-- 本地技能卡片网格 -->
@@ -3032,20 +3122,18 @@
   }
 
   function renderMarketPager() {
-    var total = Math.max(1, Math.ceil(marketFiltered().length / MARKET_PAGE_SIZE));
-    if (state.mPage > total) state.mPage = total;
-    if (state.mPage < 1) state.mPage = 1;
-    document.getElementById('marketPagerInfo').textContent = '第 ' + state.mPage + ' / ' + total + ' 页';
-    var jump = document.getElementById('pagerJump');
-    jump.max = String(total);
-    document.getElementById('pagerPrev').disabled = state.mPage <= 1;
-    document.getElementById('pagerNext').disabled = state.mPage >= total;
+    // 保留两页按钮外观：全部内容已合并展示在第 1 页，第 2 页仅展示不跳转
+    state.mPage = 1;
+    document.getElementById('marketPagerInfo').textContent = '第 1 / 1 页';
+    document.getElementById('pagerJump').max = '1';
+    document.getElementById('pagerPrev').disabled = true;
+    document.getElementById('pagerNext').disabled = true;
     var tags = document.getElementById('marketPagerTags');
     tags.innerHTML = '';
-    var nums = pagerWindow(state.mPage, total, 5);
+    var nums = pagerWindow(1, 2, 5);
     nums.forEach(function(n) {
       var btn = document.createElement('button');
-      btn.className = 'sk-pager-btn' + (n === state.mPage ? ' active' : '') + (n === '...' ? ' dots' : '');
+      btn.className = 'sk-pager-btn' + (n === 1 ? ' active' : '') + (n === 2 ? ' disabled' : '') + (n === '...' ? ' dots' : '');
       btn.textContent = n === '...' ? '…' : String(n);
       if (n !== '...') btn.setAttribute('data-page', String(n));
       tags.appendChild(btn);
@@ -3069,11 +3157,7 @@
       });
     }
 
-    // 分页切片
-    var total = Math.max(1, Math.ceil(list.length / MARKET_PAGE_SIZE));
-    if (state.mPage > total) state.mPage = total;
-    if (state.mPage < 1) state.mPage = 1;
-    list = list.slice((state.mPage - 1) * MARKET_PAGE_SIZE, state.mPage * MARKET_PAGE_SIZE);
+    // 全部内容合并展示在第 1 页（保留两页按钮外观，第二页不提供数据跳转）
 
     var html = '';
     list.forEach(function(s) {
@@ -3187,7 +3271,7 @@
   document.getElementById('pagerJump').addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;
     var v = parseInt(e.target.value, 10);
-    if (!isNaN(v) && v >= 1) { state.mPage = v; goMarketPage(); }
+    if (!isNaN(v)) { state.mPage = 1; goMarketPage(); } // 第二页已合并，任意跳转均回到第 1 页
     e.target.value = '';
     e.target.blur();
   });

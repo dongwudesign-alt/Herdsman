@@ -717,38 +717,53 @@
 
   /* ========== Toggle Switch ========== */
   .toggle-switch {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.12);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     padding: 0;
     flex-shrink: 0;
   }
 
   .toggle-switch.on {
-    background: rgba(255,255,255,0.25);
-    border-color: rgba(255,255,255,0.3);
+    background: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.35);
   }
 
   .toggle-knob {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.6);
-    transition: all 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background: rgba(255,255,255,0.45);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transform-style: preserve-3d;
   }
 
   .toggle-switch.on .toggle-knob {
-    left: 20px;
-    background: #fff;
+    left: 22px;
+    background: #1a1a2e;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  }
+
+  .toggle-switch.flipping .toggle-knob {
+    animation: none;
+  }
+
+  .toggle-switch:active .toggle-knob {
+    width: 22px;
+  }
+
+  .toggle-switch.on:active .toggle-knob {
+    left: 18px;
   }
 
   /* ========== Segment Group ========== */
@@ -1497,38 +1512,40 @@
 
   /* Small toggle for cards */
   .sk-toggle-sm {
-    width: 32px;
-    height: 18px;
-    border-radius: 9px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.12);
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     padding: 0;
     flex-shrink: 0;
   }
 
   .sk-toggle-sm.on {
-    background: rgba(255,255,255,0.25);
-    border-color: rgba(255,255,255,0.3);
+    background: #ffffff;
+    border-color: #ffffff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.3);
   }
 
   .sk-toggle-sm .toggle-knob {
     top: 2px;
     left: 2px;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.6);
-    transition: all 0.25s ease;
+    background: rgba(255,255,255,0.45);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     position: absolute;
   }
 
   .sk-toggle-sm.on .toggle-knob {
-    left: 16px;
-    background: #fff;
+    left: 18px;
+    background: #1a1a2e;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
   }
 
   /* ========== Market Card ========== */
@@ -1565,9 +1582,9 @@
   .sk-install-btn {
     padding: 6px 16px;
     border-radius: 7px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.09);
-    color: var(--text);
+    border: 1px solid #ffffff;
+    background: #ffffff;
+    color: #111114;
     font-family: inherit;
     font-size: 0.76rem;
     font-weight: 600;
@@ -1575,18 +1592,27 @@
     transition: all 0.2s ease;
     white-space: nowrap;
     margin-left: auto;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   }
 
   .sk-install-btn:hover {
-    background: rgba(96,165,250,0.16);
-    border-color: rgba(96,165,250,0.45);
-    color: #93c5fd;
+    background: #e8e8ea;
+    border-color: #e8e8ea;
+    color: #111114;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .sk-install-btn:active {
+    transform: translateY(0) scale(0.96);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   }
 
   .sk-install-btn.installed {
-    background: rgba(74,222,128,0.12);
-    border-color: rgba(74,222,128,0.3);
-    color: #4ade80;
+    background: rgba(255,255,255,0.06);
+    border: 1px dashed rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.5);
+    box-shadow: none;
     cursor: default;
     pointer-events: none;
   }
@@ -1605,6 +1631,11 @@
     color: var(--text-dim);
     white-space: nowrap;
     margin-right: 2px;
+  }
+  .sk-pager-tags {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
   .sk-pager-btn {
     min-width: 26px;
@@ -1643,7 +1674,8 @@
     pointer-events: none;
     color: var(--text-dim);
   }
-  .sk-pager-btn:disabled {
+  .sk-pager-btn:disabled,
+  .sk-pager-btn.disabled {
     opacity: 0.35;
     cursor: default;
     pointer-events: none;
@@ -3022,20 +3054,18 @@
   }
 
   function renderMarketPager() {
-    var total = Math.max(1, Math.ceil(marketFiltered().length / MARKET_PAGE_SIZE));
-    if (state.mPage > total) state.mPage = total;
-    if (state.mPage < 1) state.mPage = 1;
-    document.getElementById('marketPagerInfo').textContent = '第 ' + state.mPage + ' / ' + total + ' 页';
-    var jump = document.getElementById('pagerJump');
-    jump.max = String(total);
-    document.getElementById('pagerPrev').disabled = state.mPage <= 1;
-    document.getElementById('pagerNext').disabled = state.mPage >= total;
+    // 保留两页按钮外观：全部内容已合并展示在第 1 页，第 2 页仅展示不跳转
+    state.mPage = 1;
+    document.getElementById('marketPagerInfo').textContent = '第 1 / 1 页';
+    document.getElementById('pagerJump').max = '1';
+    document.getElementById('pagerPrev').disabled = true;
+    document.getElementById('pagerNext').disabled = true;
     var tags = document.getElementById('marketPagerTags');
     tags.innerHTML = '';
-    var nums = pagerWindow(state.mPage, total, 5);
+    var nums = pagerWindow(1, 2, 5);
     nums.forEach(function(n) {
       var btn = document.createElement('button');
-      btn.className = 'sk-pager-btn' + (n === state.mPage ? ' active' : '') + (n === '...' ? ' dots' : '');
+      btn.className = 'sk-pager-btn' + (n === 1 ? ' active' : '') + (n === 2 ? ' disabled' : '') + (n === '...' ? ' dots' : '');
       btn.textContent = n === '...' ? '…' : String(n);
       if (n !== '...') btn.setAttribute('data-page', String(n));
       tags.appendChild(btn);
@@ -3059,11 +3089,7 @@
       });
     }
 
-    // 分页切片
-    var total = Math.max(1, Math.ceil(list.length / MARKET_PAGE_SIZE));
-    if (state.mPage > total) state.mPage = total;
-    if (state.mPage < 1) state.mPage = 1;
-    list = list.slice((state.mPage - 1) * MARKET_PAGE_SIZE, state.mPage * MARKET_PAGE_SIZE);
+    // 全部内容合并展示在第 1 页（保留两页按钮外观，第二页不提供数据跳转）
 
     var html = '';
     list.forEach(function(s) {
@@ -3177,7 +3203,7 @@
   document.getElementById('pagerJump').addEventListener('keydown', function(e) {
     if (e.key !== 'Enter') return;
     var v = parseInt(e.target.value, 10);
-    if (!isNaN(v) && v >= 1) { state.mPage = v; goMarketPage(); }
+    if (!isNaN(v)) { state.mPage = 1; goMarketPage(); } // 第二页已合并，任意跳转均回到第 1 页
     e.target.value = '';
     e.target.blur();
   });

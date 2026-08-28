@@ -446,26 +446,6 @@
     margin-top: 2px;
   }
 
-  .ms-close-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-  }
-
-  .ms-close-btn:hover {
-    background: rgba(0,0,0,0.06);
-    color: var(--text);
-  }
-
   .ms-content-scroll {
     flex: 1;
     overflow-y: auto;
@@ -509,6 +489,106 @@
 
   .setting-section:last-child {
     margin-bottom: 0;
+  }
+
+  /* ========== About Page ========== */
+  .about-value {
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.2px;
+    color: var(--text);
+  }
+
+  .about-mode-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(0,0,0,0.06);
+    color: #3a3a3e;
+  }
+
+  .about-mode-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  .about-update-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #ececee;
+    color: #3a3a3e;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .about-update-btn:hover {
+    background: #dedee1;
+    transform: translateY(-1px);
+  }
+
+  .about-update-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+  }
+
+  .about-intro {
+    padding: 4px 20px 18px;
+    line-height: 1.75;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+  }
+
+  .about-intro p { margin: 0; }
+
+  /* ========== Licenses Page ========== */
+  .license-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 28px;
+    padding: 6px 20px 16px;
+  }
+
+  .license-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 2px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    min-width: 0;
+  }
+
+  .license-name {
+    font-size: 0.82rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .license-badge {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    font-weight: 500;
+    font-family: 'SF Mono', 'Cascadia Code', Consolas, monospace;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.05);
+    color: rgba(0,0,0,0.5);
   }
 
   /* ========== Account Page ========== */
@@ -644,11 +724,11 @@
     width: 44px;
     height: 24px;
     border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.10);
-    background: rgba(0,0,0,0.06);
+    border: 1px solid #d4d4d4;
+    background: #e5e5e5;
     cursor: pointer;
     position: relative;
-    transition: background 0.25s ease, border-color 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
   }
 
@@ -659,19 +739,29 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: rgba(0,0,0,0.25);
-    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
+    background: #1a1a1a;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
 
   .toggle-switch.on {
-    background: rgba(59, 130, 246, 0.28);
-    border-color: rgba(59, 130, 246, 0.5);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
   }
 
   .toggle-switch.on .toggle-knob {
     transform: translateX(20px);
-    background: #60a5fa;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .toggle-switch:active .toggle-knob {
+    width: 22px;
+  }
+
+  .toggle-switch.on:active .toggle-knob {
+    transform: translateX(16px);
   }
 
   /* Segmented Button Group */
@@ -918,25 +1008,124 @@
 		    justify-content: center;
 		    gap: 8px;
 		    padding: 13px 20px;
-		    background: rgba(59,130,246,0.08);
-		    border: 1px solid rgba(59,130,246,0.2);
+		    background: #ececee;
+		    border: 1px solid rgba(0, 0, 0, 0.12);
 		    border-radius: 12px;
-		    color: #2563eb;
+		    color: #3a3a3e;
 		    font-size: 0.88rem;
 		    font-weight: 600;
 		    font-family: inherit;
 		    cursor: pointer;
 		    transition: all 0.2s ease;
 		    margin-bottom: 24px;
+		    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 		  }
 
 		  .storage-migrate-btn:hover {
-		    background: rgba(59,130,246,0.14);
-		    border-color: rgba(59,130,246,0.3);
+		    background: #dedee1;
+		    border-color: rgba(0, 0, 0, 0.18);
+		    color: #2a2a2e;
+		    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+		    transform: translateY(-1px);
 		  }
 
 		  .storage-migrate-btn:active {
 		    transform: scale(0.98);
+		  }
+
+		  /* ===== 日志页控件 ===== */
+		  .log-input {
+		    width: 220px;
+		    padding: 8px 14px;
+		    background: rgba(0,0,0,0.03);
+		    border: 1px solid rgba(0,0,0,0.1);
+		    border-radius: 8px;
+		    color: var(--text);
+		    font-size: 0.82rem;
+		    font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+		    outline: none;
+		    transition: all 0.15s ease;
+		  }
+		  .log-input:focus {
+		    border-color: rgba(0,0,0,0.25);
+		    background: rgba(0,0,0,0.05);
+		  }
+
+		  .log-dropdown {
+		    position: relative;
+		  }
+		  .log-dropdown-trigger {
+		    display: flex;
+		    align-items: center;
+		    gap: 10px;
+		    min-width: 120px;
+		    padding: 8px 14px;
+		    background: rgba(0,0,0,0.03);
+		    border: 1px solid rgba(0,0,0,0.1);
+		    border-radius: 8px;
+		    color: var(--text);
+		    font-size: 0.82rem;
+		    font-weight: 500;
+		    font-family: inherit;
+		    cursor: pointer;
+		    transition: all 0.15s ease;
+		  }
+		  .log-dropdown-trigger:hover {
+		    background: rgba(0,0,0,0.06);
+		    border-color: rgba(0,0,0,0.16);
+		  }
+		  .log-dropdown-trigger svg {
+		    color: var(--text-dim);
+		    margin-left: auto;
+		    flex-shrink: 0;
+		    transition: transform 0.2s ease;
+		  }
+		  .log-dropdown.open .log-dropdown-trigger svg {
+		    transform: rotate(180deg);
+		  }
+		  .log-dropdown-menu {
+		    position: absolute;
+		    top: calc(100% + 6px);
+		    right: 0;
+		    min-width: 150px;
+		    background: #ffffff;
+		    border: 1px solid rgba(0,0,0,0.12);
+		    border-radius: 10px;
+		    padding: 4px;
+		    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+		    opacity: 0;
+		    visibility: hidden;
+		    transform: translateY(-4px);
+		    transition: all 0.18s ease;
+		    z-index: 50;
+		  }
+		  .log-dropdown.open .log-dropdown-menu {
+		    opacity: 1;
+		    visibility: visible;
+		    transform: translateY(0);
+		  }
+		  .log-dropdown-item {
+		    display: block;
+		    width: 100%;
+		    padding: 7px 12px;
+		    background: transparent;
+		    border: none;
+		    border-radius: 7px;
+		    color: rgba(0,0,0,0.65);
+		    font-size: 0.8rem;
+		    font-family: inherit;
+		    text-align: left;
+		    cursor: pointer;
+		    transition: all 0.12s ease;
+		  }
+		  .log-dropdown-item:hover {
+		    background: rgba(0,0,0,0.05);
+		    color: #000;
+		  }
+		  .log-dropdown-item.active {
+		    background: rgba(0,0,0,0.08);
+		    color: #000;
+		    font-weight: 600;
 		  }
 
 		  /* GPU Select Area */
@@ -1509,9 +1698,9 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
           API
         </div>
-        <div class="ms-nav-item" data-page="work">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-          Work
+        <div class="ms-nav-item" data-page="launch">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          启动设置
         </div>
         <div class="ms-nav-item" data-page="notification">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -1538,9 +1727,6 @@
         <div>
           <div class="ms-page-title" id="mainPageTitle">账户</div>
         </div>
-        <button class="ms-close-btn" id="closeBtn" title="关闭">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
-        </button>
       </div>
 
       <div class="ms-content-scroll" id="mainContent">
@@ -1827,25 +2013,28 @@
 	          </div>
 	        </div>
 
-        <!-- Work 页面 -->
-        <div class="setting-page" id="page-work" style="display:none;">
+        <!-- 启动设置页面 -->
+        <div class="setting-page" id="page-launch" style="display:none;">
           <div class="setting-section">
+            <div class="setting-section-label">启动行为</div>
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">工作区路径</div>
-                <div class="setting-row-desc">设置默认工作区目录</div>
+                <div class="setting-row-title">开机自动启动 Herdsman</div>
+                <div class="setting-row-desc">Windows 登录后自动运行本程序</div>
               </div>
               <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">选择目录</button>
+                <button class="toggle-switch" data-switch="launch-autostart">
+                  <span class="toggle-knob"></span>
+                </button>
               </div>
             </div>
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">自动保存</div>
-                <div class="setting-row-desc">定时自动保存工作区状态</div>
+                <div class="setting-row-title">启动时加载模型</div>
+                <div class="setting-row-desc">应用启动是否自动加载模型；关闭则启动不加载任何模型</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="launch-loadmodel">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1858,22 +2047,57 @@
           <div class="setting-section">
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">桌面通知</div>
-                <div class="setting-row-desc">允许应用发送桌面通知</div>
+                <div class="setting-row-title">系统通知</div>
+                <div class="setting-row-desc">总控后台运行时操作系统通知，依赖系统通知权限</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch on" data-switch>
+                <button class="toggle-switch on" data-switch="notif-master">
+                  <span class="toggle-knob"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="setting-section" id="notifSubSection">
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">模型安装成功或失败</div>
+                <div class="setting-row-desc">模型安装结果推送通知</div>
+              </div>
+              <div class="setting-row-right">
+                <button class="toggle-switch on" data-switch="notif-sub-model">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
             </div>
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">通知声音</div>
-                <div class="setting-row-desc">收到通知时播放提示音</div>
+                <div class="setting-row-title">运行时安装成功或失败</div>
+                <div class="setting-row-desc">运行时安装结果推送通知</div>
               </div>
               <div class="setting-row-right">
-                <button class="toggle-switch" data-switch>
+                <button class="toggle-switch on" data-switch="notif-sub-runtime">
+                  <span class="toggle-knob"></span>
+                </button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">对话回复生成完成</div>
+                <div class="setting-row-desc">对话输出完毕推送通知</div>
+              </div>
+              <div class="setting-row-right">
+                <button class="toggle-switch" data-switch="notif-sub-reply">
+                  <span class="toggle-knob"></span>
+                </button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">图片生成完成或失败</div>
+                <div class="setting-row-desc">图像生成结果推送通知</div>
+              </div>
+              <div class="setting-row-right">
+                <button class="toggle-switch" data-switch="notif-sub-image">
                   <span class="toggle-knob"></span>
                 </button>
               </div>
@@ -1884,43 +2108,169 @@
         <!-- 日志页面 -->
         <div class="setting-page" id="page-logs" style="display:none;">
           <div class="setting-section">
+            <div class="setting-section-label">输出设置</div>
             <div class="setting-row">
               <div class="setting-row-left">
                 <div class="setting-row-title">日志级别</div>
-                <div class="setting-row-desc">控制日志记录的详细程度</div>
+                <div class="setting-row-desc">控制日志输出等级，默认 info</div>
               </div>
               <div class="setting-row-right">
-                <div class="segment-group">
-                  <button class="segment-btn" data-level="error">错误</button>
-                  <button class="segment-btn active" data-level="warn">警告</button>
-                  <button class="segment-btn" data-level="info">信息</button>
-                  <button class="segment-btn" data-level="debug">调试</button>
+                <div class="log-dropdown">
+                  <button class="log-dropdown-trigger" type="button">
+                    <span class="log-dropdown-value">info</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="log-dropdown-menu">
+                    <button class="log-dropdown-item" type="button" data-value="debug">debug</button>
+                    <button class="log-dropdown-item active" type="button" data-value="info">info</button>
+                    <button class="log-dropdown-item" type="button" data-value="warn">warn</button>
+                    <button class="log-dropdown-item" type="button" data-value="error">error</button>
+                  </div>
                 </div>
               </div>
             </div>
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">导出日志</div>
-                <div class="setting-row-desc">将日志导出为文件以便分析</div>
+                <div class="setting-row-title">日志格式</div>
+                <div class="setting-row-desc">日志输出文件格式，默认 text</div>
               </div>
               <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">导出</button>
+                <div class="log-dropdown">
+                  <button class="log-dropdown-trigger" type="button">
+                    <span class="log-dropdown-value">text</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="log-dropdown-menu">
+                    <button class="log-dropdown-item active" type="button" data-value="text">text</button>
+                    <button class="log-dropdown-item" type="button" data-value="json">json</button>
+                  </div>
+                </div>
               </div>
             </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">日志目录</div>
+                <div class="setting-row-desc">日志文件存储路径</div>
+              </div>
+              <div class="setting-row-right">
+                <input class="log-input" type="text" spellcheck="false" value="~/herdsman/logs" placeholder="输入日志存储路径" />
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <div class="setting-section-label">轮转策略</div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">最大大小 (MB)</div>
+                <div class="setting-row-desc">单份日志文件上限大小</div>
+              </div>
+              <div class="setting-row-right">
+                <div class="port-stepper">
+                  <button class="port-btn" type="button" id="logSizeMinus">−</button>
+                  <span class="port-value" id="logSizeValue">100</span>
+                  <button class="port-btn" type="button" id="logSizePlus">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">最大备份数</div>
+                <div class="setting-row-desc">日志轮转保留备份文件数量</div>
+              </div>
+              <div class="setting-row-right">
+                <div class="port-stepper">
+                  <button class="port-btn" type="button" id="logBackupMinus">−</button>
+                  <span class="port-value" id="logBackupValue">7</span>
+                  <button class="port-btn" type="button" id="logBackupPlus">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">最大保留时间 (天)</div>
+                <div class="setting-row-desc">日志文件最长保存天数</div>
+              </div>
+              <div class="setting-row-right">
+                <div class="port-stepper">
+                  <button class="port-btn" type="button" id="logDaysMinus">−</button>
+                  <span class="port-value" id="logDaysValue">30</span>
+                  <button class="port-btn" type="button" id="logDaysPlus">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">压缩</div>
+                <div class="setting-row-desc">是否对轮转备份日志进行压缩</div>
+              </div>
+              <div class="setting-row-right">
+                <button class="toggle-switch on" type="button" data-switch="log-compress">
+                  <span class="toggle-knob"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <button class="storage-migrate-btn" id="logSaveBtn" type="button" style="margin-bottom:0;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              保存日志设置
+            </button>
           </div>
         </div>
 
         <!-- 关于页面 -->
         <div class="setting-page" id="page-about" style="display:none;">
+          <!-- 版本信息 -->
           <div class="setting-section">
+            <div class="setting-section-label">版本信息</div>
             <div class="setting-row">
               <div class="setting-row-left">
-                <div class="setting-row-title">应用版本</div>
-                <div class="setting-row-desc">AI Assistant v1.0.0</div>
+                <div class="setting-row-title">版本号</div>
+                <div class="setting-row-desc">当前程序版本 Git 哈希标识</div>
               </div>
               <div class="setting-row-right">
-                <button class="segment-btn" style="padding:8px 14px;font-size:0.78rem;">检查更新</button>
+                <span class="about-value">v2.4.1 · 8f3a2c1</span>
               </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">构建时间</div>
+                <div class="setting-row-desc">程序编译打包时间戳</div>
+              </div>
+              <div class="setting-row-right">
+                <span class="about-value">2026-08-28 14:32:05</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-row-left">
+                <div class="setting-row-title">运行模式</div>
+                <div class="setting-row-desc">当前程序运行环境</div>
+              </div>
+              <div class="setting-row-right">
+                <span class="about-mode-tag"><span class="about-mode-dot"></span>prod 生产模式</span>
+              </div>
+            </div>
+            <div class="setting-row" style="border:none;">
+              <div class="setting-row-left">
+                <div class="setting-row-title">检查更新</div>
+                <div class="setting-row-desc">检测是否存在新版本</div>
+              </div>
+              <div class="setting-row-right">
+                <button class="about-update-btn" id="checkUpdateBtn" type="button">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
+                  <span id="checkUpdateLabel">检查更新</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 产品简介 -->
+          <div class="setting-section">
+            <div class="setting-section-label">产品简介</div>
+            <div class="about-intro">
+              <p>Herdsman 是一个本地 AI 模型管理与推理服务平台，支持多种模型和推理引擎，提供 OpenAI 兼容的 API 接口。</p>
             </div>
           </div>
         </div>
@@ -1928,24 +2278,43 @@
         <!-- 开源库声明页面 -->
         <div class="setting-page" id="page-licenses" style="display:none;">
           <div class="setting-section">
-            <a class="setting-link" href="#">
-              <div class="setting-link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              </div>
-              <span class="setting-link-text">Three.js</span>
-              <span class="setting-link-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </a>
-            <a class="setting-link" href="#">
-              <div class="setting-link-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-              </div>
-              <span class="setting-link-text">Outfit Font (Google Fonts)</span>
-              <span class="setting-link-arrow">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </span>
-            </a>
+            <div class="setting-section-label">开源软件声明</div>
+            <div class="license-list">
+              <div class="license-item"><span class="license-name">llama.cpp</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">FunASR</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">ACE-Step 1.5</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">FlagEmbedding / BGE</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">DeepSeek-R1</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">Llama</span><span class="license-badge">Llama Community License</span></div>
+              <div class="license-item"><span class="license-name">Mistral Inference</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">OpenAI gpt-oss</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">Qwen3-ASR</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">InternVL</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">HY-MT</span><span class="license-badge">Tencent HY Community License</span></div>
+              <div class="license-item"><span class="license-name">GLM-4.7 / GLM-4.5</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">PaddleOCR</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">ONNX Runtime GenAI</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">sherpa-onnx</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">Wails</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">TDesign Vue Next</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">stable-diffusion.cpp</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">MinerU</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">audio.cpp</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">DeepSeek LLM</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">Gemma / ge…</span><span class="license-badge">Apache-2.0 / BSD-3-Clause</span></div>
+              <div class="license-item"><span class="license-name">Microsoft Phi</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">OpenAI Whisper</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">Qwen</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">Qwen3-TTS</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">Hunyuan-MT</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">MiMo-V2-Flash</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">Z-Image</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">OpenVINO</span><span class="license-badge">Apache-2.0 License</span></div>
+              <div class="license-item"><span class="license-name">whisper.cpp</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">edge-tts</span><span class="license-badge">LGPL-3.0 License</span></div>
+              <div class="license-item"><span class="license-name">Element Plus</span><span class="license-badge">MIT License</span></div>
+              <div class="license-item"><span class="license-name">TDesign Chat</span><span class="license-badge">MIT License</span></div>
+            </div>
           </div>
         </div>
 
@@ -2028,7 +2397,7 @@
         'storage': '存储',
         'inference': '推理设置',
         'api': 'API',
-        'work': 'Work',
+        'launch': '启动设置',
         'notification': '系统通知',
         'logs': '日志',
         'about': '关于',
@@ -2051,6 +2420,38 @@
     });
   });
 
+  // 系统通知：总开关联动子开关
+  var notifMaster = document.querySelector('[data-switch="notif-master"]');
+  var notifSubSec = document.getElementById('notifSubSection');
+  function syncNotifSubs() {
+    if (!notifMaster || !notifSubSec) return;
+    var enabled = notifMaster.classList.contains('on');
+    notifSubSec.style.opacity = enabled ? '' : '0.35';
+    notifSubSec.style.pointerEvents = enabled ? '' : 'none';
+  }
+  if (notifMaster) {
+    notifMaster.addEventListener('click', syncNotifSubs);
+    syncNotifSubs();
+  }
+
+  // 关于页：检查更新按钮
+  var checkUpdateBtn = document.getElementById('checkUpdateBtn');
+  if (checkUpdateBtn) {
+    var checkUpdateLabel = document.getElementById('checkUpdateLabel');
+    checkUpdateBtn.addEventListener('click', function () {
+      if (checkUpdateBtn.disabled) return;
+      checkUpdateBtn.disabled = true;
+      checkUpdateLabel.textContent = '检查中…';
+      setTimeout(function () {
+        checkUpdateLabel.textContent = '✓ 已是最新版本';
+        setTimeout(function () {
+          checkUpdateBtn.disabled = false;
+          checkUpdateLabel.textContent = '检查更新';
+        }, 2000);
+      }, 1200);
+    });
+  }
+
   // Segment buttons
   document.querySelectorAll('.segment-group').forEach(group => {
     group.querySelectorAll('.segment-btn').forEach(btn => {
@@ -2061,15 +2462,29 @@
     });
   });
 
-  // Theme buttons - navigate between dark/light mode
-  document.getElementById('darkModeBtn').addEventListener('click', () => {
-    window.location.href = 'setting.html';
+  // Theme buttons - navigate to light/dark mode pages, staying on appearance
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.theme === 'dark') {
+        window.location.href = 'setting.html#appearance';
+      } else {
+        window.location.href = 'setting-white.html#appearance';
+      }
+    });
   });
 
-  // Close button
-  document.getElementById('closeBtn').addEventListener('click', () => {
-    window.location.href = 'Routing policy-white.html';
-  });
+  // On load: if hash=#appearance, auto-switch to appearance page
+  if (location.hash === '#appearance') {
+    var accNav = document.querySelector('.ms-nav-item[data-page="account"]');
+    var appNav = document.querySelector('.ms-nav-item[data-page="appearance"]');
+    if (accNav) accNav.classList.remove('active');
+    if (appNav) appNav.classList.add('active');
+    document.querySelectorAll('.setting-page').forEach(p => p.style.display = 'none');
+    var appPage = document.getElementById('page-appearance');
+    if (appPage) appPage.style.display = '';
+    document.getElementById('mainPageTitle').textContent = '外观';
+    history.replaceState(null, '', location.pathname);
+  }
 
   // Logout button - custom modal
   var logoutBtn = document.getElementById('logoutBtn');
@@ -2243,10 +2658,6 @@
   });
 
   // ===== Appearance Page =====
-  document.getElementById('themeDarkBtn').addEventListener('click', function() {
-    window.location.href = 'setting.html';
-  });
-
   document.querySelectorAll('#page-appearance .segment-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       document.querySelectorAll('#page-appearance .segment-btn').forEach(function(b) {
@@ -2294,6 +2705,59 @@
     var val = parseInt(portValue.textContent, 10);
     if (val < 65535) portValue.textContent = val + 1;
   });
+
+  // ===== 日志页：自定义下拉 =====
+  document.querySelectorAll('.log-dropdown').forEach(function(dd) {
+    var trig = dd.querySelector('.log-dropdown-trigger');
+    var menu = dd.querySelector('.log-dropdown-menu');
+    trig.addEventListener('click', function(e) {
+      e.stopPropagation();
+      document.querySelectorAll('.log-dropdown').forEach(function(o) {
+        if (o !== dd) o.classList.remove('open');
+      });
+      dd.classList.toggle('open');
+    });
+    menu.querySelectorAll('.log-dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        menu.querySelectorAll('.log-dropdown-item').forEach(function(i) { i.classList.remove('active'); });
+        item.classList.add('active');
+        dd.querySelector('.log-dropdown-value').textContent = item.dataset.value;
+        dd.classList.remove('open');
+      });
+    });
+  });
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.log-dropdown').forEach(function(o) { o.classList.remove('open'); });
+  });
+
+  // ===== 日志页：数值加减 =====
+  function bindNumStepper(minusId, plusId, valueId, min, max, step) {
+    var valEl = document.getElementById(valueId);
+    var decrement = document.getElementById(minusId);
+    var increment = document.getElementById(plusId);
+    if (!valEl || !decrement || !increment) return;
+    decrement.addEventListener('click', function() {
+      var v = parseInt(valEl.textContent, 10);
+      if (v > min) valEl.textContent = v - step;
+    });
+    increment.addEventListener('click', function() {
+      var v = parseInt(valEl.textContent, 10);
+      if (v < max) valEl.textContent = v + step;
+    });
+  }
+  bindNumStepper('logSizeMinus', 'logSizePlus', 'logSizeValue', 1, 1024, 50);
+  bindNumStepper('logBackupMinus', 'logBackupPlus', 'logBackupValue', 1, 99, 1);
+  bindNumStepper('logDaysMinus', 'logDaysPlus', 'logDaysValue', 1, 365, 1);
+
+  // ===== 日志页：保存按钮 =====
+  var logSaveBtn = document.getElementById('logSaveBtn');
+  if (logSaveBtn) {
+    var logSaveOrig = logSaveBtn.innerHTML;
+    logSaveBtn.addEventListener('click', function() {
+      logSaveBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>已保存';
+      setTimeout(function() { logSaveBtn.innerHTML = logSaveOrig; }, 1200);
+    });
+  }
 </script>
 
 <script type="module">

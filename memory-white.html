@@ -756,38 +756,52 @@
 
   /* ========== Toggle Switch ========== */
   .toggle-switch {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    background: rgba(0, 0, 0, 0.10);
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: #e5e5e5;
+    border: 1px solid #d4d4d4;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     padding: 0;
     flex-shrink: 0;
   }
 
   .toggle-switch.on {
-    background: rgba(0, 0, 0, 0.25);
-    border-color: rgba(0, 0, 0, 0.3);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+    box-shadow: 0 0 8px rgba(0,0,0,0.2);
   }
 
   .toggle-knob {
     position: absolute;
     top: 2px;
     left: 2px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    transition: all 0.25s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    background: #1a1a1a;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
 
   .toggle-switch.on .toggle-knob {
-    left: 20px;
-    background: #fff;
+    left: 22px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .toggle-switch.flipping .toggle-knob {
+    animation: none;
+  }
+
+  .toggle-switch:active .toggle-knob {
+    width: 22px;
+  }
+
+  .toggle-switch.on:active .toggle-knob {
+    left: 18px;
   }
 
   /* ========== Number Stepper ========== */
@@ -1396,21 +1410,22 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.10);
   }
 
-  /* Toggle：开启态保留微量蓝色 */
+  /* Toggle：开启态反色黑白 */
   .toggle-switch {
-    background: rgba(0,0,0,0.08);
-    border-color: rgba(0,0,0,0.15);
+    background: #e5e5e5;
+    border-color: #d4d4d4;
   }
   .toggle-switch .toggle-knob {
-    background: rgba(0,0,0,0.55);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    background: #1a1a1a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
   }
   .toggle-switch.on {
-    background: rgba(59,130,246,0.16);
-    border-color: rgba(59,130,246,0.35);
+    background: #1a1a1a;
+    border-color: #1a1a1a;
   }
   .toggle-switch.on .toggle-knob {
     background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
 
   /* 弹层：白玻璃 + 浅阴影 */
@@ -1901,6 +1916,12 @@
     sw.addEventListener('click', function(e) {
       e.stopPropagation();
       this.classList.toggle('on');
+      // 翻转动画：移除再添加以确保重播
+      this.classList.remove('flipping');
+      void this.offsetWidth;
+      this.classList.add('flipping');
+      var self = this;
+      setTimeout(function() { self.classList.remove('flipping'); }, 380);
     });
   });
 
