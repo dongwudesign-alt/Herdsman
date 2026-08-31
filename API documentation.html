@@ -1,0 +1,2723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>接口文档 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --code-bg: #0b0b0d;
+    --code-text: #d8d8dc;
+    --method-get: #e4e4e7;
+    --method-post: #a1a1aa;
+    --method-delete: #71717a;
+    --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,255,255,0.25);
+  }
+
+  /* Primary Sidebar */
+  .sidebar {
+    width: 68px;
+    background: rgba(10, 10, 12, 0.6);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 52px;
+    position: relative;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Doc View */
+  .doc-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .ms-nav-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ms-nav-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ms-nav-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--text);
+  }
+
+  /* Middle Directory Card */
+  .ms-dir {
+    width: 270px;
+    flex-shrink: 0;
+    z-index: 2;
+  }
+
+  .ms-dir-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-dir-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-dir-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-dir-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-dir-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .dir-group-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 14px 16px 6px;
+    opacity: 0.85;
+  }
+
+  .dir-group-label:first-child {
+    padding-top: 8px;
+  }
+
+  .dir-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    margin: 0 8px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    transition: all 0.18s ease;
+    position: relative;
+  }
+
+  .dir-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .dir-item.active {
+    background: rgba(255,255,255,0.09);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .dir-item svg {
+    flex-shrink: 0;
+    opacity: 0.55;
+    transition: all 0.18s ease;
+  }
+
+  .dir-item.active svg {
+    opacity: 1;
+  }
+
+  /* Main Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    z-index: 2;
+  }
+
+  .ms-main-header {
+    padding: 14px 18px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-main-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .ms-page-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  /* Export Button */
+  .export-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 18px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      0 4px 14px rgba(0,0,0,0.35);
+  }
+
+  .export-btn:hover {
+    border-color: rgba(255,255,255,0.32);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.3),
+      0 6px 20px rgba(0,0,0,0.45),
+      0 0 20px rgba(255,255,255,0.06);
+  }
+
+  .export-btn svg {
+    color: var(--text-dim);
+  }
+
+  .export-btn:hover svg {
+    color: var(--text);
+  }
+
+  /* Document Scroller */
+  .doc-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 20px 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .doc-scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .doc-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .doc-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.16);
+    background-clip: content-box;
+  }
+
+  .doc-sec {
+    display: none;
+  }
+
+  .doc-sec.active {
+    display: block;
+    animation: secIn 0.28s ease-out;
+  }
+
+  @keyframes secIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .sec-head {
+    margin-bottom: 4px;
+  }
+
+  .sec-crumb {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .sec-title {
+    font-size: 1.18rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .doc-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.75;
+    margin: 10px 0 18px;
+    max-width: 72ch;
+  }
+
+  .block {
+    margin-bottom: 26px;
+  }
+
+  .block-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .block-title svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .doc-hint {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  .warn-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: #c8c8cc;
+  }
+
+  .warn-tip svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #9a9a9a;
+  }
+
+  /* Endpoint Rows */
+  .endpoint-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 4px 0 8px;
+  }
+
+  .endpoint-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+  }
+
+  .endpoint-row:hover {
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .method {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .method.get {
+    background: rgba(255,255,255,0.16);
+    color: var(--method-get);
+  }
+
+  .method.post {
+    background: rgba(255,255,255,0.10);
+    color: var(--method-post);
+  }
+
+  .method.delete {
+    background: rgba(255,255,255,0.05);
+    color: var(--method-delete);
+  }
+
+  .path {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .endpoint-row.baseurl {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .endpoint-row.baseurl .path {
+    color: #cfcfd4;
+  }
+
+  /* Copy Button */
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .copy-btn:hover {
+    background: rgba(255,255,255,0.09);
+    color: var(--text);
+  }
+
+  .copy-btn.copied {
+    width: auto;
+    padding: 0 10px;
+    background: rgba(255,255,255,0.12);
+    color: var(--method-get);
+  }
+
+  /* Tables */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    margin: 4px 0 6px;
+  }
+
+  .doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    min-width: 520px;
+  }
+
+  .doc-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.09);
+    white-space: nowrap;
+  }
+
+  .doc-table td {
+    padding: 9px 14px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .doc-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .doc-table td.opt-name,
+  .doc-table td.opt-type {
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  .doc-table td.opt-name {
+    color: #d4d4d8;
+  }
+
+  .doc-table td.opt-type {
+    color: var(--text-dim);
+  }
+
+  .req-badge {
+    display: inline-block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 5px;
+    font-family: var(--mono);
+  }
+
+  .req-badge.yes {
+    background: rgba(255,255,255,0.08);
+    color: var(--method-delete);
+  }
+
+  .req-badge.no {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-dim);
+  }
+
+  /* Code Blocks */
+  .code-block {
+    margin: 4px 0 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--code-bg);
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px 8px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .code-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .code-label .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .code-label .dot.r { background: #71717a; }
+  .code-label .dot.y { background: #a1a1aa; }
+  .code-label .dot.g { background: #e4e4e7; }
+
+  .code-block pre.code {
+    padding: 16px 18px;
+    overflow: auto;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--code-text);
+    white-space: pre;
+  }
+
+  .code-block pre.code::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .code-block pre.code::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+  }
+
+  /* Status List */
+  .status-list {
+    list-style: none;
+    margin: 4px 0 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .status-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text);
+    padding: 7px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+  }
+
+  .status-list li .code-num {
+    flex-shrink: 0;
+    min-width: 34px;
+  }
+
+  .status-list li span:last-child {
+    color: var(--text-dim);
+    font-family: 'Outfit', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item active" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="route.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <a class="s-item" href="setting.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- API Documentation View -->
+  <div class="doc-view">
+
+    <!-- Left: Secondary Menu Card (220px) -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">模型管理</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item" href="model-store.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          模型中心
+        </a>
+        <a class="ms-nav-item" href="model-management.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          模型管理
+        </a>
+        <div class="ms-nav-item active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          接口文档
+        </div>
+        <div class="ms-nav-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          调用统计
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle: API Directory Card (270px) -->
+    <div class="ms-card ms-dir">
+      <div class="ms-dir-header">
+        <span class="ms-dir-title">接口目录</span>
+      </div>
+      <div class="ms-dir-list">
+
+        <div class="dir-group-label">接入点</div>
+        <div class="dir-item active" data-target="doc-endpoint">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          接入点信息
+        </div>
+
+        <div class="dir-group-label">模型性能测试</div>
+        <div class="dir-item" data-target="doc-benchmark">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          测试任务生命周期
+        </div>
+
+        <div class="dir-group-label">MinerU 兼容接口</div>
+        <div class="dir-item" data-target="doc-mineru">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          同步文件解析
+        </div>
+
+        <div class="dir-group-label">OpenAI 兼容接口</div>
+        <div class="dir-item" data-target="doc-models">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          获取模型列表
+        </div>
+        <div class="dir-item" data-target="doc-chat">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          对话补全
+        </div>
+        <div class="dir-item" data-target="doc-embeddings">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          向量化接口
+        </div>
+        <div class="dir-item" data-target="doc-rerank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Rerank 接口
+        </div>
+
+        <div class="dir-group-label">Anthropic 接口</div>
+        <div class="dir-item" data-target="doc-anthropic">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Anthropic 对话
+        </div>
+
+        <div class="dir-group-label">AI 模型接口</div>
+        <div class="dir-item" data-target="doc-img-gen">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          图片生成接口
+        </div>
+        <div class="dir-item" data-target="doc-img-edit">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          图片编辑接口
+        </div>
+        <div class="dir-item" data-target="doc-img2img">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          图生图接口
+        </div>
+
+        <div class="dir-group-label">OCR 识别</div>
+        <div class="dir-item" data-target="doc-ocr">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          OCR 识别接口
+        </div>
+
+        <div class="dir-group-label">文档解析</div>
+        <div class="dir-item" data-target="doc-docparse">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          文档解析接口
+        </div>
+
+        <div class="dir-group-label">语音识别</div>
+        <div class="dir-item" data-target="doc-asr">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          语音识别接口
+        </div>
+        <div class="dir-item" data-target="doc-asr-stream">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          流式语音识别接口
+        </div>
+
+        <div class="dir-group-label">语音合成</div>
+        <div class="dir-item" data-target="doc-tts">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          语音合成接口
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: Detail Main Card -->
+    <div class="ms-card ms-main">
+      <div class="ms-main-header">
+        <div class="ms-main-top">
+          <span class="ms-page-title">接口文档</span>
+          <button class="export-btn" id="btnExportMd" title="导出当前接口文档为 Markdown">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            导出 Markdown
+          </button>
+        </div>
+      </div>
+
+      <div class="doc-scroll" id="docScroll">
+
+        <!-- 接入点信息 -->
+        <section class="doc-sec active" id="doc-endpoint">
+          <div class="sec-head">
+            <span class="sec-crumb">OPENAI COMPATIBLE 接入点 · 接入点信息</span>
+            <h2 class="sec-title">接入点信息</h2>
+          </div>
+          <p class="doc-desc">OpenAI 兼容 API 服务接入点，无需认证。</p>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              基础 URL
+            </h3>
+            <div class="endpoint-row baseurl">
+              <span class="method post">URL</span>
+              <code class="path" id="ep-baseurl">http://localhost:8084/v1</code>
+              <button class="copy-btn" data-target="ep-baseurl" title="复制">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+            <p class="doc-hint">所有 API 请求的基础路径。</p>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              接入点示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>接入点示例</span>
+                <button class="copy-btn" data-target="code-endpoint-example" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-endpoint-example"><code>// AI 模型接口
+POST http://localhost:8084/v1/chat/completions
+
+// Anthropic 接口
+POST http://localhost:8084/v1/anthropic/messages</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 测试任务生命周期 -->
+        <section class="doc-sec" id="doc-benchmark">
+          <div class="sec-head">
+            <span class="sec-crumb">模型性能测试接口 · 测试任务生命周期</span>
+            <h2 class="sec-title">测试任务生命周期</h2>
+          </div>
+          <p class="doc-desc">创建异步模型性能测试，并通过轮询查询进度、取消或删除任务，以及导出 Markdown/CSV 报告。全局同一时间只允许一个测试任务运行。</p>
+
+          <div class="warn-tip">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>该接口不校验身份。开启局域网访问后，任何能访问 API 端口的客户端都可以启动、取消、删除测试，并读取本机路径和运行端口。</span>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              接口地址列表
+            </h3>
+            <div class="endpoint-list">
+              <div class="endpoint-row">
+                <span class="method post">POST</span>
+                <code class="path" id="ep-bench-1">/api/benchmarks</code>
+                <button class="copy-btn" data-target="ep-bench-1" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <div class="endpoint-row">
+                <span class="method get">GET</span>
+                <code class="path" id="ep-bench-2">/api/benchmarks?status=succeeded&amp;limit=50&amp;offset=0</code>
+                <button class="copy-btn" data-target="ep-bench-2" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <div class="endpoint-row">
+                <span class="method get">GET</span>
+                <code class="path" id="ep-bench-3">/api/benchmarks/:id</code>
+                <button class="copy-btn" data-target="ep-bench-3" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <div class="endpoint-row">
+                <span class="method post">POST</span>
+                <code class="path" id="ep-bench-4">/api/benchmarks/:id/cancel</code>
+                <button class="copy-btn" data-target="ep-bench-4" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <div class="endpoint-row">
+                <span class="method delete">DELETE</span>
+                <code class="path" id="ep-bench-5">/api/benchmarks/:id</code>
+                <button class="copy-btn" data-target="ep-bench-5" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <div class="endpoint-row">
+                <span class="method get">GET</span>
+                <code class="path" id="ep-bench-6">/api/benchmarks/:id/export?format=markdown|csv</code>
+                <button class="copy-btn" data-target="ep-bench-6" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              请求示例 POST /api/benchmarks
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求示例</span>
+                <button class="copy-btn" data-target="code-bench-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-bench-req"><code>{
+  "model_name": "qwen3.5-9b",
+  "variants": ["standard"],
+  "context_sizes": [4096],
+  "warmup_count": 0,
+  "repeat_count": 1,
+  "request": {
+    "user_prompt": "Please respond with a short benchmark-friendly answer.",
+    "max_tokens": 256,
+    "stream": true,
+    "timeout_seconds": 1800
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              轮询任务状态
+            </h3>
+            <p class="doc-desc">创建请求返回 202 和 Location 后，轮询详情接口，直到 status 为 succeeded、failed 或 canceled。</p>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot y"></span>HTTP 响应头</span>
+                <button class="copy-btn" data-target="code-bench-head" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-bench-head"><code>HTTP/1.1 202 Accepted
+Location: /api/benchmarks/8bfc2bb9-2a31-4c23-9306-4dd6a92f97dc</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>GET 请求示例</span>
+                <button class="copy-btn" data-target="code-bench-poll" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-bench-poll"><code>GET /api/benchmarks/8bfc2bb9-2a31-4c23-9306-4dd6a92f97dc</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>轮询响应</span>
+                <button class="copy-btn" data-target="code-bench-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-bench-res"><code>{
+  "id": "8bfc2bb9-2a31-4c23-9306-4dd6a92f97dc",
+  "status": "running",
+  "summary": {
+    "total_cases": 1,
+    "succeeded": 0,
+    "failed": 0,
+    "canceled": 0
+  },
+  "cases": []
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+              状态码
+            </h3>
+            <ul class="status-list">
+              <li><span class="code-num">202</span><span>Benchmark queued</span></li>
+              <li><span class="code-num">204</span><span>Benchmark record deleted</span></li>
+              <li><span class="code-num">400</span><span>Invalid JSON, config, filter, pagination, or export format</span></li>
+              <li><span class="code-num">404</span><span>Benchmark run not found</span></li>
+              <li><span class="code-num">409</span><span>Another benchmark is active, or an active run cannot be deleted</span></li>
+              <li><span class="code-num">500</span><span>Internal storage or service error</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 同步文件解析 -->
+        <section class="doc-sec" id="doc-mineru">
+          <div class="sec-head">
+            <span class="sec-crumb">MinerU 兼容接口 · 同步文件解析</span>
+            <h2 class="sec-title">同步文件解析</h2>
+          </div>
+          <p class="doc-desc">兼容 MinerU 开源版和 Cherry Studio OpenMinerU 处理器的同步 multipart 接口。该接口位于服务根路径，不带 /v1。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-mineru">/file_parse</code>
+            <button class="copy-btn" data-target="ep-mineru" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数表
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">files</td><td class="opt-type">file[]</td><td><span class="req-badge yes">是</span></td><td>一个或多个 files 文件；单文件上限 200 MiB，请求上限 1 GiB。</td></tr>
+                  <tr><td class="opt-name">backend</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>pipeline 或 hybrid-engine；缺省时读取系统设置中的 MinerU 默认解析模式。</td></tr>
+                  <tr><td class="opt-name">effort</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>medium 或 high，默认 medium。</td></tr>
+                  <tr><td class="opt-name">formula_enable</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否启用公式识别，默认 true。</td></tr>
+                  <tr><td class="opt-name">parse_method</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 auto。</td></tr>
+                  <tr><td class="opt-name">lang_list</td><td class="opt-type">string[]</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认语言 ch。</td></tr>
+                  <tr><td class="opt-name">table_enable</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 true。</td></tr>
+                  <tr><td class="opt-name">image_analysis</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 true。</td></tr>
+                  <tr><td class="opt-name">return_md</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>返回 Markdown，默认 true。</td></tr>
+                  <tr><td class="opt-name">return_images</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>返回提取图片，默认 false。</td></tr>
+                  <tr><td class="opt-name">response_format_zip</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>返回 application/zip，默认 false。</td></tr>
+                  <tr><td class="opt-name">return_original_file</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>ZIP 中包含原文件，默认 false。</td></tr>
+                  <tr><td class="opt-name">start_page_id</td><td class="opt-type">integer</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 0。</td></tr>
+                  <tr><td class="opt-name">end_page_id</td><td class="opt-type">integer</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 99999。</td></tr>
+                  <tr><td class="opt-name">server_url</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>第一阶段不支持，必须省略或留空。</td></tr>
+                  <tr><td class="opt-name">return_middle_json</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 false。</td></tr>
+                  <tr><td class="opt-name">return_model_output</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 false。</td></tr>
+                  <tr><td class="opt-name">return_content_list</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 false。</td></tr>
+                  <tr><td class="opt-name">client_side_output_generation</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>当前仅支持默认值 false。</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              curl 请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>curl</span>
+                <button class="copy-btn" data-target="code-mineru-curl" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-mineru-curl"><code>curl -X POST "http://localhost:8084/file_parse" \
+ -F "files=@document.pdf" \
+ -F "backend=pipeline" \
+ -F "return_md=true" \
+ -F "return_images=true" \
+ -F "response_format_zip=true" \
+ --output results.zip</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+              ZIP 响应结构
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot y"></span>zip 目录</span>
+                <button class="copy-btn" data-target="code-mineru-zip" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-mineru-zip"><code>document/auto/document.md
+document/auto/images/figure.png
+document/auto/document_origin.pdf</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              JSON 响应结构
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应示例</span>
+                <button class="copy-btn" data-target="code-mineru-json" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-mineru-json"><code>{
+  "backend": "pipeline",
+  "version": "0.1.7",
+  "results": {
+    "document": {
+      "md_content": "# Document",
+      "images": {"figure.png": "data:image/png;base64,..."}
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z"/></svg>
+              Cherry Studio 配置
+            </h3>
+            <p class="doc-desc">选择 OpenMinerU 处理器，将 API Host 设置为上方服务根 URL。API Key 可留空；发送 Authorization 时 Herdsman 也会忽略。</p>
+            <div class="endpoint-row baseurl">
+              <span class="method post">URL</span>
+              <code class="path" id="ep-mineru-url">http://localhost:8084</code>
+              <button class="copy-btn" data-target="ep-mineru-url" title="复制">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+            <p class="doc-hint">API Host 地址示例：http://localhost:8084</p>
+          </div>
+        </section>
+
+        <!-- 获取模型列表 -->
+        <section class="doc-sec" id="doc-models">
+          <div class="sec-head">
+            <span class="sec-crumb">OpenAI 兼容接口 · 获取模型列表</span>
+            <h2 class="sec-title">获取模型列表</h2>
+          </div>
+          <p class="doc-desc">获取当前服务中可用的模型列表。</p>
+
+          <div class="endpoint-row">
+            <span class="method get">GET</span>
+            <code class="path" id="ep-models">/v1/models</code>
+            <button class="copy-btn" data-target="ep-models" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+              参数
+            </h3>
+            <p class="doc-desc">无。</p>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-models-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-models-req"><code>GET /v1/models</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-models-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-models-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "id": "llama3-8b",
+      "object": "model",
+      "created": 1710000000,
+      "owned_by": "herdsman"
+    },
+    {
+      "id": "qwen3.5-9b",
+      "object": "model",
+      "created": 1710000000,
+      "owned_by": "herdsman"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 对话补全 -->
+        <section class="doc-sec" id="doc-chat">
+          <div class="sec-head">
+            <span class="sec-crumb">OpenAI 兼容接口 · 对话补全</span>
+            <h2 class="sec-title">对话补全</h2>
+          </div>
+          <p class="doc-desc">发送对话请求，获取 AI 回复。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-chat">/v1/chat/completions</code>
+            <button class="copy-btn" data-target="ep-chat" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">messages</td><td class="opt-type">array</td><td><span class="req-badge yes">是</span></td><td>对话消息列表</td></tr>
+                  <tr><td class="opt-name">temperature</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>采样温度</td></tr>
+                  <tr><td class="opt-name">stream</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否使用流式响应</td></tr>
+                  <tr><td class="opt-name">reasoning_effort</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>OpenAI Chat Completions 兼容推理级别，可选值：low、medium、high；本地 llama.cpp 会映射到模板参数</td></tr>
+                  <tr><td class="opt-name">thinking_enabled</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>Herdsman 兼容扩展：为支持的模型启用或关闭思考模式；本地 llama.cpp 会映射为 enable_thinking</td></tr>
+                  <tr><td class="opt-name">thinking_tokens</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>Herdsman 兼容扩展：思考 token 预算；本地 llama.cpp 会映射为 reasoning_budget</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求头</span>
+                <button class="copy-btn" data-target="code-chat-head" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-chat-head"><code>POST /v1/chat/completions
+Content-Type: application/json</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求体</span>
+                <button class="copy-btn" data-target="code-chat-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-chat-req"><code>{
+  "model": "llama3-8b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello, how are you?"
+    }
+  ],
+  "temperature": 0.7,
+  "reasoning_effort": "high",
+  "stream": true
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              流式响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-chat-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-chat-res"><code>{
+  "id": "chatcmpl-123",
+  "object": "chat.completion.chunk",
+  "created": 1677858242,
+  "model": "llama3-8b",
+  "choices": [
+    {
+      "index": 0,
+      "delta": {
+        "role": "assistant",
+        "content": "I'm fine, thank you!"
+      },
+      "finish_reason": null
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 向量化接口 -->
+        <section class="doc-sec" id="doc-embeddings">
+          <div class="sec-head">
+            <span class="sec-crumb">OpenAI 兼容接口 · 向量化接口</span>
+            <h2 class="sec-title">向量化接口</h2>
+          </div>
+          <p class="doc-desc">提交文本或文本列表，获取向量表示。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-emb">/v1/embeddings</code>
+            <button class="copy-btn" data-target="ep-emb" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">input</td><td class="opt-type">string / array</td><td><span class="req-badge yes">是</span></td><td>输入文本或文本列表</td></tr>
+                  <tr><td class="opt-name">encoding_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>向量编码格式，默认 float</td></tr>
+                  <tr><td class="opt-name">dimensions</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>指定向量维度</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-emb-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-emb-req"><code>{
+  "model": "bge-large-zh-v1.5",
+  "input": "Herdsman 是本地 AI 模型管理与推理服务平台",
+  "encoding_format": "float"
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-emb-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-emb-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": [0.001, 0.002, 0.003],
+      "index": 0
+    }
+  ],
+  "model": "bge-large-zh-v1.5",
+  "usage": {
+    "prompt_tokens": 10,
+    "total_tokens": 10
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rerank 接口 -->
+        <section class="doc-sec" id="doc-rerank">
+          <div class="sec-head">
+            <span class="sec-crumb">OpenAI 兼容接口 · Rerank 接口</span>
+            <h2 class="sec-title">Rerank 接口</h2>
+          </div>
+          <p class="doc-desc">对给定查询和文档列表进行相关性重排序。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-rerank">/v1/rerank</code>
+            <button class="copy-btn" data-target="ep-rerank" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">query</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>查询文本</td></tr>
+                  <tr><td class="opt-name">documents</td><td class="opt-type">array</td><td><span class="req-badge yes">是</span></td><td>待排序文档列表</td></tr>
+                  <tr><td class="opt-name">top_n</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>返回前 N 个结果</td></tr>
+                  <tr><td class="opt-name">return_documents</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否返回原文内容</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-rerank-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-rerank-req"><code>{
+  "model": "bge-reranker-large",
+  "query": "本地 AI 模型管理平台",
+  "documents": [
+    "Herdsman 支持本地模型推理",
+    "Herdsman 提供 OpenAI 兼容 API",
+    "Herdsman 可管理模型启动与性能测试"
+  ],
+  "top_n": 3,
+  "return_documents": true
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-rerank-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-rerank-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "index": 0,
+      "relevance_score": 0.92,
+      "document": "Herdsman 支持本地模型推理"
+    },
+    {
+      "index": 1,
+      "relevance_score": 0.88,
+      "document": "Herdsman 提供 OpenAI 兼容 API"
+    }
+  ],
+  "model": "bge-reranker-large",
+  "usage": {
+    "prompt_tokens": 20,
+    "total_tokens": 20
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- Anthropic 对话 -->
+        <section class="doc-sec" id="doc-anthropic">
+          <div class="sec-head">
+            <span class="sec-crumb">Anthropic 接口 · Anthropic 对话</span>
+            <h2 class="sec-title">Anthropic 对话</h2>
+          </div>
+          <p class="doc-desc">兼容 Anthropic 消息接口，发送对话请求并获取模型回复。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-anthropic">/v1/anthropic/messages</code>
+            <button class="copy-btn" data-target="ep-anthropic" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">messages</td><td class="opt-type">array</td><td><span class="req-badge yes">是</span></td><td>对话消息列表</td></tr>
+                  <tr><td class="opt-name">max_tokens</td><td class="opt-type">number</td><td><span class="req-badge yes">是</span></td><td>最大生成 Token 数</td></tr>
+                  <tr><td class="opt-name">temperature</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>采样温度</td></tr>
+                  <tr><td class="opt-name">stream</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否使用流式响应</td></tr>
+                  <tr><td class="opt-name">thinking_enabled</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否启用思考模式</td></tr>
+                  <tr><td class="opt-name">thinking_tokens</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>思考 Token 预算</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-anthropic-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-anthropic-req"><code>{
+  "model": "llama3-8b",
+  "messages": [
+    {
+      "role": "user",
+      "content": "介绍一下 Herdsman"
+    }
+  ],
+  "max_tokens": 1024,
+  "temperature": 0.7,
+  "stream": true
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-anthropic-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-anthropic-res"><code>{
+  "id": "msg-123",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "Herdsman 是一个本地 AI 模型管理与推理服务平台..."
+    }
+  ],
+  "model": "llama3-8b",
+  "usage": {
+    "input_tokens": 10,
+    "output_tokens": 50
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 图片生成接口 -->
+        <section class="doc-sec" id="doc-img-gen">
+          <div class="sec-head">
+            <span class="sec-crumb">AI 模型接口 · 图片生成接口</span>
+            <h2 class="sec-title">图片生成接口</h2>
+          </div>
+          <p class="doc-desc">根据提示词生成图片。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-img-gen">/v1/images/generations</code>
+            <button class="copy-btn" data-target="ep-img-gen" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">prompt</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>图片描述提示词</td></tr>
+                  <tr><td class="opt-name">n</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>生成图片数量</td></tr>
+                  <tr><td class="opt-name">size</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>图片尺寸</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>响应格式，如 url、b64_json</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-img-gen-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img-gen-req"><code>{
+  "model": "sd3",
+  "prompt": "一只穿宇航服的橘猫站在月球表面",
+  "n": 1,
+  "size": "1024x1024",
+  "response_format": "b64_json"
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-img-gen-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img-gen-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "url": "",
+      "b64_json": "iVBORw0KGgoAAAANSUhEUgAA..."
+    }
+  ],
+  "model": "sd3",
+  "usage": {
+    "prompt_tokens": 15,
+    "total_tokens": 15
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 图片编辑接口 -->
+        <section class="doc-sec" id="doc-img-edit">
+          <div class="sec-head">
+            <span class="sec-crumb">AI 模型接口 · 图片编辑接口</span>
+            <h2 class="sec-title">图片编辑接口</h2>
+          </div>
+          <p class="doc-desc">对已有图片进行局部编辑或风格改造。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-img-edit">/v1/images/edits</code>
+            <button class="copy-btn" data-target="ep-img-edit" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">image</td><td class="opt-type">file / string</td><td><span class="req-badge yes">是</span></td><td>原图文件或 Base64 图片</td></tr>
+                  <tr><td class="opt-name">prompt</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>编辑描述</td></tr>
+                  <tr><td class="opt-name">mask</td><td class="opt-type">file / string</td><td><span class="req-badge no">否</span></td><td>遮罩区域</td></tr>
+                  <tr><td class="opt-name">n</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>生成图片数量</td></tr>
+                  <tr><td class="opt-name">size</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>图片尺寸</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>响应格式</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-img-edit-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img-edit-req"><code>{
+  "model": "sd3",
+  "image": "base64_image...",
+  "prompt": "将背景替换为赛博朋克城市夜景",
+  "mask": "base64_mask...",
+  "n": 1,
+  "size": "1024x1024",
+  "response_format": "b64_json"
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-img-edit-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img-edit-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "url": "",
+      "b64_json": "iVBORw0KGgoAAAANSUhEUgAA..."
+    }
+  ],
+  "model": "sd3",
+  "usage": {
+    "prompt_tokens": 12,
+    "total_tokens": 12
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 图生图接口 -->
+        <section class="doc-sec" id="doc-img2img">
+          <div class="sec-head">
+            <span class="sec-crumb">AI 模型接口 · 图生图接口</span>
+            <h2 class="sec-title">图生图接口</h2>
+          </div>
+          <p class="doc-desc">根据原图和提示词生成或改造图片。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-img2img">/v1/images/generations/img2img</code>
+            <button class="copy-btn" data-target="ep-img2img" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>模型名称</td></tr>
+                  <tr><td class="opt-name">image</td><td class="opt-type">file / string</td><td><span class="req-badge yes">是</span></td><td>输入图片</td></tr>
+                  <tr><td class="opt-name">prompt</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>图片生成提示词</td></tr>
+                  <tr><td class="opt-name">negative_prompt</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>负面提示词</td></tr>
+                  <tr><td class="opt-name">strength</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>原图影响强度</td></tr>
+                  <tr><td class="opt-name">n</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>生成图片数量</td></tr>
+                  <tr><td class="opt-name">size</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>图片尺寸</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>响应格式</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-img2img-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img2img-req"><code>{
+  "model": "sd3",
+  "image": "base64_image...",
+  "prompt": "将原图改造成梦幻森林插画风格",
+  "negative_prompt": "低清晰度、变形、杂乱文字",
+  "strength": 0.75,
+  "n": 1,
+  "size": "1024x1024",
+  "response_format": "b64_json"
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-img2img-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-img2img-res"><code>{
+  "object": "list",
+  "data": [
+    {
+      "url": "",
+      "b64_json": "iVBORw0KGgoAAAANSUhEUgAA..."
+    }
+  ],
+  "model": "sd3",
+  "usage": {
+    "prompt_tokens": 18,
+    "total_tokens": 18
+  }
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- OCR 识别接口 -->
+        <section class="doc-sec" id="doc-ocr">
+          <div class="sec-head">
+            <span class="sec-crumb">OCR 识别 · OCR 识别接口</span>
+            <h2 class="sec-title">OCR 识别接口</h2>
+          </div>
+          <p class="doc-desc">识别图片中的文字内容、表格、公式等信息。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-ocr">/v1/ocr/parse</code>
+            <button class="copy-btn" data-target="ep-ocr" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>OCR 模型名称</td></tr>
+                  <tr><td class="opt-name">image</td><td class="opt-type">file / string</td><td><span class="req-badge yes">是</span></td><td>图片文件或 Base64 图片</td></tr>
+                  <tr><td class="opt-name">language</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>识别语言</td></tr>
+                  <tr><td class="opt-name">output_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>输出格式，如 text、json、markdown</td></tr>
+                  <tr><td class="opt-name">enable_table</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否启用表格识别</td></tr>
+                  <tr><td class="opt-name">enable_formula</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否启用公式识别</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-ocr-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-ocr-req"><code>{
+  "model": "paddleocr",
+  "image": "base64_image...",
+  "language": "ch",
+  "output_format": "markdown",
+  "enable_table": true,
+  "enable_formula": true
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-ocr-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-ocr-res"><code>{
+  "object": "ocr_result",
+  "text": "识别到的文本内容",
+  "markdown": "# 识别结果\n\n| 列1 | 列2 |\n|---|---|\n| 内容1 | 内容2 |",
+  "tables": [
+    {
+      "rows": [
+        ["列1", "列2"],
+        ["内容1", "内容2"]
+      ]
+    }
+  ],
+  "formulas": [],
+  "model": "paddleocr"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 文档解析接口 -->
+        <section class="doc-sec" id="doc-docparse">
+          <div class="sec-head">
+            <span class="sec-crumb">文档解析 · 文档解析接口</span>
+            <h2 class="sec-title">文档解析接口</h2>
+          </div>
+          <p class="doc-desc">解析文档文件，支持 PDF、Word、Excel、PPT、图片等格式。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-docparse">/v1/documents/parse</code>
+            <button class="copy-btn" data-target="ep-docparse" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>文档解析模型名称</td></tr>
+                  <tr><td class="opt-name">file</td><td class="opt-type">file / string</td><td><span class="req-badge yes">是</span></td><td>文档文件或 Base64</td></tr>
+                  <tr><td class="opt-name">file_type</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>文件类型，如 pdf、docx、xlsx、pptx、image</td></tr>
+                  <tr><td class="opt-name">parse_mode</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>解析模式，如 text、ocr、hybrid</td></tr>
+                  <tr><td class="opt-name">output_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>输出格式，如 text、markdown、json</td></tr>
+                  <tr><td class="opt-name">enable_table</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否解析表格</td></tr>
+                  <tr><td class="opt-name">enable_formula</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否解析公式</td></tr>
+                  <tr><td class="opt-name">enable_image</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否提取图片</td></tr>
+                  <tr><td class="opt-name">start_page_id</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>起始页码</td></tr>
+                  <tr><td class="opt-name">end_page_id</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>结束页码</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-docparse-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-docparse-req"><code>{
+  "model": "mineru",
+  "file": "base64_pdf...",
+  "file_type": "pdf",
+  "parse_mode": "hybrid",
+  "output_format": "markdown",
+  "enable_table": true,
+  "enable_formula": true,
+  "enable_image": false,
+  "start_page_id": 1,
+  "end_page_id": 3
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-docparse-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-docparse-res"><code>{
+  "object": "document_result",
+  "markdown": "# 文档标题\n\n## 章节内容\n\n正文内容。",
+  "text": "文档纯文本内容",
+  "tables": [],
+  "images": [],
+  "formulas": [],
+  "model": "mineru"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 语音识别接口 -->
+        <section class="doc-sec" id="doc-asr">
+          <div class="sec-head">
+            <span class="sec-crumb">语音识别 · 语音识别接口</span>
+            <h2 class="sec-title">语音识别接口</h2>
+          </div>
+          <p class="doc-desc">将音频文件转换为文本。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-asr">/v1/audio/transcriptions</code>
+            <button class="copy-btn" data-target="ep-asr" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>语音识别模型名称</td></tr>
+                  <tr><td class="opt-name">file</td><td class="opt-type">file / string</td><td><span class="req-badge yes">是</span></td><td>音频文件或 Base64</td></tr>
+                  <tr><td class="opt-name">language</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>识别语言</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>输出格式，如 text、json、verbose_json</td></tr>
+                  <tr><td class="opt-name">temperature</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>识别温度</td></tr>
+                  <tr><td class="opt-name">timestamp_granularities</td><td class="opt-type">array</td><td><span class="req-badge no">否</span></td><td>时间戳粒度</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-asr-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-asr-req"><code>{
+  "model": "whisper",
+  "file": "base64_audio...",
+  "language": "ch",
+  "response_format": "verbose_json",
+  "temperature": 0
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-asr-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-asr-res"><code>{
+  "object": "transcription",
+  "text": "这是一段语音识别结果。",
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.0,
+      "end": 2.5,
+      "text": "这是一段语音识别结果。"
+    }
+  ],
+  "model": "whisper"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 流式语音识别接口 -->
+        <section class="doc-sec" id="doc-asr-stream">
+          <div class="sec-head">
+            <span class="sec-crumb">语音识别 · 流式语音识别接口</span>
+            <h2 class="sec-title">流式语音识别接口</h2>
+          </div>
+          <p class="doc-desc">对音频流进行实时语音识别。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-asr-stream">/v1/audio/transcriptions/stream</code>
+            <button class="copy-btn" data-target="ep-asr-stream" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>语音识别模型名称</td></tr>
+                  <tr><td class="opt-name">audio</td><td class="opt-type">binary / string</td><td><span class="req-badge yes">是</span></td><td>音频流数据</td></tr>
+                  <tr><td class="opt-name">language</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>识别语言</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>输出格式</td></tr>
+                  <tr><td class="opt-name">stream</td><td class="opt-type">boolean</td><td><span class="req-badge no">否</span></td><td>是否返回流式结果</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-asr-stream-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-asr-stream-req"><code>{
+  "model": "whisper",
+  "audio": "base64_audio_chunk...",
+  "language": "ch",
+  "response_format": "text",
+  "stream": true
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-asr-stream-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-asr-stream-res"><code>{
+  "object": "transcription_chunk",
+  "text": "这是",
+  "is_final": false
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <!-- 语音合成接口 -->
+        <section class="doc-sec" id="doc-tts">
+          <div class="sec-head">
+            <span class="sec-crumb">语音合成 · 语音合成接口</span>
+            <h2 class="sec-title">语音合成接口</h2>
+          </div>
+          <p class="doc-desc">将文本转换为语音文件。</p>
+
+          <div class="endpoint-row">
+            <span class="method post">POST</span>
+            <code class="path" id="ep-tts">/v1/audio/speech</code>
+            <button class="copy-btn" data-target="ep-tts" title="复制">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              参数
+            </h3>
+            <div class="table-wrap">
+              <table class="doc-table">
+                <thead>
+                  <tr><th>参数名</th><th>类型</th><th>必填</th><th>描述</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="opt-name">model</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>语音合成模型名称</td></tr>
+                  <tr><td class="opt-name">input</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>合成文本</td></tr>
+                  <tr><td class="opt-name">voice</td><td class="opt-type">string</td><td><span class="req-badge yes">是</span></td><td>音色名称</td></tr>
+                  <tr><td class="opt-name">response_format</td><td class="opt-type">string</td><td><span class="req-badge no">否</span></td><td>音频格式，如 mp3、wav</td></tr>
+                  <tr><td class="opt-name">speed</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>语速</td></tr>
+                  <tr><td class="opt-name">pitch</td><td class="opt-type">number</td><td><span class="req-badge no">否</span></td><td>音调</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+              请求示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot g"></span>请求</span>
+                <button class="copy-btn" data-target="code-tts-req" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-tts-req"><code>{
+  "model": "tts-model",
+  "input": "欢迎使用 Herdsman 语音合成服务。",
+  "voice": "female-01",
+  "response_format": "mp3",
+  "speed": 1.0,
+  "pitch": 1.0
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3 class="block-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              响应示例
+            </h3>
+            <div class="code-block">
+              <div class="code-head">
+                <span class="code-label"><span class="dot b"></span>响应</span>
+                <button class="copy-btn" data-target="code-tts-res" title="复制">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+              <pre class="code" id="code-tts-res"><code>{
+  "object": "audio",
+  "url": "",
+  "b64_audio": "SUQzBAAAAAA...",
+  "model": "tts-model"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // 目录切换
+  document.querySelectorAll('.dir-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('.dir-item').forEach(function (i) { i.classList.remove('active'); });
+      item.classList.add('active');
+      var target = document.getElementById(item.dataset.target);
+      document.querySelectorAll('.doc-sec').forEach(function (s) { s.classList.remove('active'); });
+      if (target) {
+        target.classList.add('active');
+        var scroller = document.getElementById('docScroll');
+        if (scroller) scroller.scrollTop = 0;
+      }
+    });
+  });
+
+  // 复制
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = '';
+      if (btn.dataset.copy) {
+        text = btn.dataset.copy;
+      } else if (btn.dataset.target) {
+        var el = document.getElementById(btn.dataset.target);
+        if (el) text = el.textContent.trim();
+      }
+      if (!text) return;
+      var done = function () {
+        var original = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>已复制</span>';
+        setTimeout(function () {
+          btn.classList.remove('copied');
+          btn.innerHTML = original;
+        }, 1200);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        done();
+      }
+    });
+  });
+
+  // 导出 Markdown
+  document.getElementById('btnExportMd').addEventListener('click', function () {
+    var sec = document.querySelector('.doc-sec.active');
+    if (!sec) return;
+    var lines = [];
+    var title = sec.querySelector('.sec-title').textContent.trim();
+    var crumb = sec.querySelector('.sec-crumb').textContent.trim();
+    lines.push('# ' + title);
+    lines.push('');
+    lines.push('> ' + crumb);
+    var desc = sec.querySelector('.doc-desc');
+    if (desc) {
+      lines.push('');
+      lines.push(desc.textContent.trim());
+    }
+    sec.querySelectorAll('.endpoint-row').forEach(function (row) {
+      var m = row.querySelector('.method');
+      var p = row.querySelector('.path');
+      if (m && p) {
+        lines.push('');
+        lines.push('`' + m.textContent.trim() + ' ' + p.textContent.trim() + '`');
+      }
+    });
+    sec.querySelectorAll('.block').forEach(function (block) {
+      var bt = block.querySelector('.block-title');
+      if (bt) {
+        lines.push('');
+        lines.push('## ' + bt.textContent.trim());
+      }
+      var hint = block.querySelector('.doc-hint');
+      if (hint) {
+        lines.push('');
+        lines.push(hint.textContent.trim());
+      }
+      var table = block.querySelector('table.doc-table');
+      if (table) {
+        lines.push('');
+        var rows = [];
+        table.querySelectorAll('tr').forEach(function (tr) {
+          rows.push(Array.prototype.map.call(tr.querySelectorAll('th,td'), function (c) { return c.textContent.trim(); }));
+        });
+        if (rows.length) {
+          lines.push('| ' + rows[0].join(' | ') + ' |');
+          lines.push('| ' + rows[0].map(function () { return '---'; }).join(' | ') + ' |');
+          rows.slice(1).forEach(function (r) {
+            lines.push('| ' + r.join(' | ') + ' |');
+          });
+        }
+      }
+      block.querySelectorAll('.code-block').forEach(function (cb) {
+        var label = cb.querySelector('.code-label');
+        var pre = cb.querySelector('pre.code');
+        if (label) {
+          lines.push('');
+          lines.push('**' + label.textContent.trim() + '**');
+        }
+        if (pre) {
+          lines.push('');
+          lines.push('```');
+          lines.push(pre.textContent.replace(/\n+$/, ''));
+          lines.push('```');
+        }
+      });
+    });
+    sec.querySelectorAll('.status-list li').forEach(function (li) {
+      lines.push('');
+      lines.push('- ' + li.textContent.replace(/\s+/g, ' ').trim());
+    });
+    var blob = new Blob([lines.join('\n') + '\n'], { type: 'text/markdown;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (title || 'API') + '.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  });
+</script>
+</body>
+</html>
