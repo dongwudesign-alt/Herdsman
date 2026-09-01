@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>调用统计 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="laser-flow.css">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --accent-blue: #5b8def;
+    --accent-purple: #a78bfa;
+    --accent-green: #4ade80;
+    --accent-orange: #fb923c;
+    --accent-pink: #f472b6;
+    --accent-red: #f87171;
+    --accent-yellow: #facc15;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .win-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .win-btn.close:hover { background: rgba(255,80,80,0.3); color: #fff; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    position: relative;
+  }
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Route View */
+  .route-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar { width: 4px; }
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .ms-nav-item:hover { background: rgba(255,255,255,0.06); }
+  .ms-nav-item.active { background: rgba(255,255,255,0.08); }
+  .ms-nav-item svg { flex-shrink: 0; color: var(--text-dim); }
+  .ms-nav-item.active svg { color: var(--text); }
+
+  /* Main Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+  }
+
+  .ms-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar { width: 4px; }
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  /* ===== Stats Layout ===== */
+  .dash-row {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dash-row:last-child { margin-bottom: 0; }
+
+  .dash-row.row-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Card header */
+  .card-header {
+    padding: 12px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .card-title-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+  }
+
+  .card-body {
+    padding: 0 14px 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sort-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+
+  /* ===== Filter bar ===== */
+  .stats-filter {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .filter-range {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
+  .refresh-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .refresh-btn:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.16);
+  }
+  .refresh-btn.spin svg { animation: spin 0.8s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .trend-tab {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    user-select: none;
+  }
+  .trend-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .trend-tab.active {
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  /* ===== Metric grid ===== */
+  .metric-grid {
+    display: grid;
+    gap: 8px;
+    padding: 2px 0 0;
+  }
+  .metric-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+  .metric-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 9px;
+    padding: 11px 12px 10px;
+    transition: all 0.2s ease;
+    min-width: 0;
+  }
+  .metric-card:hover {
+    background: rgba(255,255,255,0.045);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .metric-top {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .metric-chip {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .metric-chip.m-blue { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+  .metric-chip.m-red { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.75); }
+  .metric-chip.m-purple { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+  .metric-chip.m-green { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.8); }
+  .metric-chip.m-orange { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); }
+  .metric-chip.m-pink { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.55); }
+
+  .metric-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .metric-value {
+    font-size: 1.12rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .metric-value .unit {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-left: 3px;
+  }
+
+  .metric-sub {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ===== Trend chart ===== */
+  .trend-legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .trend-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+  }
+  .trend-legend .dot { width: 14px; height: 3px; border-radius: 2px; }
+  .trend-legend .dot.req { background: var(--accent-blue); }
+  .trend-legend .dot.fail { background: var(--accent-red); }
+  .trend-legend .dot.lat { background: var(--accent-yellow); }
+
+  .trend-chart-area {
+    height: 190px;
+    margin: 10px 0 6px;
+    position: relative;
+  }
+
+  .trend-chart-area svg { width: 100%; height: 100%; }
+
+  .tg { stroke: rgba(255,255,255,0.045); stroke-width: 1; }
+  .tl-req { stroke: var(--accent-blue); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tl-fail { stroke: var(--accent-red); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .tl-lat { stroke: var(--accent-yellow); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .tl-label { fill: rgba(154,154,154,0.7); font-size: 10px; font-family: 'Outfit', sans-serif; }
+
+  .chart-tooltip {
+    position: absolute;
+    padding: 6px 10px;
+    background: rgba(15,15,20,0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    font-size: 0.7rem;
+    color: var(--text);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  .chart-tooltip.show { opacity: 1; }
+  .chart-tooltip .tt-date { color: var(--text-dim); font-size: 0.65rem; margin-bottom: 4px; }
+  .chart-tooltip .tt-row { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .chart-tooltip .tt-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ===== Runtime distribution ===== */
+  .runtime-list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    padding: 4px 0 2px;
+  }
+  .runtime-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .runtime-name {
+    width: 92px;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  .runtime-track {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+  .runtime-fill {
+    height: 100%;
+    border-radius: 3px;
+    min-width: 2px;
+    transition: width 0.5s ease-out;
+  }
+  .runtime-fill.g1 { background: linear-gradient(90deg, var(--accent-blue), rgba(91,141,239,0.55)); }
+  .runtime-fill.g2 { background: linear-gradient(90deg, var(--accent-purple), rgba(167,139,250,0.55)); }
+  .runtime-fill.g3 { background: linear-gradient(90deg, var(--accent-green), rgba(74,222,128,0.55)); }
+  .runtime-fill.g4 { background: linear-gradient(90deg, var(--accent-orange), rgba(251,146,60,0.55)); }
+  .runtime-fill.g5 { background: linear-gradient(90deg, var(--accent-pink), rgba(244,114,182,0.55)); }
+  .runtime-val {
+    width: 56px;
+    text-align: right;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  /* ===== Tables ===== */
+  .model-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+  }
+
+  .model-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .model-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-table tr:last-child td { border-bottom: none; }
+  .model-table tbody tr { transition: background 0.15s ease; }
+  .model-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  .table-wrapper {
+    max-height: 240px;
+    overflow-y: auto;
+    border-radius: 8px;
+  }
+  .table-wrapper::-webkit-scrollbar { width: 4px; }
+  .table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .model-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .model-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .model-badge.cloud { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+  .model-badge.end { background: rgba(91,141,239,0.15); color: var(--accent-blue); }
+
+  .model-info { display: flex; flex-direction: column; min-width: 0; }
+  .model-name-text { font-weight: 500; color: var(--text); font-size: 0.8rem; }
+  .model-type {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .token-num { font-weight: 500; }
+  .cache-num {
+    color: var(--accent-green);
+    font-weight: 500;
+  }
+  .rate-ok { color: var(--accent-green); font-weight: 600; }
+  .rate-warn { color: var(--accent-orange); font-weight: 600; }
+
+  .endpoint-name {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .cap-name { font-size: 0.7rem; color: var(--text-dim); margin-top: 1px; }
+
+  /* Error distribution */
+  .stage-chip {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .stage-chip.s1 { background: rgba(248,113,113,0.12); color: var(--accent-red); }
+  .stage-chip.s2 { background: rgba(251,146,60,0.12); color: var(--accent-orange); }
+  .stage-chip.s3 { background: rgba(244,114,182,0.12); color: var(--accent-pink); }
+  .stage-chip.s4 { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
+
+  .err-type {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.76rem;
+    color: var(--text);
+  }
+
+  .err-empty {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 26px 0;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+  .err-empty.show { display: flex; }
+  .err-empty svg { color: var(--text-dim); opacity: 0.5; }
+
+  /* ===== Ranking ===== */
+  .rank-list {
+    display: flex;
+    flex-direction: column;
+    padding: 2px 0;
+  }
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .rank-item:last-child { border-bottom: none; }
+
+  .rank-badge {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.66rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-badge.r1 { background: rgba(251,146,60,0.15); color: var(--accent-orange); }
+  .rank-badge.r2 { background: rgba(167,139,250,0.15); color: var(--accent-purple); }
+  .rank-badge.r3 { background: rgba(91,141,239,0.15); color: var(--accent-blue); }
+  .rank-badge.other { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+
+  .rank-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .rank-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rank-type {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+  }
+
+  .rank-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  .rank-time {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .rank-tok {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 1080px) {
+    .dash-row.row-2 { grid-template-columns: 1fr; }
+    .metric-grid.cols-6 { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .route-view { left: 0; top: 36px; }
+    .ms-nav { display: none; }
+    .metric-grid.cols-6 { grid-template-columns: repeat(2, 1fr); }
+    .stats-filter { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item active" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="route.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <a class="s-item" href="setting.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Route View -->
+  <div class="route-view" id="routeView">
+
+    <!-- Left: Navigation Card -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">模型管理</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item" href="model-store.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          模型中心
+        </a>
+        <a class="ms-nav-item" href="API documentation.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          接口文档
+        </a>
+        <div class="ms-nav-item active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          调用统计
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Main Area -->
+    <div class="ms-main">
+      <div class="ms-main-header">
+        <div class="ms-page-title">调用统计</div>
+        <div class="ms-page-subtitle">模型调用统计看板，请求量 / 成功率 / Token / 延迟分布，全部数据仅本地保存</div>
+      </div>
+
+      <div class="ms-content-scroll">
+
+        <!-- Filter bar -->
+        <div class="dash-row">
+          <div class="ms-card stats-filter">
+            <div class="filter-group">
+              <div class="trend-tab active" data-range="24h">24小时</div>
+              <div class="trend-tab" data-range="7d">7天</div>
+              <div class="trend-tab" data-range="30d">30天</div>
+            </div>
+            <div class="filter-range" id="rangeLabel"></div>
+            <button class="refresh-btn" id="refreshBtn" title="刷新统计">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric cards -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </span>
+                核心指标
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="metric-grid cols-6">
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-blue">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </span>
+                    <span class="metric-label">总调用</span>
+                  </div>
+                  <div class="metric-value" id="mCalls">0</div>
+                  <div class="metric-sub" id="mCallsSub"></div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-red">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </span>
+                    <span class="metric-label">错误率</span>
+                  </div>
+                  <div class="metric-value" id="mErr">0</div>
+                  <div class="metric-sub" id="mErrSub"></div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-purple">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+                    </span>
+                    <span class="metric-label">Tokens</span>
+                  </div>
+                  <div class="metric-value" id="mTok">0</div>
+                  <div class="metric-sub" id="mTokSub"></div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-green">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </span>
+                    <span class="metric-label">P95 / P99 延迟</span>
+                  </div>
+                  <div class="metric-value" id="mP95">0</div>
+                  <div class="metric-sub" id="mP95Sub"></div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-orange">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </span>
+                    <span class="metric-label">TTFT</span>
+                  </div>
+                  <div class="metric-value" id="mTtft">0</div>
+                  <div class="metric-sub" id="mTtftSub"></div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-top">
+                    <span class="metric-chip m-pink">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </span>
+                    <span class="metric-label">自动启动</span>
+                  </div>
+                  <div class="metric-value" id="mAuto">0</div>
+                  <div class="metric-sub" id="mAutoSub"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend chart -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </span>
+                请求趋势图表
+              </div>
+              <div class="trend-legend">
+                <span><i class="dot req"></i>请求量</span>
+                <span><i class="dot fail"></i>失败请求</span>
+                <span><i class="dot lat"></i>平均延迟</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="trend-chart-area" id="trendChart">
+                <svg id="trendSvg" viewBox="0 0 800 200" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="gradReq" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#5b8def" stop-opacity="0.28"/>
+                      <stop offset="100%" stop-color="#5b8def" stop-opacity="0"/>
+                    </linearGradient>
+                    <linearGradient id="gradFail" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#f87171" stop-opacity="0.22"/>
+                      <stop offset="100%" stop-color="#f87171" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <line class="tg" x1="0" y1="44" x2="800" y2="44"/>
+                  <line class="tg" x1="0" y1="84" x2="800" y2="84"/>
+                  <line class="tg" x1="0" y1="124" x2="800" y2="124"/>
+                  <line class="tg" x1="0" y1="164" x2="800" y2="164"/>
+                  <path id="pAreaReq" fill="url(#gradReq)"/>
+                  <path id="pAreaFail" fill="url(#gradFail)"/>
+                  <path id="pLineReq" class="tl-req" fill="none"/>
+                  <path id="pLineFail" class="tl-fail" fill="none"/>
+                  <path id="pLineLat" class="tl-lat" fill="none"/>
+                  <g id="tlLabels"></g>
+                </svg>
+                <div class="chart-tooltip" id="chartTip"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Runtime + Capability -->
+        <div class="dash-row row-2">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                运行时分布
+              </div>
+              <span class="sort-chip">按调用量</span>
+            </div>
+            <div class="card-body">
+              <div class="runtime-list" id="runtimeList"></div>
+            </div>
+          </div>
+
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                </span>
+                能力分布
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="model-table">
+                  <thead>
+                    <tr>
+                      <th>能力 / Endpoint</th>
+                      <th>调用</th>
+                      <th>总耗时 (ms)</th>
+                      <th>Tokens</th>
+                    </tr>
+                  </thead>
+                  <tbody id="capBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error distribution + Ranking -->
+        <div class="dash-row row-2">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </span>
+                错误分布
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="err-empty" id="errEmpty">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>
+                <span>当前区间无错误记录</span>
+              </div>
+              <div id="errWrapper">
+                <div class="table-wrapper">
+                  <table class="model-table">
+                    <thead>
+                      <tr>
+                        <th>阶段</th>
+                        <th>错误类型</th>
+                        <th>次数</th>
+                      </tr>
+                    </thead>
+                    <tbody id="errBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                </span>
+                模型排行
+              </div>
+              <span class="sort-chip">调用量降序</span>
+            </div>
+            <div class="card-body">
+              <div class="rank-list" id="rankList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model table -->
+        <div class="dash-row">
+          <div class="ms-card">
+            <div class="card-header">
+              <div class="card-title">
+                <span class="card-title-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                </span>
+                按模型统计
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="model-table">
+                  <thead>
+                    <tr>
+                      <th>模型</th>
+                      <th>调用</th>
+                      <th>成功率</th>
+                      <th>失败 / 取消</th>
+                      <th>流式</th>
+                      <th>输入</th>
+                      <th>输出</th>
+                      <th>缓存</th>
+                    </tr>
+                  </thead>
+                  <tbody id="modelBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== helpers ==========
+  const fmt = n => n.toLocaleString('en-US');
+  const fmtBig = n => n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : String(Math.round(n));
+
+  // Interpolate a base array into n points (deterministic)
+  function expand(arr, n) {
+    if (arr.length >= n) return arr.slice(0, n);
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const t = (i / (n - 1)) * (arr.length - 1);
+      const a = Math.floor(t), b = Math.min(a + 1, arr.length - 1), f = t - a;
+      out.push(arr[a] + (arr[b] - arr[a]) * f);
+    }
+    return out;
+  }
+
+  // ========== mock data (本地演示数据) ==========
+  const DATA = {
+    '24h': {
+      label: '2026-09-01 09:00 - 2026-09-02 09:00',
+      calls: 12842, ok: 11930, errRate: 6.2, fail: 744, cancel: 168,
+      tokensIn: 48200000, tokensOut: 9400000,
+      p95: 1240, p99: 2860, ttft: 320, tps: 28.4,
+      autoStream: 1240, autoNon: 3860,
+      trend: {
+        req: [820, 940, 1100, 1320, 1450, 1280, 1180, 1350, 1520, 1400, 1210, 1080],
+        fail: [38, 52, 61, 74, 90, 66, 58, 72, 84, 70, 55, 42],
+        lat: [1150, 1180, 1240, 1290, 1360, 1210, 1170, 1230, 1320, 1280, 1200, 1140]
+      },
+      runtime: [
+        { name: 'llama-cpp', n: 4820 }, { name: 'sd-cpp', n: 2340 },
+        { name: 'openai-cpp', n: 1860 }, { name: 'npu-winml', n: 1180 },
+        { name: 'whisper-cpp', n: 428 }
+      ],
+      caps: [
+        { ep: 'chat19', name: '对话', calls: 8240, time: 4820000, tokens: 52600000 },
+        { ep: 'image-generation2', name: '图像生成', calls: 1240, time: 6150000, tokens: 3100000 },
+        { ep: 'embed-2', name: '向量嵌入', calls: 1842, time: 820000, tokens: 3800000 },
+        { ep: 'tts-1', name: '语音合成', calls: 520, time: 1680000, tokens: 260000 }
+      ],
+      errors: [
+        { stage: '推理阶段', type: 'timeout', n: 312 },
+        { stage: '排队阶段', type: 'queue_full', n: 186 },
+        { stage: '网关转发', type: 'upstream_5xx', n: 104 },
+        { stage: '输入校验', type: 'invalid_prompt', n: 76 }
+      ],
+      rows: [
+        { name: 'llama-3.1-8B', kind: '端侧 · llama-cpp', calls: 4820, rate: 97.6, fail: 84, cancel: 32, stream: 3215, inp: 12400000, out: 2360000, cache: 8200000 },
+        { name: 'qwen2.5-7B', kind: '端侧 · llama-cpp', calls: 3430, rate: 98.1, fail: 42, cancel: 23, stream: 2480, inp: 8900000, out: 1740000, cache: 5100000 },
+        { name: 'sd-xl-base', kind: '端侧 · sd-cpp', calls: 2340, rate: 95.8, fail: 79, cancel: 19, stream: 0, inp: 1800000, out: 96000, cache: 0 },
+        { name: 'gpt-4o', kind: '云端 · OpenAI', calls: 1860, rate: 93.9, fail: 88, cancel: 26, stream: 1540, inp: 9400000, out: 2180000, cache: 3900000 },
+        { name: 'bge-m3', kind: '端侧 · onnx-npu', calls: 1842, rate: 97.9, fail: 26, cancel: 13, stream: 0, inp: 3800000, out: 0, cache: 1200000 },
+        { name: 'deepseek-v3', kind: '云端 · DeepSeek', calls: 1240, rate: 96.4, fail: 32, cancel: 12, stream: 1020, inp: 6200000, out: 1580000, cache: 2100000 },
+        { name: 'qwen2.5-72B', kind: '云端 · Qwen', calls: 860, rate: 95.1, fail: 31, cancel: 11, stream: 722, inp: 4300000, out: 920000, cache: 0 },
+        { name: 'ember-tts', kind: '端侧 · onnx-npu', calls: 520, rate: 98.8, fail: 4, cancel: 2, stream: 0, inp: 2600000, out: 520000, cache: 0 }
+      ]
+    },
+    '7d': {
+      label: '2026-08-26 09:00 - 2026-09-02 09:00',
+      calls: 86420, ok: 79850, errRate: 5.1, fail: 4112, cancel: 1058,
+      tokensIn: 312000000, tokensOut: 61800000,
+      p95: 1180, p99: 2740, ttft: 305, tps: 27.1,
+      autoStream: 8900, autoNon: 25400,
+      trend: {
+        req: [6800, 7200, 8600, 7900, 9500, 11200, 12400],
+        fail: [210, 340, 380, 290, 520, 610, 690],
+        lat: [1180, 1240, 1100, 1360, 1280, 1420, 1180]
+      },
+      runtime: [
+        { name: 'llama-cpp', n: 31800 }, { name: 'sd-cpp', n: 15200 },
+        { name: 'openai-cpp', n: 12400 }, { name: 'npu-winml', n: 8200 },
+        { name: 'whisper-cpp', n: 2900 }
+      ],
+      caps: [
+        { ep: 'chat19', name: '对话', calls: 56200, time: 31800000, tokens: 342000000 },
+        { ep: 'image-generation2', name: '图像生成', calls: 8200, time: 39400000, tokens: 19600000 },
+        { ep: 'embed-2', name: '向量嵌入', calls: 12620, time: 5600000, tokens: 24200000 },
+        { ep: 'tts-1', name: '语音合成', calls: 3400, time: 9800000, tokens: 1400000 }
+      ],
+      errors: [
+        { stage: '推理阶段', type: 'timeout', n: 2014 },
+        { stage: '排队阶段', type: 'queue_full', n: 1120 },
+        { stage: '网关转发', type: 'upstream_5xx', n: 642 },
+        { stage: '输入校验', type: 'invalid_prompt', n: 336 }
+      ],
+      rows: [
+        { name: 'gpt-4o', kind: '云端 · OpenAI', calls: 16820, rate: 94.2, fail: 742, cancel: 232, stream: 13900, inp: 82000000, out: 19400000, cache: 31000000 },
+        { name: 'llama-3.1-8B', kind: '端侧 · llama-cpp', calls: 15240, rate: 97.8, fail: 248, cancel: 86, stream: 10400, inp: 54000000, out: 11200000, cache: 38000000 },
+        { name: 'qwen2.5-7B', kind: '端侧 · llama-cpp', calls: 10420, rate: 98.2, fail: 142, cancel: 46, stream: 7620, inp: 38000000, out: 8400000, cache: 22000000 },
+        { name: 'deepseek-v3', kind: '云端 · DeepSeek', calls: 9120, rate: 96.1, fail: 268, cancel: 88, stream: 7400, inp: 41000000, out: 10600000, cache: 14000000 },
+        { name: 'bge-m3', kind: '端侧 · onnx-npu', calls: 12620, rate: 97.6, fail: 224, cancel: 78, stream: 0, inp: 24200000, out: 0, cache: 8600000 },
+        { name: 'sd-xl-base', kind: '端侧 · sd-cpp', calls: 8680, rate: 95.4, fail: 312, cancel: 88, stream: 0, inp: 12000000, out: 640000, cache: 0 },
+        { name: 'qwen2.5-72B', kind: '云端 · Qwen', calls: 5840, rate: 95.3, fail: 214, cancel: 58, stream: 4860, inp: 29000000, out: 6400000, cache: 0 },
+        { name: 'ember-tts', kind: '端侧 · onnx-npu', calls: 3400, rate: 98.9, fail: 26, cancel: 12, stream: 0, inp: 16400000, out: 3200000, cache: 0 }
+      ]
+    },
+    '30d': {
+      label: '2026-08-03 09:00 - 2026-09-02 09:00',
+      calls: 342615, ok: 316830, errRate: 5.8, fail: 19452, cancel: 5133,
+      tokensIn: 1240000000, tokensOut: 248000000,
+      p95: 1320, p99: 2980, ttft: 342, tps: 26.5,
+      autoStream: 31200, autoNon: 88400,
+      trend: {
+        req: [9800, 11200, 8600, 12400, 10100, 9400, 13800, 11900, 13200, 10800],
+        fail: [410, 520, 630, 380, 460, 710, 540, 820, 690, 580],
+        lat: [1210, 1280, 1150, 1320, 1240, 1380, 1190, 1420, 1290, 1260]
+      },
+      runtime: [
+        { name: 'llama-cpp', n: 128400 }, { name: 'sd-cpp', n: 61900 },
+        { name: 'openai-cpp', n: 52300 }, { name: 'npu-winml', n: 34100 },
+        { name: 'whisper-cpp', n: 12800 }
+      ],
+      caps: [
+        { ep: 'chat19', name: '对话', calls: 224600, time: 128000000, tokens: 1320000000 },
+        { ep: 'image-generation2', name: '图像生成', calls: 34500, time: 152000000, tokens: 78000000 },
+        { ep: 'embed-2', name: '向量嵌入', calls: 52415, time: 22400000, tokens: 96000000 },
+        { ep: 'tts-1', name: '语音合成', calls: 12800, time: 38000000, tokens: 5600000 }
+      ],
+      errors: [
+        { stage: '推理阶段', type: 'timeout', n: 8840 },
+        { stage: '排队阶段', type: 'queue_full', n: 4920 },
+        { stage: '网关转发', type: 'upstream_5xx', n: 3680 },
+        { stage: '输入校验', type: 'invalid_prompt', n: 2012 }
+      ],
+      rows: [
+        { name: 'gpt-4o', kind: '云端 · OpenAI', calls: 68400, rate: 94.4, fail: 2930, cancel: 890, stream: 56200, inp: 336000000, out: 78000000, cache: 126000000 },
+        { name: 'llama-3.1-8B', kind: '端侧 · llama-cpp', calls: 61300, rate: 97.9, fail: 980, cancel: 306, stream: 42200, inp: 214000000, out: 44600000, cache: 152000000 },
+        { name: 'bge-m3', kind: '端侧 · onnx-npu', calls: 52415, rate: 97.7, fail: 890, cancel: 310, stream: 0, inp: 96000000, out: 0, cache: 34000000 },
+        { name: 'qwen2.5-7B', kind: '端侧 · llama-cpp', calls: 42100, rate: 98.3, fail: 546, cancel: 174, stream: 30200, inp: 152000000, out: 33800000, cache: 88000000 },
+        { name: 'deepseek-v3', kind: '云端 · DeepSeek', calls: 36600, rate: 96.2, fail: 1080, cancel: 310, stream: 29600, inp: 164000000, out: 42400000, cache: 56000000 },
+        { name: 'sd-xl-base', kind: '端侧 · sd-cpp', calls: 34500, rate: 95.5, fail: 1240, cancel: 310, stream: 0, inp: 48000000, out: 2600000, cache: 0 },
+        { name: 'qwen2.5-72B', kind: '云端 · Qwen', calls: 23400, rate: 95.4, fail: 840, cancel: 236, stream: 19600, inp: 116000000, out: 25600000, cache: 0 },
+        { name: 'ember-tts', kind: '端侧 · onnx-npu', calls: 12800, rate: 98.9, fail: 102, cancel: 42, stream: 0, inp: 62400000, out: 12800000, cache: 0 }
+      ]
+    }
+  };
+
+  const XLABELS = {
+    '24h': ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+    '7d': ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    '30d': ['第1周', '第2周', '第3周', '第4周']
+  };
+  const DAYS = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+  const CHART_W = 800, CHART_H = 200, PAD_L = 16, PAD_R = 16, TOP = 10, BOT = 166;
+
+  function svgLine(points) {
+    const max = Math.max.apply(null, points);
+    const min = Math.min.apply(null, points);
+    const span = (max - min) || 1;
+    const step = (CHART_W - PAD_L - PAD_R) / (points.length - 1);
+    return points.map((v, i) => {
+      const x = PAD_L + i * step;
+      const y = BOT - ((v - min) / span) * (BOT - TOP);
+      return (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+    }).join(' ');
+  }
+
+  function svgArea(points) {
+    return svgLine(points) + ' L' + (CHART_W - PAD_R).toFixed(1) + ',' + CHART_H + ' L' + PAD_L + ',' + CHART_H + ' Z';
+  }
+
+  function labelFor(range, idx, n) {
+    if (range === '24h') {
+      const h = Math.round(idx / (n - 1) * 24);
+      return ('0' + h).slice(-2) + ':00';
+    }
+    if (range === '7d') return DAYS[Math.round(idx / (n - 1) * 6)];
+    const d = Math.round(idx / (n - 1) * 29) + 1;
+    return '8月' + d + '日';
+  }
+
+  // ========== state ==========
+  let currentRange = '24h';
+  let curTrend = null; // { req, fail, lat } for tooltip
+
+  // ========== render ==========
+  function render(range, jitter) {
+    const d = DATA[range];
+    const f = jitter ? 0.97 + Math.random() * 0.06 : 1;
+    const n = v => Math.max(0, Math.round(v * f));
+
+    // range label
+    document.getElementById('rangeLabel').textContent = '统计区间：' + d.label;
+
+    // metrics
+    document.getElementById('mCalls').textContent = fmt(n(d.calls));
+    document.getElementById('mCallsSub').textContent = '成功 ' + fmt(n(d.ok));
+    document.getElementById('mErr').textContent = d.errRate.toFixed(1) + '%';
+    document.getElementById('mErrSub').textContent = '失败 ' + fmt(n(d.fail)) + ' · 取消 ' + fmt(n(d.cancel));
+    document.getElementById('mTok').textContent = '输入 ' + fmtBig(n(d.tokensIn));
+    document.getElementById('mTokSub').textContent = '输出 ' + fmtBig(n(d.tokensOut));
+    document.getElementById('mP95').textContent = fmt(n(d.p95));
+    document.getElementById('mP95Sub').textContent = 'P99 ' + fmt(n(d.p99)) + ' ms';
+    document.getElementById('mTtft').textContent = fmt(n(d.ttft)) + ' ms';
+    document.getElementById('mTtftSub').textContent = 'TPS ' + (d.tps * (jitter ? 0.97 + Math.random() * 0.06 : 1)).toFixed(1);
+    document.getElementById('mAuto').textContent = '流式 ' + fmt(n(d.autoStream));
+    document.getElementById('mAutoSub').textContent = '非流式 ' + fmt(n(d.autoNon));
+
+    // trend
+    const nPts = range === '24h' ? 12 : range === '7d' ? 14 : 30;
+    const req = expand(d.trend.req, nPts).map(v => n(v));
+    const fail = expand(d.trend.fail, nPts).map(v => n(v));
+    const lat = expand(d.trend.lat, nPts).map(v => n(v));
+    curTrend = { req, fail, lat, range, n: nPts };
+
+    document.getElementById('pAreaReq').setAttribute('d', svgArea(req));
+    document.getElementById('pAreaFail').setAttribute('d', svgArea(fail));
+    document.getElementById('pLineReq').setAttribute('d', svgLine(req));
+    document.getElementById('pLineFail').setAttribute('d', svgLine(fail));
+    document.getElementById('pLineLat').setAttribute('d', svgLine(lat));
+
+    // x labels
+    const labels = XLABELS[range];
+    const g = document.getElementById('tlLabels');
+    let html = '';
+    labels.forEach((t, j) => {
+      const x = PAD_L + j * (CHART_W - PAD_L - PAD_R) / (labels.length - 1);
+      html += '<text class="tl-label" x="' + x + '" y="192" text-anchor="middle">' + t + '</text>';
+    });
+    g.innerHTML = html;
+
+    // runtime bars
+    const rt = d.runtime.map(r => ({ name: r.name, n: n(r.n) })).sort((a, b) => b.n - a.n);
+    const rtMax = Math.max.apply(null, rt.map(r => r.n)) || 1;
+    document.getElementById('runtimeList').innerHTML = rt.map((r, i) =>
+      '<div class="runtime-row">' +
+        '<div class="runtime-name" title="' + r.name + '">' + r.name + '</div>' +
+        '<div class="runtime-track"><div class="runtime-fill g' + ((i % 5) + 1) + '" style="width:' + (r.n / rtMax * 100).toFixed(1) + '%"></div></div>' +
+        '<div class="runtime-val">' + fmt(r.n) + '</div>' +
+      '</div>'
+    ).join('');
+
+    // capability
+    document.getElementById('capBody').innerHTML = d.caps.map(c =>
+      '<tr>' +
+        '<td><span class="endpoint-name">' + c.ep + '</span><div class="cap-name">' + c.name + '</div></td>' +
+        '<td class="stat-num">' + fmt(n(c.calls)) + '</td>' +
+        '<td class="stat-num">' + fmtBig(n(c.time)) + '</td>' +
+        '<td class="token-num">' + fmtBig(n(c.tokens)) + '</td>' +
+      '</tr>'
+    ).join('');
+
+    // errors
+    const errs = d.errors.map(e => ({ stage: e.stage, type: e.type, n: n(e.n) })).filter(e => e.n > 0);
+    const errTotal = errs.reduce((s, e) => s + e.n, 0);
+    document.getElementById('errEmpty').classList.toggle('show', errTotal === 0);
+    document.getElementById('errWrapper').style.display = errTotal === 0 ? 'none' : '';
+    if (errTotal > 0) {
+      const stageColor = { '推理阶段': 's1', '排队阶段': 's2', '网关转发': 's3', '输入校验': 's4' };
+      document.getElementById('errBody').innerHTML = errs.map((e, i) =>
+        '<tr>' +
+          '<td><span class="stage-chip ' + (stageColor[e.stage] || 's' + ((i % 4) + 1)) + '">' + e.stage + '</span></td>' +
+          '<td><span class="err-type">' + e.type + '</span></td>' +
+          '<td class="stat-num">' + fmt(e.n) + '</td>' +
+        '</tr>'
+      ).join('');
+    }
+
+    // ranking (top 6 by calls)
+    const rank = d.rows.slice().sort((a, b) => b.calls - a.calls).slice(0, 6);
+    document.getElementById('rankList').innerHTML = rank.map((r, i) =>
+      '<div class="rank-item">' +
+        '<div class="rank-badge ' + (i < 3 ? 'r' + (i + 1) : 'other') + '">' + (i + 1) + '</div>' +
+        '<div class="rank-info"><span class="rank-name">' + r.name + '</span><span class="rank-type">' + r.kind + '</span></div>' +
+        '<div class="rank-meta"><span class="rank-time">' + fmtBig(n(r.calls) * 1000) + ' ms</span><span class="rank-tok">Tokens ' + fmtBig(n(r.inp) + n(r.out)) + '</span></div>' +
+      '</div>'
+    ).join('');
+
+    // model table
+    document.getElementById('modelBody').innerHTML = d.rows.map(r => {
+      const isEnd = r.kind.indexOf('端侧') === 0;
+      const letter = r.name.charAt(0).toUpperCase();
+      const rateCls = r.rate >= 95 ? 'rate-ok' : 'rate-warn';
+      return '<tr>' +
+        '<td><div class="model-name-cell"><div class="model-badge ' + (isEnd ? 'end' : 'cloud') + '">' + letter + '</div>' +
+          '<div class="model-info"><span class="model-name-text">' + r.name + '</span><span class="model-type">' + r.kind + '</span></div></div></td>' +
+        '<td class="stat-num">' + fmt(n(r.calls)) + '</td>' +
+        '<td class="' + rateCls + '">' + r.rate.toFixed(1) + '%</td>' +
+        '<td class="stat-num">' + fmt(n(r.fail)) + ' / ' + fmt(n(r.cancel)) + '</td>' +
+        '<td class="stat-num">' + (r.stream > 0 ? fmt(n(r.stream)) : '—') + '</td>' +
+        '<td class="token-num">' + fmtBig(n(r.inp)) + '</td>' +
+        '<td class="token-num">' + (r.out > 0 ? fmtBig(n(r.out)) : '—') + '</td>' +
+        '<td class="cache-num">' + (r.cache > 0 ? '+' + fmtBig(n(r.cache)) : '—') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  // ========== interactions ==========
+  // range tabs
+  document.querySelectorAll('.trend-tab[data-range]').forEach(tab => {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.trend-tab[data-range]').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      currentRange = this.dataset.range;
+      render(currentRange, false);
+    });
+  });
+
+  // refresh
+  document.getElementById('refreshBtn').addEventListener('click', function () {
+    this.classList.remove('spin');
+    void this.offsetWidth;
+    this.classList.add('spin');
+    setTimeout(() => this.classList.remove('spin'), 800);
+    render(currentRange, true);
+  });
+
+  // chart tooltip
+  const chartArea = document.getElementById('trendChart');
+  const tooltip = document.getElementById('chartTip');
+  chartArea.addEventListener('mousemove', function (e) {
+    if (!curTrend) return;
+    const rect = chartArea.getBoundingClientRect();
+    const w = rect.width;
+    const x = (e.clientX - rect.left) / w * CHART_W;
+    const n = curTrend.n;
+    const idx = Math.round((x - PAD_L) / (CHART_W - PAD_L - PAD_R) * (n - 1));
+    const i = Math.max(0, Math.min(n - 1, idx));
+    tooltip.innerHTML =
+      '<div class="tt-date">' + labelFor(curTrend.range, i, n) + '</div>' +
+      '<div class="tt-row"><span class="tt-dot" style="background:rgba(91,141,239,1)"></span>请求量: ' + fmt(curTrend.req[i]) + '</div>' +
+      '<div class="tt-row"><span class="tt-dot" style="background:rgba(248,113,113,1)"></span>失败请求: ' + fmt(curTrend.fail[i]) + '</div>' +
+      '<div class="tt-row"><span class="tt-dot" style="background:rgba(250,204,21,1)"></span>平均延迟: ' + fmt(Math.round(curTrend.lat[i])) + ' ms</div>';
+    tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
+    tooltip.style.top = (e.clientY - rect.top - 52) + 'px';
+    tooltip.classList.add('show');
+  });
+  chartArea.addEventListener('mouseleave', function () {
+    tooltip.classList.remove('show');
+  });
+
+  // init
+  render(currentRange, false);
+</script>
+</body>
+</html>
