@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2f0ed;
+    --panel: rgba(0,0,0,0.02);
+    --glass: rgba(255,255,255,0.5);
+    --glass-hover: rgba(255,255,255,0.7);
+    --border: rgba(0,0,0,0.06);
+    --border-hover: rgba(0,0,0,0.12);
+    --text: #1c1c1e;
+    --text-dim: #8e8e93;
+    --accent-glow: rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f2f0ed;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #faf8f6;
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.04),
+      0 24px 80px rgba(0,0,0,0.08),
+      inset 0 0 40px rgba(255,255,255,0.5);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(0, 0, 0, 0.04) 30deg,
+      rgba(0, 0, 0, 0.08) 45deg,
+      rgba(0, 0, 0, 0.04) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(0, 0, 0, 0.03) 210deg,
+      rgba(0, 0, 0, 0.06) 225deg,
+      rgba(0, 0, 0, 0.03) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(0, 0, 0, 0.03) 0%,
+      rgba(0, 0, 0, 0.01) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 20;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.75);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.10);
+    color: rgba(200,50,50,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar {
+    justify-content: center;
+    position: relative;
+  }
+
+  .sidebar-group.top {
+    margin-bottom: 0;
+  }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #1c1c1e;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Sidebar wrapper */
+  .sidebar-wrapper {
+    display: flex;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-wrapper.expanded .secondary-sidebar {
+    width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Secondary sidebar */
+  .secondary-sidebar {
+    width: 0;
+    height: calc(100% - 60px);
+    margin: 48px 0 12px 0;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.04),
+      0 8px 32px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(255,255,255,0.5) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    position: relative;
+  }
+
+  .secondary-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.04) 25%,
+      rgba(0, 0, 0, 0.015) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .secondary-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(0, 0, 0, 0.04) 0%,
+      rgba(0, 0, 0, 0.025) 18%,
+      rgba(0, 0, 0, 0.012) 38%,
+      rgba(0, 0, 0, 0.005) 58%,
+      rgba(0, 0, 0, 0.002) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sec-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-title-header {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 4px 2px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sec-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .sec-close:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.75);
+  }
+
+  .sec-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #000;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+
+  .sec-action:hover {
+    background: rgba(0,0,0,0.06);
+    color: #000;
+  }
+
+  .sec-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sec-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+  }
+
+  .sec-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sec-item:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  .sec-item.active {
+    background: rgba(0,0,0,0.06);
+  }
+
+  .sec-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .sec-thumb.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+  .sec-thumb.red { background: linear-gradient(135deg, #f87171, #ef4444); }
+  .sec-thumb.orange { background: linear-gradient(135deg, #fb923c, #f97316); }
+  .sec-thumb.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  .sec-thumb.purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+  .sec-thumb.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+  .sec-thumb.dark { background: linear-gradient(135deg, #4b5563, #374151); }
+  .sec-thumb.pink { background: linear-gradient(135deg, #f472b6, #ec4899); }
+  .sec-thumb.teal { background: linear-gradient(135deg, #2dd4bf, #14b8a6); }
+  .sec-thumb.gold { background: linear-gradient(135deg, #facc15, #eab308); }
+  .sec-thumb.cyan { background: linear-gradient(135deg, #67e8f9, #06b6d4); }
+  .sec-thumb.slate { background: linear-gradient(135deg, #94a3b8, #64748b); }
+  .sec-thumb.navy { background: linear-gradient(135deg, #818cf8, #6366f1); }
+  .sec-thumb.rose { background: linear-gradient(135deg, #fda4af, #f43f5e); }
+  .sec-thumb.indigo { background: linear-gradient(135deg, #a5b4fc, #818cf8); }
+
+  .sec-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+  }
+
+  .sec-item:hover .sec-title,
+  .sec-item.active .sec-title {
+    color: var(--text);
+  }
+
+  .sec-more {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: auto;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  .sec-item:hover .sec-more {
+    opacity: 1;
+  }
+
+  .sec-more:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.7);
+  }
+
+  .sec-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    transform: none;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    min-width: 80px;
+  }
+
+  .sec-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sec-menu-item {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sec-menu-item:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text);
+  }
+
+  .sec-menu-item.delete:hover {
+    background: rgba(255, 60, 60, 0.08);
+    color: rgba(200, 50, 50, 0.9);
+  }
+
+  /* Asset Panel */
+  .asset-panel {
+    position: absolute;
+    top: 48px;
+    right: 20px;
+    width: 0;
+    height: calc(100% - 60px);
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.04),
+      0 8px 32px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(255,255,255,0.5) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    z-index: 20;
+  }
+
+  .asset-panel.show {
+    width: 260px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .asset-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.04) 25%,
+      rgba(0, 0, 0, 0.015) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .asset-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(0, 0, 0, 0.04) 0%,
+      rgba(0, 0, 0, 0.025) 18%,
+      rgba(0, 0, 0, 0.012) 38%,
+      rgba(0, 0, 0, 0.005) 58%,
+      rgba(0, 0, 0, 0.002) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .asset-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .asset-close:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.75);
+  }
+
+  .asset-tabs {
+    display: flex;
+    padding: 0 14px;
+    gap: 4px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-tab {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .asset-tab:hover {
+    background: rgba(0,0,0,0.03);
+    color: var(--text);
+  }
+
+  .asset-tab.active {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.10);
+    color: var(--text);
+  }
+
+  .asset-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .asset-body::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+  }
+
+  .asset-section {
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 10px;
+  }
+
+  .asset-section-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .asset-section-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-card {
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.02);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .asset-card-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .asset-file-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.025);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .asset-file-card:hover {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.10);
+  }
+
+  .asset-file-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .asset-file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .asset-file-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .asset-file-meta {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .asset-empty {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 4px 0;
+  }
+
+  /* Image Generation View */
+  .image-gen-view {
+    position: absolute;
+    top: 48px;
+    left: 0px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .image-gen-view.show {
+    display: flex;
+  }
+
+  .ig-card {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.04),
+      0 8px 32px rgba(0,0,0,0.06),
+      inset 0 0 40px rgba(255,255,255,0.4);
+    position: relative;
+  }
+
+  .ig-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.04) 25%,
+      rgba(0, 0, 0, 0.015) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ig-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(0, 0, 0, 0.04) 0%,
+      rgba(0, 0, 0, 0.025) 18%,
+      rgba(0, 0, 0, 0.012) 38%,
+      rgba(0, 0, 0, 0.006) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left - History */
+  .ig-history {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ig-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-all-btn:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .ig-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin: 0 12px 8px;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-search svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .ig-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .ig-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  /* 技能入口区域 */
+  .ig-skills {
+    padding: 8px 10px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-skill-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .ig-skill-btn:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  .ig-skill-btn.active {
+    background: rgba(0,0,0,0.06);
+  }
+
+  .ig-skill-btn svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ig-skill-btn.active svg {
+    color: var(--text);
+  }
+
+  /* 分隔线 */
+  .ig-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+    margin: 8px 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 历史区域标题 */
+  .ig-history-title {
+    padding: 6px 14px 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-item {
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-item:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  .ig-item.active {
+    background: rgba(0,0,0,0.06);
+  }
+
+  .ig-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Center - Settings */
+  .ig-settings {
+    width: 320px;
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  .ig-tabs {
+    display: flex;
+    padding: 12px 14px 0;
+    gap: 6px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-tab:hover {
+    background: rgba(0,0,0,0.03);
+    color: var(--text);
+  }
+
+  .ig-tab.active {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.10);
+    color: var(--text);
+  }
+
+  .ig-tab svg {
+    flex-shrink: 0;
+  }
+
+  .ig-section {
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .ig-textarea-wrap {
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ig-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 10px 12px;
+    resize: none;
+    line-height: 1.5;
+  }
+
+  .ig-textarea::placeholder {
+    color: var(--text-dim);
+  }
+
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .ig-char-count {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .ig-size-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .ig-size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-size-btn:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .ig-size-btn.active {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.16);
+    color: var(--text);
+  }
+
+  .ig-size-icon {
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  /* Custom Size Picker */
+  .ig-size-custom {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-size-custom.show {
+    display: flex;
+  }
+
+  .ig-size-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 34px;
+    gap: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .ig-size-field:focus-within {
+    border-color: rgba(0,0,0,0.18);
+  }
+
+  .ig-size-field-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .ig-size-field input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: right;
+    min-width: 0;
+  }
+
+  .ig-size-field input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  .ig-size-field input::-webkit-outer-spin-button,
+  .ig-size-field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ig-size-field input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .ig-size-lock {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .ig-size-lock:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .ig-size-lock.locked {
+    color: rgba(140, 180, 255, 0.7);
+  }
+
+  .ig-size-unit {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+    letter-spacing: 0.02em;
+  }
+
+  .ig-advanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-advanced:hover {
+    color: var(--text);
+  }
+
+  .ig-adv-arrow {
+    font-size: 0.75rem;
+  }
+
+  .ig-generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: auto 14px 14px;
+    padding: 12px 0;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.35);
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1;
+    /* 深色玻璃主按钮 */
+    background: linear-gradient(180deg,
+      rgba(28,28,30,0.88) 0%,
+      rgba(28,28,30,0.94) 50%,
+      rgba(28,28,30,1) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    /* 顶部高光与底部阴影 */
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,0.15),
+      inset 0 -1px 0 0 rgba(0,0,0,0.08),
+      0 4px 16px rgba(0,0,0,0.16);
+    text-shadow: 0 0 6px rgba(0,0,0,0.12);
+  }
+
+  /* 顶部强光晕 */
+  .ig-generate-btn::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 8%;
+    right: 8%;
+    height: 16px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0,0,0,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  /* 底部柔和漫反射光晕 */
+  .ig-generate-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 12%;
+    right: 12%;
+    height: 14px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0,0,0,0.08), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+  }
+
+  .ig-generate-btn:hover {
+    background: linear-gradient(180deg,
+      rgba(28,28,30,0.94) 0%,
+      rgba(28,28,30,1) 50%,
+      rgba(0,0,0,1) 100%
+    );
+    border-color: rgba(0,0,0,0.5);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,0.15),
+      0 6px 22px rgba(0,0,0,0.20);
+    text-shadow: 0 0 10px rgba(0,0,0,0.20);
+  }
+
+  .ig-generate-btn:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(0,0,0,0.14), transparent 70%);
+  }
+
+  .ig-generate-btn:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(0,0,0,0.12), transparent 70%);
+  }
+
+  .ig-generate-btn svg {
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.15));
+  }
+
+  .ig-generate-btn:hover svg {
+    filter: drop-shadow(0 0 8px rgba(0,0,0,0.25));
+  }
+
+  /* Right - Results */
+  .ig-res-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-res-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-res-grid-toggle {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-res-grid-toggle:hover {
+    background: rgba(0,0,0,0.06);
+    color: var(--text);
+  }
+
+  .ig-result {
+    flex: 1;
+    min-width: 0;
+    container-type: inline-size;
+    container-name: result-panel;
+  }
+
+  .ig-res-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+    columns: 1;
+    column-gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  @container result-panel (min-width: 200px) {
+    .ig-res-grid { columns: 2; }
+  }
+
+  @container result-panel (min-width: 400px) {
+    .ig-res-grid { columns: 3; }
+  }
+
+  @container result-panel (min-width: 600px) {
+    .ig-res-grid { columns: 4; }
+  }
+
+  @container result-panel (min-width: 800px) {
+    .ig-res-grid { columns: 5; }
+  }
+
+  .ig-res-grid::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-res-grid::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-res-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .ig-res-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ig-res-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .ig-res-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ig-res-item:hover .ig-res-overlay {
+    opacity: 1;
+  }
+
+  .ig-res-date {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+
+  .ig-res-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ig-res-actions button {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-res-actions button:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  .main {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .image-gen-view {
+    display: flex;
+  }
+
+  /* Dictionary button */
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .ig-dict-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(0,0,0,0.03);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ig-dict-btn:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text);
+    border-color: rgba(0,0,0,0.14);
+  }
+
+  .ig-dict-btn svg {
+    color: rgba(210, 150, 40, 0.85);
+  }
+
+  /* Inspiration Modal */
+  .ig-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .ig-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ig-modal {
+    width: 720px;
+    max-height: 560px;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ig-modal-overlay.show .ig-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .ig-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-modal-close:hover {
+    background: rgba(0,0,0,0.06);
+    color: rgba(0,0,0,0.75);
+  }
+
+  .ig-modal-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+    margin: 0 22px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 22px 10px;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+
+  .ig-modal-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ig-modal-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tab:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .ig-modal-tab.active {
+    background: rgba(0,0,0,0.06);
+    color: var(--text);
+  }
+
+  .ig-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 22px 18px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 2px;
+  }
+
+  .ig-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .ig-modal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-modal-item:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  .ig-modal-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(0,0,0,0.45);
+  }
+
+  .ig-modal-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ig-modal-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ig-modal-item-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+<div class="sidebar-wrapper" id="sidebarWrapper">
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" id="btnHome" href="index-white.html">
+        <!-- logo icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item active" id="btnImageGen" href="index-white.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store-white.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="route-white.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <a class="s-item" href="setting-white.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="secondary-sidebar" id="secondarySidebar">
+    <div class="sec-header">
+      <div class="sec-title-header">
+        <span>历史对话</span>
+        <button class="sec-close" id="btnCloseSidebar" title="收起">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <button class="sec-action" id="btnNewChat">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        新对话
+      </button>
+    </div>
+    <div class="sec-list">
+      <div class="sec-item active">
+        <div class="sec-title">背景改左上角渐浅蓝色系...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">去除文字背景框</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四种风格行业去向分布图...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">企业微信图标3D风格设计</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">AgestraAI文字logo设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">保留UI格中英文英文</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">拒绝中文及英文请求</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">图片清晰扩展至2K</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">插画式3D立体风格</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四角宽亮渐金色</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">删文字图片卡片居中</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">2024-08-05/06-25 1...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">他信国放展台片设计绝佳...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">现代抽象几何未来风格设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">炫风格展台片并排同</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="image-gen-view" id="imageGenView">
+    <!-- 左侧：图片历史 -->
+    <div class="ig-card ig-history" id="igHistory">
+      <div class="ig-header">
+        <span class="ig-title">智能体</span>
+      </div>
+
+      <!-- 技能入口 -->
+      <div class="ig-skills">
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          对话
+        </button>
+        <button class="ig-skill-btn active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          图片
+        </button>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+          翻译
+        </button>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          总结
+        </button>
+        <a class="ig-skill-btn" href="meeting-home-white.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          会议
+        </a>
+        <a class="ig-skill-btn" href="knowledge-white.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          知识库
+        </a>
+      </div>
+
+      <!-- 分隔线 -->
+      <div class="ig-divider"></div>
+
+      <!-- 历史对话标题 -->
+      <div class="ig-history-title">历史对话</div>
+
+      <!-- 历史记录列表 -->
+      <div class="ig-list">
+        <div class="ig-item active">
+          <div class="ig-item-title">户外机能服广...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">生成写实美少...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">Prompt for Ca...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">生成写实美少...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">生成美少女图片</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">未来城市，日...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中间：参数设置 -->
+    <div class="ig-card ig-settings" id="igSettings">
+      <div class="ig-header">
+        <span class="ig-title">工作台</span>
+      </div>
+      <div class="ig-section">
+        <div class="ig-label">描述你想生成的图片</div>
+        <div class="ig-textarea-wrap">
+          <textarea class="ig-textarea" rows="4" placeholder="请输入图片描述..."></textarea>
+          <div class="ig-textarea-footer">
+            <button class="ig-dict-btn" id="btnInspiration" title="灵感示例">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              词典
+            </button>
+            <span class="ig-char-count">59 / 1000</span>
+          </div>
+        </div>
+      </div>
+      <div class="ig-section">
+        <div class="ig-label">尺寸</div>
+        <div class="ig-size-grid">
+          <button class="ig-size-btn active"><span class="ig-size-icon">□</span>1:1</button>
+          <button class="ig-size-btn"><span class="ig-size-icon">▭</span>16:9</button>
+          <button class="ig-size-btn"><span class="ig-size-icon">▯</span>9:16</button>
+          <button class="ig-size-btn"><span class="ig-size-icon">▭</span>4:3</button>
+          <button class="ig-size-btn"><span class="ig-size-icon">▯</span>3:4</button>
+          <button class="ig-size-btn" id="btnCustomSize"><span class="ig-size-icon">⚙</span>自定义</button>
+        </div>
+      </div>
+      <div class="ig-size-custom" id="customSizePicker">
+        <div class="ig-size-field">
+          <span class="ig-size-field-label">W</span>
+          <input type="number" id="customWidth" value="1728" min="1" max="8192">
+        </div>
+        <button class="ig-size-lock locked" id="btnSizeLock" title="锁定比例">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </button>
+        <div class="ig-size-field">
+          <span class="ig-size-field-label">H</span>
+          <input type="number" id="customHeight" value="2304" min="1" max="8192">
+        </div>
+        <span class="ig-size-unit">PX</span>
+      </div>
+      <div class="ig-advanced">
+        <span>高级参数</span>
+        <span class="ig-adv-arrow">展开</span>
+      </div>
+      <button class="ig-generate-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        生成图片
+      </button>
+    </div>
+
+    <!-- 右侧：生成结果 -->
+    <div class="ig-card ig-result" id="igResult">
+      <div class="ig-res-header">
+        <span class="ig-res-title">生成结果 (6)</span>
+        <button class="ig-res-grid-toggle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+      </div>
+      <div class="ig-res-grid">
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:29</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=400&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:29</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=400&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:26</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400&h=300&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:27</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=300&h=400&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:25</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="ig-res-item">
+          <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=300&fit=crop" alt="生成图片" loading="lazy">
+          <div class="ig-res-overlay">
+            <span class="ig-res-date">2026/07/30 10:25</span>
+            <div class="ig-res-actions">
+              <button title="下载"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+              <button title="复制"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button title="查看"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+              <button title="删除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 资产库卡片 -->
+  <div class="asset-panel" id="assetPanel">
+    <div class="asset-header">
+      <span class="asset-title">任务检查器</span>
+      <button class="asset-close" id="btnCloseAsset" title="收起">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+      </button>
+    </div>
+    <div class="asset-tabs">
+      <button class="asset-tab">轨迹</button>
+      <button class="asset-tab active">上下文 (1)</button>
+      <button class="asset-tab">产物</button>
+    </div>
+    <div class="asset-body">
+      <div class="asset-section">
+        <div class="asset-section-label">WORKSPACE</div>
+        <div class="asset-section-title">本地文件系统</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-card-label">本地文档</div>
+        <div class="asset-file-card">
+          <div class="asset-file-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="asset-file-info">
+            <div class="asset-file-name">提示词.md</div>
+            <div class="asset-file-meta">缓存命中 · 975 chars</div>
+          </div>
+        </div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-card-label">图片</div>
+        <div class="asset-empty">未附加图片</div>
+      </div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+  const sidebarWrapper = document.getElementById('sidebarWrapper');
+  const expandBtn = document.querySelector('.toolbar-btn:first-child');
+  const closeBtn = document.getElementById('btnCloseSidebar');
+
+  function openSidebar() {
+    sidebarWrapper.classList.add('expanded');
+    if (expandBtn) {
+      expandBtn.style.opacity = '0';
+      expandBtn.style.pointerEvents = 'none';
+    }
+  }
+
+  function closeSidebar() {
+    sidebarWrapper.classList.remove('expanded');
+    if (expandBtn) {
+      expandBtn.style.opacity = '';
+      expandBtn.style.pointerEvents = '';
+    }
+  }
+
+  if (expandBtn) {
+    expandBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openSidebar();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeSidebar();
+    });
+  }
+
+  document.querySelector('.main').addEventListener('click', function() {
+    if (sidebarWrapper.classList.contains('expanded')) {
+      closeSidebar();
+    }
+  });
+
+  // 历史记录更多菜单
+  const moreBtns = document.querySelectorAll('.sec-more');
+  let activeMenu = null;
+
+  moreBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var menu = btn.nextElementSibling;
+      if (activeMenu && activeMenu !== menu) {
+        activeMenu.classList.remove('show');
+      }
+      menu.classList.toggle('show');
+      activeMenu = menu.classList.contains('show') ? menu : null;
+    });
+  });
+
+  document.addEventListener('click', function() {
+    if (activeMenu) {
+      activeMenu.classList.remove('show');
+      activeMenu = null;
+    }
+  });
+
+  // 菜单项点击
+  const menuItems = document.querySelectorAll('.sec-menu-item');
+  menuItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.textContent.trim();
+      var secItem = item.closest('.sec-item');
+      if (action === '置顶') {
+        var list = document.querySelector('.sec-list');
+        list.insertBefore(secItem, list.firstChild);
+      } else if (action === '删除') {
+        secItem.remove();
+      }
+      if (activeMenu) {
+        activeMenu.classList.remove('show');
+        activeMenu = null;
+      }
+    });
+  });
+
+  // 资产库卡片交互
+  const assetBtn = document.querySelector('.toolbar-btn:last-child');
+  const assetPanel = document.getElementById('assetPanel');
+  const assetCloseBtn = document.getElementById('btnCloseAsset');
+  const contentArea = document.querySelector('.content');
+
+  if (assetBtn && assetPanel) {
+    assetBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      assetPanel.classList.toggle('show');
+      if (contentArea) {
+        contentArea.classList.toggle('shift-left', assetPanel.classList.contains('show'));
+      }
+    });
+  }
+
+  if (assetCloseBtn && assetPanel) {
+    assetCloseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      assetPanel.classList.remove('show');
+      if (contentArea) {
+        contentArea.classList.remove('shift-left');
+      }
+    });
+  }
+
+  // 标签页切换
+  const assetTabs = document.querySelectorAll('.asset-tab');
+  assetTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      assetTabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
+  });
+
+  // 自定义尺寸选择器
+  const btnCustomSize = document.getElementById('btnCustomSize');
+  const customSizePicker = document.getElementById('customSizePicker');
+  const btnSizeLock = document.getElementById('btnSizeLock');
+  const customWidth = document.getElementById('customWidth');
+  const customHeight = document.getElementById('customHeight');
+  let isLocked = true;
+  let aspectRatio = 1728 / 2304;
+
+  btnCustomSize.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var showing = !customSizePicker.classList.contains('show');
+    customSizePicker.classList.toggle('show');
+    btnCustomSize.classList.toggle('active', showing);
+    if (showing) {
+      document.querySelectorAll('.ig-size-btn').forEach(function(b) {
+        if (b !== btnCustomSize) b.classList.remove('active');
+      });
+    }
+  });
+
+  // 其他比例按钮点击时，关闭自定义面板并移除自定义按钮选中状态
+  document.querySelectorAll('.ig-size-btn').forEach(function(btn) {
+    if (btn !== btnCustomSize) {
+      btn.addEventListener('click', function() {
+        customSizePicker.classList.remove('show');
+        btnCustomSize.classList.remove('active');
+      });
+    }
+  });
+
+  btnSizeLock.addEventListener('click', function(e) {
+    e.stopPropagation();
+    isLocked = !isLocked;
+    btnSizeLock.classList.toggle('locked', isLocked);
+  });
+
+  customWidth.addEventListener('input', function() {
+    if (isLocked && customWidth.value) {
+      const w = parseInt(customWidth.value);
+      if (!isNaN(w) && w > 0) {
+        customHeight.value = Math.round(w / aspectRatio);
+      }
+    }
+  });
+
+  customHeight.addEventListener('input', function() {
+    if (isLocked && customHeight.value) {
+      const h = parseInt(customHeight.value);
+      if (!isNaN(h) && h > 0) {
+        customWidth.value = Math.round(h * aspectRatio);
+      }
+    }
+  });
+  // 灵感示例弹窗
+  const btnInspiration = document.getElementById('btnInspiration');
+  const modalOverlay = document.createElement('div');
+  modalOverlay.className = 'ig-modal-overlay';
+  modalOverlay.id = 'inspirationModal';
+  modalOverlay.innerHTML = `
+    <div class="ig-modal">
+      <div class="ig-modal-header">
+        <span class="ig-modal-title">灵感示例</span>
+        <button class="ig-modal-close" id="modalCloseBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="ig-modal-divider"></div>
+      <div class="ig-modal-tabs" id="modalTabs"></div>
+      <div class="ig-modal-body">
+        <div class="ig-modal-grid" id="modalGrid"></div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modalOverlay);
+
+  const inspirationData = {
+    '全部': [
+      { title: '沙发棚拍人像', desc: '高调棚拍、干净皮肤、柔和布光' },
+      { title: '晨光枕边人像', desc: '清晨自然光、生活方式照片' },
+      { title: '山间抓拍', desc: '户外旅行、纪实快照感' },
+      { title: '金色逆光人像', desc: '夕阳、浪漫、暖色调' },
+      { title: '雨夜街头肖像', desc: '霓虹、湿润街面、电影感' },
+      { title: '职场形象照', desc: '专业、现代办公室、自然自信' },
+      { title: '复古胶片肖像', desc: '颗粒感、暖色、70年代氛围' },
+      { title: '运动员训练照', desc: '汗水、动作、力量感' },
+      { title: '新中式茶室人像', desc: '东方美学、木质空间、静谧' },
+      { title: '儿童生日抓拍', desc: '家庭、蜡烛、真实笑容' },
+      { title: '婚礼晨袍人像', desc: '窗边、白纱、柔和氛围' },
+      { title: '街舞动态人像', desc: '低角度、动作冻结、城市背景' },
+      { title: '咖啡馆阅读人像', desc: '窗边、书本、生活方式' },
+      { title: '音乐人后台肖像', desc: '舞台前夜、暗调、情绪感' },
+      { title: '银发优雅肖像', desc: '岁月纹理、柔光、尊贵感' },
+      { title: '海边风吹人像', desc: '蓝调、自然风、清爽' },
+      { title: '夜市摊前人像', desc: '烟火气、暖光、街头纪实' },
+      { title: '城市屋顶肖像', desc: '天台、黄昏、都市感' },
+    ],
+    '人像': [
+      { title: '沙发棚拍人像', desc: '高调棚拍、干净皮肤、柔和布光' },
+      { title: '晨光枕边人像', desc: '清晨自然光、生活方式照片' },
+      { title: '山间抓拍', desc: '户外旅行、纪实快照感' },
+      { title: '金色逆光人像', desc: '夕阳、浪漫、暖色调' },
+      { title: '雨夜街头肖像', desc: '霓虹、湿润街面、电影感' },
+      { title: '职场形象照', desc: '专业、现代办公室、自然自信' },
+      { title: '复古胶片肖像', desc: '颗粒感、暖色、70年代氛围' },
+      { title: '运动员训练照', desc: '汗水、动作、力量感' },
+      { title: '新中式茶室人像', desc: '东方美学、木质空间、静谧' },
+      { title: '儿童生日抓拍', desc: '家庭、蜡烛、真实笑容' },
+      { title: '婚礼晨袍人像', desc: '窗边、白纱、柔和氛围' },
+      { title: '街舞动态人像', desc: '低角度、动作冻结、城市背景' },
+      { title: '咖啡馆阅读人像', desc: '窗边、书本、生活方式' },
+      { title: '音乐人后台肖像', desc: '舞台前夜、暗调、情绪感' },
+      { title: '银发优雅肖像', desc: '岁月纹理、柔光、尊贵感' },
+      { title: '海边风吹人像', desc: '蓝调、自然风、清爽' },
+      { title: '夜市摊前人像', desc: '烟火气、暖光、街头纪实' },
+      { title: '城市屋顶肖像', desc: '天台、黄昏、都市感' },
+    ],
+    '海报': [
+      { title: '极简电影海报', desc: '大面积留白、单色主体、排版张力' },
+      { title: '音乐节海报', desc: '霓虹渐变、粗体字、动感构图' },
+      { title: '展览宣传海报', desc: '艺术感、几何构成、高级灰' },
+      { title: '品牌概念海报', desc: '产品居中、氛围渲染、品牌色' },
+      { title: '戏剧演出海报', desc: '暗调、人物剪影、戏剧光' },
+      { title: '书籍封面海报', desc: '文艺感、手写字体、暖色调' },
+    ],
+    '产品': [
+      { title: '香水平铺产品照', desc: '大理石台面、花瓣点缀、柔光' },
+      { title: '手表特写产品照', desc: '金属质感、深色背景、微距' },
+      { title: '咖啡杯场景照', desc: '木质桌面、蒸汽、温暖氛围' },
+      { title: '耳机悬浮产品照', desc: '纯色背景、悬浮效果、科技感' },
+      { title: '护肤品组合照', desc: '白色背景、水滴、清新感' },
+      { title: '运动鞋产品照', desc: '动态角度、渐变背景、潮流感' },
+    ],
+    '场景': [
+      { title: '日式枯山水庭院', desc: '砂石纹理、苔藓、禅意氛围' },
+      { title: '北欧极简客厅', desc: '原木、白色墙面、自然光' },
+      { title: '赛博朋克街道', desc: '霓虹灯牌、雨夜、未来都市' },
+      { title: '雪山日出全景', desc: '金色阳光、雪顶、壮阔感' },
+      { title: '热带雨林小径', desc: '雾气、蕨类植物、神秘感' },
+      { title: '废弃工厂空间', desc: '工业风、锈迹、自然光透过' },
+    ],
+    '创意': [
+      { title: '超现实漂浮岛屿', desc: '云朵、瀑布倒流、梦幻色彩' },
+      { title: '镜面世界', desc: '对称反射、无限延伸、冷色调' },
+      { title: '微缩城市景观', desc: '移轴效果、玩具感、暖光' },
+      { title: '液体艺术', desc: '彩色液体飞溅、高速摄影、抽象' },
+      { title: '光影迷宫', desc: '几何投影、明暗对比、空间感' },
+      { title: '折纸世界', desc: '纸艺风格、柔和色彩、童趣' },
+    ],
+    '插画': [
+      { title: '水彩花卉插画', desc: '柔和色彩、花瓣细节、文艺感' },
+      { title: '扁平风城市插画', desc: '几何建筑、明快色彩、现代感' },
+      { title: '复古旅行海报插画', desc: '怀旧色调、地标建筑、装饰风' },
+      { title: '儿童绘本插画', desc: '温暖色彩、可爱角色、故事感' },
+      { title: '赛博朋克插画', desc: '霓虹色调、未来城市、科技感' },
+      { title: '中国风水墨插画', desc: '留白意境、山水云雾、东方美学' },
+    ],
+    '动漫': [
+      { title: '新海诚风格场景', desc: '蓝天白云、光影细腻、青春感' },
+      { title: '吉卜力森林场景', desc: '绿色植被、神秘氛围、童话感' },
+      { title: '赛博朋克动漫角色', desc: '机械义体、霓虹背景、冷峻' },
+      { title: '魔法少女变身场景', desc: '星光、飘逸裙摆、梦幻色彩' },
+      { title: '热血战斗场景', desc: '动态线条、冲击波、燃系配色' },
+      { title: '日常校园场景', desc: '教室、午后阳光、温馨氛围' },
+    ],
+    '美食': [
+      { title: '日式拉面特写', desc: '蒸汽、溏心蛋、木质碗具' },
+      { title: '法式甜点摆盘', desc: '精致装饰、白色餐盘、高级感' },
+      { title: '烧烤烟火气', desc: '炭火、肉串、夜市氛围' },
+      { title: '咖啡拉花特写', desc: '奶泡艺术、陶瓷杯、暖光' },
+      { title: '海鲜拼盘俯拍', desc: '冰块、柠檬、新鲜质感' },
+      { title: '手工面包切面', desc: '气孔纹理、木质砧板、质朴感' },
+    ],
+    '建筑空间': [
+      { title: '安藤忠雄清水混凝土', desc: '几何光影、极简、静谧感' },
+      { title: '扎哈曲线建筑', desc: '流线型、白色、未来感' },
+      { title: '传统四合院', desc: '青砖灰瓦、庭院、历史感' },
+      { title: '玻璃幕墙摩天楼', desc: '反射天空、现代都市、冷峻' },
+      { title: '地中海白色小镇', desc: '蓝白配色、拱门、阳光' },
+      { title: '工业风Loft空间', desc: '裸露砖墙、金属管道、复古' },
+    ],
+    '时尚': [
+      { title: '高定秀场造型', desc: 'T台、聚光灯、高级时装' },
+      { title: '街头潮流穿搭', desc: '城市背景、oversize、态度感' },
+      { title: '复古港风写真', desc: '胶片质感、霓虹灯、90年代' },
+      { title: '极简主义穿搭', desc: '纯色背景、线条感、高级灰' },
+      { title: '民族风时尚大片', desc: '传统纹样、自然背景、文化融合' },
+      { title: '运动时尚造型', desc: '动感姿态、功能性服装、活力' },
+    ],
+    '游戏': [
+      { title: '开放世界风景', desc: '广阔地形、动态天气、史诗感' },
+      { title: '科幻太空站', desc: '金属结构、星空背景、科技蓝' },
+      { title: '中世纪城堡', desc: '石砌建筑、火把光、史诗氛围' },
+      { title: '像素风小镇', desc: '复古像素、温馨色调、怀旧感' },
+      { title: '末世废土场景', desc: '荒凉、锈迹、末日氛围' },
+      { title: '仙侠云海仙山', desc: '云雾缭绕、亭台楼阁、东方奇幻' },
+    ],
+    'UI/图标': [
+      { title: '玻璃拟态UI界面', desc: '毛玻璃效果、柔和渐变、现代感' },
+      { title: '3D立体图标集', desc: '柔和阴影、圆润造型、多彩' },
+      { title: '暗黑模式Dashboard', desc: '深色背景、数据可视化、专业' },
+      { title: '新拟态按钮设计', desc: '柔和凸起、单色背景、极简' },
+      { title: '手绘风图标', desc: '线条感、温暖色彩、亲和力' },
+      { title: '等距视角场景图标', desc: '2.5D视角、建筑元素、精致' },
+    ],
+  };
+
+  const categories = Object.keys(inspirationData);
+  const tabsContainer = document.getElementById('modalTabs');
+  const gridContainer = document.getElementById('modalGrid');
+  let activeCategory = '全部';
+
+  function renderTabs() {
+    tabsContainer.innerHTML = '';
+    categories.forEach(function(cat) {
+      var tab = document.createElement('button');
+      tab.className = 'ig-modal-tab' + (cat === activeCategory ? ' active' : '');
+      tab.textContent = cat;
+      tab.addEventListener('click', function() {
+        activeCategory = cat;
+        renderTabs();
+        renderGrid();
+      });
+      tabsContainer.appendChild(tab);
+    });
+  }
+
+  function renderGrid() {
+    var items = inspirationData[activeCategory] || [];
+    gridContainer.innerHTML = '';
+    items.forEach(function(item) {
+      var el = document.createElement('div');
+      el.className = 'ig-modal-item';
+      el.innerHTML = `
+        <div class="ig-modal-item-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div class="ig-modal-item-text">
+          <span class="ig-modal-item-title">${item.title}</span>
+          <span class="ig-modal-item-desc">${item.desc}</span>
+        </div>
+      `;
+      el.addEventListener('click', function() {
+        var textarea = document.querySelector('.ig-textarea');
+        if (textarea) {
+          textarea.value = item.title + '，' + item.desc;
+        }
+        closeModal();
+      });
+      gridContainer.appendChild(el);
+    });
+  }
+
+  function openModal() {
+    modalOverlay.classList.add('show');
+    renderTabs();
+    renderGrid();
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('show');
+  }
+
+  btnInspiration.addEventListener('click', function(e) {
+    e.stopPropagation();
+    openModal();
+  });
+
+  document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('show')) {
+      closeModal();
+    }
+  });
+
+
+</script>
+
+</body>
+</html>
