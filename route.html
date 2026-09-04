@@ -931,29 +931,56 @@
     gap: 10px;
   }
 
-  .gw-addr-input {
+  .gw-addr-seg {
     flex: 1;
-    height: 36px;
+    display: flex;
+    gap: 6px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.10);
-    border-radius: 8px;
-    padding: 0 12px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    color: var(--text);
-    outline: none;
-    transition: all 0.2s ease;
+    border-radius: 10px;
+    padding: 4px;
+    height: 44px;
   }
 
-  .gw-addr-input::placeholder {
+  .gw-addr-opt {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: none;
+    background: transparent;
     color: var(--text-dim);
-    opacity: 0.6;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 500;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    padding: 0 10px;
   }
 
-  .gw-addr-input:focus {
-    border-color: rgba(255,255,255,0.24);
+  .gw-addr-opt svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .gw-addr-opt:hover {
+    color: var(--text);
     background: rgba(255,255,255,0.06);
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
+  }
+
+  .gw-addr-opt.active {
+    background: rgba(255,255,255,0.92);
+    color: #0d0d0f;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.40);
+  }
+
+  .gw-addr-opt.active svg {
+    opacity: 1;
   }
 
   .gw-addr-actions {
@@ -1003,15 +1030,15 @@
     border-color: rgba(255,255,255,0.30);
   }
 
-  .gw-btn.danger {
-    color: #ff8a8a;
-    border-color: rgba(255,100,100,0.18);
-    background: rgba(255,80,80,0.06);
+  .gw-btn.connected {
+    color: #6fe3a2;
+    border-color: rgba(80,220,120,0.25);
+    background: rgba(80,220,120,0.10);
   }
 
-  .gw-btn.danger:hover {
-    background: rgba(255,80,80,0.12);
-    border-color: rgba(255,100,100,0.30);
+  .gw-btn.connected:hover {
+    background: rgba(80,220,120,0.16);
+    border-color: rgba(80,220,120,0.38);
   }
 
   .gw-btn.loading {
@@ -1024,80 +1051,6 @@
     padding: 0 12px;
     font-size: 0.74rem;
     border-radius: 7px;
-  }
-
-  .gw-addr-hint {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-    opacity: 0.75;
-  }
-
-  .gw-addr-hint svg {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-    margin-top: 2px;
-    opacity: 0.6;
-  }
-
-  .gw-status-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 10px 14px;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 8px;
-  }
-
-  .gw-status-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.74rem;
-    color: var(--text-dim);
-  }
-
-  .gw-status-item .label {
-    opacity: 0.6;
-  }
-
-  .gw-status-item .value {
-    color: var(--text);
-    font-weight: 500;
-  }
-
-  .gw-status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .gw-status-dot.connected {
-    background: rgb(80, 220, 120);
-    box-shadow: 0 0 6px rgba(80, 220, 120, 0.6);
-  }
-
-  .gw-status-dot.disconnected {
-    background: rgba(255,255,255,0.2);
-  }
-
-  .gw-status-label {
-    font-size: 0.74rem;
-    font-weight: 500;
-  }
-
-  .gw-status-label.connected {
-    color: rgb(80, 220, 120);
-  }
-
-  .gw-status-label.disconnected {
-    color: var(--text-dim);
   }
 
   /* ========== 鉴权 KEY 列表区 ========== */
@@ -1311,49 +1264,31 @@
       <div class="ms-content-scroll">
 
         <!-- Section 0a: 基础地址配置区 -->
-        <div class="config-section">
-          <div class="section-header">
-            <div class="section-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        <div class="gw-addr-card">
+          <div class="gw-addr-row">
+            <div class="gw-addr-seg" id="gwAddrSeg">
+              <button class="gw-addr-opt active" type="button" data-addr="http://127.0.0.1:16621">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/></svg>
+                本机访问
+              </button>
+              <button class="gw-addr-opt" type="button" data-addr="http://0.0.0.0:16621">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                局域网访问
+              </button>
             </div>
-            <span class="section-title">基础地址配置</span>
-            <span class="section-desc">配置网关监听地址与访问控制</span>
-          </div>
-          <div class="gw-addr-card">
-            <div class="gw-addr-row">
-              <input class="gw-addr-input" id="gwAddrInput" type="text" value="http://127.0.0.1:16621" placeholder="http://127.0.0.1:16621" spellcheck="false">
-              <div class="gw-addr-actions">
-                <button class="gw-btn primary" id="gwApplyBtn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  应用
-                </button>
-                <button class="gw-btn" id="gwRefreshBtn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                  刷新
-                </button>
-                <button class="gw-btn danger" id="gwRestartBtn">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0 1 16.5-6l2.5 2.5"/><path d="M21.5 12.5a10 10 0 0 1-16.5 6l-2.5-2.5"/></svg>
-                  重启网关
-                </button>
-              </div>
-            </div>
-            <div class="gw-addr-hint">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              <span>填写 <code style="font-family:inherit;background:rgba(255,255,255,0.06);padding:1px 4px;border-radius:3px;">http://0.0.0.0:端口</code> 可开放局域网访问；本机管理界面仍使用 127.0.0.1。应用后会自动重启网关。</span>
-            </div>
-            <div class="gw-status-bar" id="gwStatusBar">
-              <div class="gw-status-item">
-                <span class="gw-status-dot connected" id="gwStatusDot"></span>
-                <span class="gw-status-label connected" id="gwStatusLabel">已连通</span>
-              </div>
-              <div class="gw-status-item">
-                <span class="label">监听地址</span>
-                <span class="value" id="gwStatusAddr">http://127.0.0.1:16621</span>
-              </div>
-              <div class="gw-status-item">
-                <span class="label">进程 PID</span>
-                <span class="value" id="gwStatusPid">28451</span>
-              </div>
+            <div class="gw-addr-actions">
+              <button class="gw-btn primary" id="gwApplyBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                应用
+              </button>
+              <button class="gw-btn" id="gwRefreshBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                刷新
+              </button>
+              <button class="gw-btn connected" id="gwRestartBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>
+                已连接
+              </button>
             </div>
           </div>
         </div>
@@ -1752,31 +1687,29 @@
   });
 
   // ========== 基础地址配置区 ==========
-  const gwAddrInput = document.getElementById('gwAddrInput');
+  const gwAddrOpts = document.querySelectorAll('.gw-addr-opt');
   const gwApplyBtn = document.getElementById('gwApplyBtn');
   const gwRefreshBtn = document.getElementById('gwRefreshBtn');
   const gwRestartBtn = document.getElementById('gwRestartBtn');
-  const gwStatusDot = document.getElementById('gwStatusDot');
-  const gwStatusLabel = document.getElementById('gwStatusLabel');
-  const gwStatusAddr = document.getElementById('gwStatusAddr');
-  const gwStatusPid = document.getElementById('gwStatusPid');
 
-  function setGwStatus(connected, addr, pid) {
-    gwStatusDot.className = 'gw-status-dot ' + (connected ? 'connected' : 'disconnected');
-    gwStatusLabel.className = 'gw-status-label ' + (connected ? 'connected' : 'disconnected');
-    gwStatusLabel.textContent = connected ? '已连通' : '未连通';
-    if (addr) gwStatusAddr.textContent = addr;
-    if (pid) gwStatusPid.textContent = pid;
+  function getSelectedAddr() {
+    const opt = document.querySelector('.gw-addr-opt.active');
+    return opt ? opt.dataset.addr : 'http://127.0.0.1:16621';
   }
+
+  gwAddrOpts.forEach(opt => {
+    opt.addEventListener('click', () => {
+      gwAddrOpts.forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+    });
+  });
 
   gwApplyBtn.addEventListener('click', () => {
     if (gwApplyBtn.classList.contains('loading')) return;
-    const addr = gwAddrInput.value.trim();
-    if (!addr) { showToast('请填写网关基础地址'); return; }
+    const addr = getSelectedAddr();
     setLoading(gwApplyBtn, '应用中…');
     setTimeout(() => {
       clearLoading(gwApplyBtn);
-      setGwStatus(true, addr, String(Math.floor(Math.random() * 50000 + 10000)));
       showToast('地址已应用，网关已重启至 ' + addr);
     }, 1000);
   });
@@ -1786,20 +1719,16 @@
     setLoading(gwRefreshBtn, '刷新中…');
     setTimeout(() => {
       clearLoading(gwRefreshBtn);
-      setGwStatus(true, gwAddrInput.value.trim(), String(Math.floor(Math.random() * 50000 + 10000)));
       showToast('网关状态已刷新');
     }, 700);
   });
 
+  // 连接状态按钮：常态显示「已连接」，点击时进入重启加载态
   gwRestartBtn.addEventListener('click', () => {
     if (gwRestartBtn.classList.contains('loading')) return;
     setLoading(gwRestartBtn, '重启中…');
-    gwStatusDot.className = 'gw-status-dot disconnected';
-    gwStatusLabel.className = 'gw-status-label disconnected';
-    gwStatusLabel.textContent = '重启中…';
     setTimeout(() => {
       clearLoading(gwRestartBtn);
-      setGwStatus(true, gwAddrInput.value.trim(), String(Math.floor(Math.random() * 50000 + 10000)));
       showToast('网关已重启');
     }, 1400);
   });
