@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>知识库 - AI Assistant</title>
+<title>动物图片 - AI Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1034,9 +1034,194 @@
 
   /* Center - Settings */
   .ig-settings {
-    width: 320px;
+    width: 240px;
     flex-shrink: 0;
     margin: 0 auto;
+  }
+
+  /* Center - Folder detail */
+  .fd-head {
+    width: 199px;
+    padding: 16px 16px 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fd-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .fd-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 0 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fd-body::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .fd-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .fd-section-label {
+    margin: 20px 0 4px;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .fd-rows {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .fd-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 3px 0;
+    font-size: 0.76rem;
+    line-height: 1.35;
+  }
+
+  .fd-key {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .fd-val {
+    color: var(--text);
+    text-align: right;
+  }
+
+  /* 文字描述：撑满卡片剩余高度，内部滚动查看全文 */
+  .fd-desc-text {
+    flex: 1 1 auto;
+    min-height: 88px;
+    margin: 4px 0 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 10px 11px;
+    border-radius: 9px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-size: 0.76rem;
+    line-height: 1.7;
+    text-align: justify;
+    word-break: break-word;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.22) transparent;
+  }
+
+  .fd-desc-text::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .fd-desc-text::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .fd-desc-text::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.22);
+    border-radius: 2px;
+  }
+
+  .fd-desc-text::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.36);
+  }
+
+  .fd-footer {
+    padding: 12px 16px 16px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .fd-export-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .fd-export-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  /* Center - Image detail */
+  .fd-thumb {
+    position: relative;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.35);
+  }
+
+  .fd-thumb img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+  }
+
+  .fd-thumb-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.92);
+    color: #111;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .fd-name {
+    margin-top: 12px;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    word-break: break-all;
+  }
+
+  /* 网格中当前选中的图片 */
+  .ig-res-item.selected::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.78);
+    pointer-events: none;
   }
 
   .ig-tabs {
@@ -1392,24 +1577,68 @@
   .ig-res-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 14px 14px 10px;
     flex-shrink: 0;
     position: relative;
     z-index: 1;
   }
 
-  .ig-res-title {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--text);
+  /* 顶部栏工具区 */
+  .ig-res-toolbar {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
-  .ig-res-grid-toggle {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
+  .ig-res-search {
+    flex: 0 1 220px;
+    min-width: 0;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 4px 0 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .ig-res-search:focus-within {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .ig-res-search svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .ig-res-search input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
     border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+  }
+
+  .ig-res-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  .ig-res-icon-btn {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--text-dim);
     display: flex;
@@ -1419,9 +1648,669 @@
     transition: all 0.2s ease;
   }
 
-  .ig-res-grid-toggle:hover {
+  .ig-res-icon-btn:hover {
     background: rgba(255,255,255,0.08);
     color: var(--text);
+  }
+
+  .ig-res-icon-btn.active {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.14);
+    color: var(--text);
+  }
+
+  /* 搜索框内的设置按钮：贴合搜索框高度并靠右 */
+  .ig-res-search .ig-res-icon-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+  }
+
+  /* 以图搜图：图标 + 文字按钮 */
+  .ig-res-imgsearch-btn {
+    width: auto;
+    gap: 6px;
+    padding: 0 10px;
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    font-family: inherit;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
+  /* 顶部栏下拉浮层（挂载到 body） */
+  .ig-res-menu {
+    position: fixed;
+    min-width: 176px;
+    background: rgba(20, 20, 22, 0.92);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .ig-res-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .ig-res-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .ig-res-menu-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-res-menu-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .ig-res-menu-item.active::after {
+    content: '✓';
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text);
+  }
+
+  .ig-res-menu-item svg {
+    flex-shrink: 0;
+    margin-right: 9px;
+  }
+
+  /* 排版栏（工具栏下方一行，与筛选栏同构） */
+  .ig-res-layoutbar {
+    z-index: 2;
+  }
+
+  .ig-res-layoutbar .ig-res-seg button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 9px;
+  }
+
+  /* 选项带图标后，下拉菜单需要比触发器更宽才不会挤压文字 */
+  .ig-res-layoutbar .ig-res-fdrop-menu {
+    width: auto;
+    min-width: 138px;
+  }
+
+  .ig-res-layoutbar .ig-res-fdrop-menu .ig-res-menu-item {
+    padding: 7px 8px;
+  }
+
+  .ig-res-layoutbar .ig-res-fdrop-menu .ig-res-menu-item svg {
+    margin-right: 8px;
+  }
+
+  /* 设置面板（更宽的浮层） */
+  .ig-res-menu.wide {
+    min-width: 268px;
+    padding: 2px;
+  }
+
+  .ig-res-field {
+    padding: 10px;
+  }
+
+  .ig-res-field + .ig-res-field {
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .ig-res-field-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+    margin-bottom: 7px;
+  }
+
+  .ig-res-field-val {
+    color: var(--text);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ig-res-hint {
+    margin-top: 6px;
+    font-size: 0.66rem;
+    color: var(--text-dim);
+  }
+
+  /* 模型选项 */
+  .ig-res-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-opt + .ig-res-opt {
+    margin-top: 3px;
+  }
+
+  .ig-res-opt:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .ig-res-opt.on {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text);
+  }
+
+  .ig-res-opt-dot {
+    width: 13px;
+    height: 13px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.26);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s ease;
+  }
+
+  .ig-res-opt.on .ig-res-opt-dot {
+    border-color: var(--text);
+  }
+
+  .ig-res-opt.on .ig-res-opt-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text);
+  }
+
+  .ig-res-opt-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ig-res-opt-name {
+    font-size: 0.78rem;
+  }
+
+  .ig-res-opt-sub {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+
+  /* 权重滑块 */
+  .ig-res-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 16px;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .ig-res-slider::-webkit-slider-runnable-track {
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(to right,
+      var(--text) var(--pct, 70%),
+      rgba(255,255,255,0.13) var(--pct, 70%));
+  }
+
+  .ig-res-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4.5px;
+    border: none;
+    border-radius: 50%;
+    background: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+
+  .ig-res-slider::-moz-range-track {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.13);
+  }
+
+  .ig-res-slider::-moz-range-progress {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--text);
+  }
+
+  .ig-res-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    background: var(--text);
+  }
+
+  .ig-res-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2px;
+    font-size: 0.66rem;
+    color: var(--text-dim);
+  }
+
+  /* 召回数量输入 */
+  .ig-res-number {
+    width: 100%;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    outline: none;
+    color-scheme: dark;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ig-res-number:focus {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.24);
+  }
+
+  .ig-res-number::-webkit-outer-spin-button,
+  .ig-res-number::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* 升序 / 降序分段控件 */
+  .ig-res-seg {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+    transition: opacity 0.15s ease;
+  }
+
+  .ig-res-seg button {
+    flex: 1;
+    height: 24px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-seg button:hover {
+    color: var(--text);
+  }
+
+  .ig-res-seg button.on {
+    background: rgba(255,255,255,0.11);
+    color: var(--text);
+  }
+
+  /* ===== 工具栏下方筛选栏 ===== */
+  .ig-res-filterbar {
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px 12px;
+    padding: 0 14px 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 3;
+  }
+
+  .ig-res-filterbar.show {
+    display: flex;
+    animation: igFbarIn 0.18s ease both;
+  }
+
+  @keyframes igFbarIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ig-res-fgroup {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
+    gap: 6px;
+  }
+
+  .ig-res-fgroup-label {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+
+  .ig-res-fdiv {
+    width: 1px;
+    height: 14px;
+    background: rgba(255,255,255,0.09);
+  }
+
+  /* 下拉选择器（文件夹 / 分辨率 / 格式） */
+  .ig-res-fdrop {
+    position: relative;
+    width: 116px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ig-res-fdrop-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    height: 24px;
+    padding: 0 8px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-fdrop-btn:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.16);
+    color: var(--text);
+  }
+
+  .ig-res-fdrop.has-value .ig-res-fdrop-btn,
+  .ig-res-fdrop.open .ig-res-fdrop-btn {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.24);
+    color: var(--text);
+  }
+
+  .ig-res-fdrop-value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+
+  .ig-res-fdrop-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    opacity: 0.9;
+  }
+
+  .ig-res-fdrop-icon svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .ig-res-fdrop-arrow {
+    flex-shrink: 0;
+    width: 0;
+    height: 0;
+    border-left: 3.5px solid transparent;
+    border-right: 3.5px solid transparent;
+    border-top: 4px solid currentColor;
+    opacity: 0.65;
+    transition: transform 0.18s ease;
+  }
+
+  .ig-res-fdrop.open .ig-res-fdrop-arrow {
+    transform: rotate(180deg);
+  }
+
+  .ig-res-fdrop-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 3;
+    width: 100%;
+    min-width: 112px;
+    max-height: 216px;
+    overflow-y: auto;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(20,20,22,0.94);
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  }
+
+  .ig-res-fdrop.open .ig-res-fdrop-menu {
+    display: block;
+    animation: igFdropIn 0.16s ease both;
+  }
+
+  @keyframes igFdropIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 菜单内的选项：横铺整行的复选框条目 */
+  .ig-res-fdrop-menu .ig-res-chip {
+    display: flex;
+    width: 100%;
+    padding: 0 7px;
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .ig-res-fdrop-menu .ig-res-chip:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: transparent;
+  }
+
+  .ig-res-fdrop-menu .ig-res-chip.on {
+    background: rgba(255,255,255,0.12);
+    border-color: transparent;
+  }
+
+  .ig-res-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 24px;
+    padding: 0 9px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-chip:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.16);
+    color: var(--text);
+  }
+
+  .ig-res-chip.on {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.26);
+    color: var(--text);
+  }
+
+  .ig-res-chip-box {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ig-res-chip.on .ig-res-chip-box {
+    background: var(--text);
+    border-color: var(--text);
+  }
+
+  .ig-res-chip-box::after {
+    content: '';
+    width: 5px;
+    height: 2.5px;
+    border-left: 1.4px solid #0b0b0c;
+    border-bottom: 1.4px solid #0b0b0c;
+    transform: rotate(-45deg) translate(0.5px, -0.5px);
+    opacity: 0;
+  }
+
+  .ig-res-chip.on .ig-res-chip-box::after {
+    opacity: 1;
+  }
+
+  .ig-res-dateinput,
+  .ig-res-placeinput {
+    height: 24px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.72rem;
+    outline: none;
+    color-scheme: dark;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ig-res-dateinput {
+    padding: 0 7px;
+    flex: 1 1 118px;
+    width: 118px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ig-res-dateinput::-webkit-calendar-picker-indicator {
+    opacity: 0.45;
+    cursor: pointer;
+  }
+
+  .ig-res-dateinput:hover::-webkit-calendar-picker-indicator {
+    opacity: 0.8;
+  }
+
+  .ig-res-placeinput {
+    padding: 0 9px;
+    flex: 1 1 116px;
+    width: 116px;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ig-res-dateinput:focus,
+  .ig-res-placeinput:focus {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.24);
+  }
+
+  .ig-res-placeinput::placeholder {
+    color: var(--text-dim);
+  }
+
+  .ig-res-fsep {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+
+  .ig-res-fbar-end {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ig-res-fcount {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ig-res-freset {
+    height: 24px;
+    padding: 0 9px;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-freset:hover:not(:disabled) {
+    background: rgba(255,255,255,0.07);
+    color: var(--text);
+  }
+
+  .ig-res-freset:disabled {
+    opacity: 0.32;
+    cursor: default;
   }
 
   .ig-result {
@@ -1435,26 +2324,207 @@
     flex: 1;
     overflow-y: auto;
     padding: 0 12px 12px;
-    columns: 1;
-    column-gap: 8px;
     position: relative;
     z-index: 1;
   }
 
+  /* 瀑布流：响应式多列（最多 5 列），列宽一致、高度随原图比例错落 */
+  .ig-res-grid.masonry {
+    columns: 1;
+    column-gap: 8px;
+  }
+
   @container result-panel (min-width: 200px) {
-    .ig-res-grid { columns: 2; }
+    .ig-res-grid.masonry { columns: 2; }
   }
 
   @container result-panel (min-width: 400px) {
-    .ig-res-grid { columns: 3; }
+    .ig-res-grid.masonry { columns: 3; }
   }
 
   @container result-panel (min-width: 600px) {
-    .ig-res-grid { columns: 4; }
+    .ig-res-grid.masonry { columns: 4; }
   }
 
   @container result-panel (min-width: 800px) {
-    .ig-res-grid { columns: 5; }
+    .ig-res-grid.masonry { columns: 5; }
+  }
+
+  /* 网格：随容器宽度自适应列数，图片统一裁切为正方形 */
+  .ig-res-grid.grid {
+    columns: 1;
+    column-gap: 8px;
+  }
+
+  @container result-panel (min-width: 200px) {
+    .ig-res-grid.grid { columns: 2; }
+  }
+
+  @container result-panel (min-width: 400px) {
+    .ig-res-grid.grid { columns: 3; }
+  }
+
+  @container result-panel (min-width: 600px) {
+    .ig-res-grid.grid { columns: 4; }
+  }
+
+  @container result-panel (min-width: 800px) {
+    .ig-res-grid.grid { columns: 5; }
+  }
+
+  .ig-res-grid.grid .ig-res-item {
+    aspect-ratio: 1;
+  }
+
+  .ig-res-grid.grid .ig-res-item img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 列表：单列横向条目 */
+  .ig-res-grid.list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ig-res-grid.list .ig-res-item {
+    display: flex;
+    flex: none;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 0;
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.025);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ig-res-grid.list .ig-res-item:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.13);
+  }
+
+  .ig-res-grid.list .ig-res-item img {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    object-fit: cover;
+  }
+
+  .ig-res-grid.list .ig-res-item:hover img {
+    transform: none;
+  }
+
+  .ig-res-grid.list .ig-res-overlay {
+    position: static;
+    inset: auto;
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    opacity: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .ig-res-grid.list .ig-res-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .ig-res-grid.list .ig-res-name,
+  .ig-res-grid.list .ig-res-meta {
+    display: block;
+  }
+
+  .ig-res-grid.list .ig-res-name,
+  .ig-res-grid.list .ig-res-date,
+  .ig-res-grid.list .ig-res-meta {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ig-res-grid.list .ig-res-date {
+    margin-bottom: 0;
+    color: var(--text-dim);
+  }
+
+  .ig-res-grid.list .ig-res-actions {
+    flex-shrink: 0;
+  }
+
+  /* 窄容器：列表条目改为两行堆叠（缩略图+信息 / 操作按钮整行右对齐），避免操作按钮被裁剪 */
+  @container result-panel (max-width: 300px) {
+    .ig-res-grid.list .ig-res-overlay {
+      display: contents;
+    }
+
+    .ig-res-grid.list .ig-res-info {
+      flex: 1 1 120px;
+    }
+
+    .ig-res-grid.list .ig-res-actions {
+      flex: 1 0 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  /* 窄容器：筛选栏改为分组纵向堆叠，避免固定宽度的日期/地点输入框把内容撑出面板而被裁切 */
+  @container result-panel (max-width: 340px) {
+    .ig-res-filterbar {
+      gap: 6px;
+      padding: 0 10px 10px;
+    }
+
+    .ig-res-fdiv,
+    .ig-res-fsep {
+      display: none;
+    }
+
+    .ig-res-fgroup,
+    .ig-res-fgroup-label,
+    .ig-res-fdrop {
+      width: 100%;
+    }
+
+    .ig-res-dateinput,
+    .ig-res-placeinput {
+      flex: 1 1 100%;
+    }
+
+    .ig-res-fbar-end {
+      width: 100%;
+      margin-left: 0;
+      justify-content: flex-end;
+    }
+  }
+
+  /* 列表模式下展开的附加信息，其余排版隐藏 */
+  .ig-res-info {
+    display: contents;
+  }
+
+  .ig-res-name {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ig-res-meta {
+    display: none;
+    font-size: 0.68rem;
+    color: var(--text-dim);
   }
 
   .ig-res-grid::-webkit-scrollbar {
@@ -1476,6 +2546,14 @@
     page-break-inside: avoid;
     margin-bottom: 8px;
     width: 100%;
+  }
+
+  .ig-res-empty {
+    column-span: all;
+    padding: 40px 10px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-dim);
   }
 
   .ig-res-item img {
@@ -3921,13 +4999,6 @@
     margin-top: 4px;
   }
 
-  /* 创建 / 编辑知识库弹窗底部操作栏（仅作用于该弹窗，不影响二次确认弹窗） */
-  #kbModalOverlay .kb-modal-footer {
-    height: 100px;
-    padding-top: 40px;
-    padding-bottom: 0;
-  }
-
   .kb-modal-footer .kb-modal-btn-cancel {
     margin-left: auto;
   }
@@ -4244,10 +5315,10 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
           会议
         </a>
-        <button class="ig-skill-btn active">
+        <a class="ig-skill-btn active" href="knowledge.html">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           知识库
-        </button>
+        </a>
       </div>
 
       <!-- 分隔线 -->
@@ -4274,22 +5345,22 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
-        <div class="kb-item active" data-kb="产品迭代" onclick="selectKb(this)">
+        <div class="kb-item" data-kb="产品迭代" onclick="location.href='knowledge.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <span class="kb-item-name">产品迭代</span>
           <span class="kb-item-count">24</span>
         </div>
-        <div class="kb-item" data-kb="项目启动" onclick="selectKb(this)">
+        <div class="kb-item" data-kb="项目启动" onclick="location.href='knowledge.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <span class="kb-item-name">项目启动</span>
           <span class="kb-item-count">12</span>
         </div>
-        <div class="kb-item" data-kb="UI设计评审" onclick="selectKb(this)">
+        <div class="kb-item" data-kb="UI设计评审" onclick="location.href='knowledge.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <span class="kb-item-name">UI设计评审</span>
           <span class="kb-item-count">18</span>
         </div>
-        <div class="kb-item" data-kb="运维部署" onclick="selectKb(this)">
+        <div class="kb-item" data-kb="运维部署" onclick="location.href='knowledge.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
           <span class="kb-item-name">运维部署</span>
           <span class="kb-item-count">9</span>
@@ -4301,12 +5372,12 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
         </div>
-        <div class="kb-item" data-kb="收藏" onclick="selectKb(this)">
+        <div class="kb-item" data-kb="收藏" onclick="location.href='knowledge.html'">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           <span class="kb-item-name">收藏</span>
           <span class="kb-item-count">0</span>
         </div>
-        <div class="kb-item" data-kb="动物图片" onclick="location.href='Image%20Search.html'">
+        <div class="kb-item active" data-kb="动物图片">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <span class="kb-item-name">动物图片</span>
           <span class="kb-item-count">20</span>
@@ -4314,177 +5385,205 @@
       </div>
     </div>
 
-    <!-- 中间：知识库文件列表 -->
+    <!-- 中间：图片详情 -->
     <div class="ig-card ig-settings" id="igSettings">
-      <!-- 知识库头部 -->
-      <div class="ig-header">
-        <div class="kb-lib-head">
-          <span class="kb-lib-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          </span>
-          <div class="kb-lib-title-wrap">
-            <div class="kb-lib-name" id="kbLibName">产品迭代</div>
-            <div class="kb-lib-count" id="kbFileCount">24 个文件</div>
-          </div>
-          <button class="kb-edit-btn" id="btnEditKb" title="修改知识库">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
-          </button>
-        </div>
+      <div class="fd-head">
+        <h2 class="fd-title">图片详情</h2>
       </div>
 
-      <!-- 文件操作工具栏 -->
-      <div class="kb-toolbar">
-        <button class="kb-tool-btn" title="筛选库内文档" id="btnFileSearch">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </button>
-        <button class="kb-tool-btn" title="切换文件排序方式" id="btnFileSort">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5h10"/><path d="M11 9h7"/><path d="M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 18V4"/></svg>
-        </button>
-        <button class="kb-tool-btn" title="刷新文件列表" id="btnFileRefresh">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><polyline points="21 3 21 8 16 8"/></svg>
-        </button>
-        <button class="kb-tool-btn" title="上传文档到知识库" id="btnFileUpload">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-        <div class="kb-toolbar-spacer"></div>
-        <button class="kb-tool-btn" title="批量操作" id="btnBatchToggle">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        </button>
+      <div class="fd-body">
+        <div class="fd-thumb">
+          <img id="fdThumbImg" alt="图片缩略图">
+          <span class="fd-thumb-badge" id="fdThumbBadge"></span>
+        </div>
+
+        <div class="fd-name" id="fdName">未选择图片</div>
+
+        <div class="fd-section-label">基本信息</div>
+        <div class="fd-rows">
+          <div class="fd-row">
+            <span class="fd-key">尺寸</span>
+            <span class="fd-val" id="fdDim">—</span>
+          </div>
+          <div class="fd-row">
+            <span class="fd-key">文件大小</span>
+            <span class="fd-val" id="fdSize">—</span>
+          </div>
+          <div class="fd-row">
+            <span class="fd-key">格式</span>
+            <span class="fd-val" id="fdFormat">—</span>
+          </div>
+          <div class="fd-row">
+            <span class="fd-key">分辨率</span>
+            <span class="fd-val" id="fdRes">—</span>
+          </div>
+          <div class="fd-row">
+            <span class="fd-key">添加日期</span>
+            <span class="fd-val" id="fdDate">—</span>
+          </div>
+        </div>
+
+        <div class="fd-section-label">文字描述</div>
+        <p class="fd-desc-text">画面中央是一只停在枯枝上的短耳鸮——它侧身面向镜头，右眼周围那圈深色羽毛在逆光里被压成一条细线，瞳孔微微收缩。清晨六点半，气温接近零下五度，薄雾还没散尽，光线从主体的左后方斜切进来，把胸腹的绒羽照出半透明的质感；背景是一片收割后的草场，枯黄与浅褐层层退后，最终融成柔和的散景。拍摄时我把机位压到与鸟眼齐平的高度，用长焦压缩前后景的距离，焦点落在虹膜与喙的交界处，前景几根杂草被刻意保留，作为画面下缘的引导线。器材是两百毫米定焦加增距镜，参数定在光圈f/4、快门一千分之一秒、感光度四百——连拍十几张，最后只有三张对焦点足够扎实，这一张是其中唯一目光朝向镜头的。整张照片的色调偏冷，只在羽毛的受光面留了一点暖色，用来平衡大面积的灰蓝。后期处理很轻：压低背景高光，提亮胸口暗部，去掉两粒浮尘。取景、等待、按下快门——真正重要的其实不是参数，而是它在我离开之前始终没有飞走。</p>
       </div>
 
-      <!-- 文件列表 -->
-      <div class="kb-file-list" id="kbFileList">
-        <div class="kb-file" data-file="产品需求文档.docx" onclick="selectFile(this)">
-          <div class="kb-file-icon word">W</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">产品需求文档.docx</div>
-            <div class="kb-file-meta">2.4 MB · 2026/08/10</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="迭代规划.md" onclick="selectFile(this)">
-          <div class="kb-file-icon md">M</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">迭代规划.md</div>
-            <div class="kb-file-meta">86 KB · 2026/08/09</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="竞品分析报告.pdf" onclick="selectFile(this)">
-          <div class="kb-file-icon pdf">P</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">竞品分析报告.pdf</div>
-            <div class="kb-file-meta">5.1 MB · 2026/08/08</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="季度复盘.pptx" onclick="selectFile(this)">
-          <div class="kb-file-icon ppt">P</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">季度复盘.pptx</div>
-            <div class="kb-file-meta">12.8 MB · 2026/08/06</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="设计规范.docx" onclick="selectFile(this)">
-          <div class="kb-file-icon word">W</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">设计规范.docx</div>
-            <div class="kb-file-meta">1.1 MB · 2026/08/05</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="用户访谈记录.md" onclick="selectFile(this)">
-          <div class="kb-file-icon md">M</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">用户访谈记录.md</div>
-            <div class="kb-file-meta">45 KB · 2026/08/03</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="技术架构.pdf" onclick="selectFile(this)">
-          <div class="kb-file-icon pdf">P</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">技术架构.pdf</div>
-            <div class="kb-file-meta">3.7 MB · 2026/07/28</div>
-          </div>
-        </div>
-        <div class="kb-file" data-file="市场调研汇总.xlsx" onclick="selectFile(this)">
-          <div class="kb-file-icon xls">X</div>
-          <div class="kb-file-info">
-            <div class="kb-file-name">市场调研汇总.xlsx</div>
-            <div class="kb-file-meta">2.9 MB · 2026/07/25</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 批量操作按钮组（settings 卡片右下角） -->
-      <div class="kb-batch-actions">
-        <button type="button" class="kb-batch-select-all" id="btnBatchSelectAll" title="全选">全选</button>
-        <button type="button" class="kb-batch-delete-fab" id="btnBatchDeleteFab" title="请先勾选要删除的文件" disabled>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-          <span class="kb-batch-delete-fab-text">删除</span>
-          <span class="kb-batch-delete-count" id="kbBatchDeleteCount">0</span>
+      <div class="fd-footer">
+        <button type="button" class="fd-export-btn" id="fdExportBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          导出
         </button>
       </div>
     </div>
 
-    <!-- 右侧：知识库问答 -->
+    <!-- 右侧：图片宫格 -->
     <div class="ig-card ig-result" id="igResult">
       <div class="ig-res-header">
-        <span class="ig-res-title" id="kbChatTitle">知识库问答</span>
-        <div class="kb-res-tools">
-          <button class="kb-res-tool" id="btnKbHistory" title="历史对话">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="ig-res-toolbar">
+          <!-- 排版布局 -->
+          <button type="button" class="ig-res-icon-btn" id="btnResGridToggle" title="排版布局" aria-haspopup="true" aria-expanded="false" aria-controls="resLayoutMenu" aria-label="排版布局">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
           </button>
-          <button class="kb-res-tool" id="btnNewChat" title="新建对话">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+
+          <!-- 筛选 -->
+          <button type="button" class="ig-res-icon-btn" id="btnResFilter" title="筛选" aria-expanded="false" aria-controls="resFilterBar" aria-label="筛选">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
           </button>
+
+          <!-- 搜索框：内含右侧对齐的设置按钮 -->
+          <div class="ig-res-search">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="igResSearchInput" placeholder="搜索图片" autocomplete="off">
+            <!-- 设置 -->
+            <button type="button" class="ig-res-icon-btn" id="btnResSettings" title="设置" aria-haspopup="true" aria-expanded="false" aria-controls="resSettingsMenu" aria-label="检索设置">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+          </div>
+
+          <!-- 以图搜图：位于搜索框右侧，图标 + 文字 -->
+          <button type="button" class="ig-res-icon-btn ig-res-imgsearch-btn" id="btnResImgSearch" title="以图搜图">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="14" height="13" rx="2"/><circle cx="7" cy="8.5" r="1.5"/><polyline points="16.5 13.5 11.5 9 4.5 16.5"/><circle cx="17" cy="17" r="4"/><line x1="20" y1="20" x2="22.5" y2="22.5"/></svg>
+            <span>以图搜图</span>
+          </button>
+        </div>
+      </div>
+      <!-- 筛选栏：点击工具栏「筛选」后展开 -->
+      <div class="ig-res-filterbar" id="resFilterBar">
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">时间</span>
+          <input type="date" class="ig-res-dateinput" id="resDateFrom" title="开始时间">
+          <span class="ig-res-fsep">至</span>
+          <input type="date" class="ig-res-dateinput" id="resDateTo" title="结束时间">
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">文件夹</span>
+          <div class="ig-res-fdrop" data-drop="folder">
+            <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="ig-res-fdrop-value">全部文件夹</span>
+              <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="ig-res-fdrop-menu" id="resFolderChips"></div>
+          </div>
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">分辨率</span>
+          <div class="ig-res-fdrop" data-drop="resolution">
+            <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="ig-res-fdrop-value">全部分辨率</span>
+              <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="ig-res-fdrop-menu">
+              <button type="button" class="ig-res-chip" data-resolution="4320" title="8K超高清-4320P" aria-pressed="false"><span class="ig-res-chip-box"></span>8K</button>
+              <button type="button" class="ig-res-chip" data-resolution="2160" title="4K超高清-2160P" aria-pressed="false"><span class="ig-res-chip-box"></span>4K</button>
+              <button type="button" class="ig-res-chip" data-resolution="1440" title="2K超高清-1440P" aria-pressed="false"><span class="ig-res-chip-box"></span>2K</button>
+              <button type="button" class="ig-res-chip" data-resolution="1080" title="全高清-1080P" aria-pressed="false"><span class="ig-res-chip-box"></span>1080P</button>
+              <button type="button" class="ig-res-chip" data-resolution="720" title="高清-720P" aria-pressed="false"><span class="ig-res-chip-box"></span>720P</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">格式</span>
+          <div class="ig-res-fdrop" data-drop="format">
+            <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="ig-res-fdrop-value">全部格式</span>
+              <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="ig-res-fdrop-menu">
+              <button type="button" class="ig-res-chip" data-format="png" aria-pressed="false"><span class="ig-res-chip-box"></span>png</button>
+              <button type="button" class="ig-res-chip" data-format="jpg" aria-pressed="false"><span class="ig-res-chip-box"></span>jpg</button>
+              <button type="button" class="ig-res-chip" data-format="gif" aria-pressed="false"><span class="ig-res-chip-box"></span>gif</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">地点</span>
+          <input type="text" class="ig-res-placeinput" id="resPlaceInput" placeholder="全部地点" autocomplete="off">
+        </div>
+
+        <div class="ig-res-fbar-end">
+          <span class="ig-res-fcount" id="resFilterCount"></span>
+          <button type="button" class="ig-res-freset" id="resFilterReset" disabled>重置</button>
         </div>
       </div>
 
-      <!-- 会话窗口 -->
-      <div class="kb-chat" id="kbChat">
-        <div class="kb-welcome" id="kbWelcome">
-          <div class="kb-welcome-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <!-- 排版栏：点击工具栏「排版」后展开 -->
+      <div class="ig-res-filterbar ig-res-layoutbar" id="resLayoutMenu" aria-label="排版布局">
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">排版方式</span>
+          <div class="ig-res-fdrop has-value ig-res-ldrop" data-ldrop="layout">
+            <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="ig-res-fdrop-icon" aria-hidden="true"></span>
+              <span class="ig-res-fdrop-value">瀑布流</span>
+              <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="ig-res-fdrop-menu">
+              <button type="button" class="ig-res-menu-item active" data-layout="masonry" aria-pressed="true"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="11" rx="1"/><rect x="13.5" y="3" width="7.5" height="7" rx="1"/><rect x="3" y="17.5" width="7.5" height="3.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>瀑布流</button>
+              <button type="button" class="ig-res-menu-item" data-layout="grid" aria-pressed="false"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1"/></svg>网格</button>
+              <button type="button" class="ig-res-menu-item" data-layout="list" aria-pressed="false"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1.2"/><rect x="3" y="10" width="18" height="4" rx="1.2"/><rect x="3" y="16" width="18" height="4" rx="1.2"/></svg>列表</button>
+            </div>
           </div>
-          <h2 class="kb-slogan" id="kbSlogan">今天我能帮你什么？</h2>
-          <p class="kb-slogan-sub" id="kbSloganSub">我会结合「产品迭代」知识库中的文档回答你的问题</p>
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">排列顺序</span>
+          <div class="ig-res-fdrop has-value ig-res-ldrop" data-ldrop="sort">
+            <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false">
+              <span class="ig-res-fdrop-value">使用全局设置</span>
+              <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+            </button>
+            <div class="ig-res-fdrop-menu">
+              <button type="button" class="ig-res-menu-item active" data-sort="global" aria-pressed="true"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg>使用全局设置</button>
+              <button type="button" class="ig-res-menu-item" data-sort="date" aria-pressed="false"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>创建日期</button>
+              <button type="button" class="ig-res-menu-item" data-sort="size" aria-pressed="false"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>文件大小</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-res-fdiv"></div>
+
+        <div class="ig-res-fgroup">
+          <span class="ig-res-fgroup-label">排序方向</span>
+          <div class="ig-res-seg" id="resSortDir">
+            <button type="button" data-dir="desc" class="on" aria-pressed="true"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16"/><path d="M6 14l6 6 6-6"/></svg>降序</button>
+            <button type="button" data-dir="asc" aria-pressed="false"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4"/><path d="M6 10l6-6 6 6"/></svg>升序</button>
+          </div>
         </div>
       </div>
 
-      <!-- 底部输入区（首页对话框样式，宽度高度随卡片自适应） -->
-      <div class="kb-input-bar">
-        <div class="glass-input kb-glass-input">
-          <!-- 文件附件区域 -->
-          <div class="file-attachment" id="kbFileAttachment" style="display:none;">
-            <div class="file-attachment-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            </div>
-            <div class="file-attachment-info">
-              <div class="file-attachment-name" id="kbFileAttachmentName">2026-07-01.pdf</div>
-              <div class="file-attachment-status" id="kbFileAttachmentStatus">
-                <span class="file-spinner"></span>
-                <span class="file-status-text">转换中</span>
-              </div>
-            </div>
-            <button class="file-attachment-close" id="kbFileAttachmentClose" title="移除">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
-            </button>
-          </div>
-          <textarea class="kb-input" id="kbInput" rows="1" placeholder="基于知识库提问，我将结合库内文档回答..."></textarea>
-          <div class="input-footer">
-            <button class="btn" id="kbModelSelectBtn" title="选择模型">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-              <span id="kbSelectedModelName">Gemma4 12B 指令版</span>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="btn-group">
-              <button class="icon-btn" id="kbAddFileBtn" title="添加">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              </button>
-              <button class="icon-btn send" id="btnKbSend" title="发送">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div class="ig-res-grid masonry" id="igResGrid"></div>
     </div>
   </div>
 
@@ -4527,111 +5626,55 @@
 </main>
 </div>
 
-<!-- 创建 / 编辑知识库弹窗 -->
-<div class="kb-modal-overlay" id="kbModalOverlay">
-  <div class="kb-modal">
-    <div class="kb-modal-header">
-      <h3 class="kb-modal-title" id="kbModalTitle">创建知识库</h3>
-      <button class="kb-modal-close" id="btnCloseKbModal" title="关闭">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- 右侧顶部栏：设置下拉 -->
+<div class="ig-res-menu wide" id="resSettingsMenu" aria-label="检索设置">
+  <div class="ig-res-field">
+    <div class="ig-res-field-label">选择模型</div>
+    <button type="button" class="ig-res-opt" data-model="multimodal" aria-pressed="false">
+      <span class="ig-res-opt-dot"></span>
+      <span class="ig-res-opt-text">
+        <span class="ig-res-opt-name">MultiModal Only</span>
+        <span class="ig-res-opt-sub">多模态模型，语义理解更准</span>
+      </span>
+    </button>
+    <button type="button" class="ig-res-opt" data-model="clip" aria-pressed="false">
+      <span class="ig-res-opt-dot"></span>
+      <span class="ig-res-opt-text">
+        <span class="ig-res-opt-name">CLIP Only</span>
+        <span class="ig-res-opt-sub">纯 CLIP 模型，检索更快</span>
+      </span>
+    </button>
+    <button type="button" class="ig-res-opt on" data-model="hybrid" aria-pressed="true">
+      <span class="ig-res-opt-dot"></span>
+      <span class="ig-res-opt-text">
+        <span class="ig-res-opt-name">MultiModal + CLIP</span>
+        <span class="ig-res-opt-sub">双模型融合，兼顾效果与速度</span>
+      </span>
+    </button>
+  </div>
+
+  <div class="ig-res-field">
+    <div class="ig-res-field-label">
+      <span>相似度权重</span>
+      <span class="ig-res-field-val" id="resWeightVal">0.70</span>
     </div>
-    <div class="kb-modal-field">
-      <label class="kb-modal-label" for="kbModalName">知识库名称</label>
-      <input class="kb-modal-input" id="kbModalName" placeholder="请输入知识库名称" maxlength="20" />
-    </div>
-    <div class="kb-modal-field">
-      <label class="kb-modal-label">类型选择</label>
-      <div class="kb-select" id="kbTypeSelect">
-        <button type="button" class="kb-select-trigger" id="kbSelectTrigger">
-          <span id="kbSelectValue">文档</span>
-          <svg class="kb-select-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="kb-select-menu" id="kbSelectMenu">
-          <div class="kb-select-option selected" data-value="doc">
-            <span>文档</span>
-            <svg class="kb-select-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <div class="kb-select-option" data-value="media">
-            <span>图片 / 视频</span>
-            <svg class="kb-select-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="kb-modal-footer">
-      <button class="kb-modal-btn-delete" id="btnDeleteKb" style="display:none;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-        删除知识库
-      </button>
-      <div class="kb-modal-footer-right">
-        <button class="kb-modal-btn-cancel" id="btnCancelKbModal">取消</button>
-        <button class="kb-modal-btn-confirm" id="kbModalConfirmBtn">创建</button>
-      </div>
-    </div>
+    <input type="range" class="ig-res-slider" id="resWeight" min="0" max="1" step="0.05" value="0.7" aria-label="相似度权重">
+    <div class="ig-res-scale"><span>0</span><span>1</span></div>
+  </div>
+
+  <div class="ig-res-field">
+    <div class="ig-res-field-label">召回文件数量</div>
+    <input type="number" class="ig-res-number" id="resRecall" min="1" max="200" step="1" value="20" aria-label="召回文件数量">
+    <div class="ig-res-hint">默认 20，最多 200</div>
+  </div>
+
+  <div class="ig-res-field">
+    <div class="ig-res-hint">模型与相似度权重在下次检索时生效</div>
   </div>
 </div>
 
-<!-- 删除知识库二次确认弹窗 -->
-<div class="kb-modal-overlay" id="kbDeleteConfirmOverlay">
-  <div class="kb-modal">
-    <div class="kb-modal-header">
-      <h3 class="kb-modal-title">删除知识库</h3>
-      <button class="kb-modal-close" id="btnCloseDeleteConfirm" title="关闭">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="kb-delete-confirm-text" id="kbDeleteConfirmText">确定要删除该知识库吗？</div>
-    <span class="kb-delete-confirm-text-warn">删除后该知识库及其中的所有文件将不可恢复</span>
-    <div class="kb-modal-footer">
-      <div></div>
-      <div class="kb-modal-footer-right">
-        <button class="kb-modal-btn-cancel" id="btnCancelDeleteConfirm">取消</button>
-        <button class="kb-modal-btn-delete-confirm" id="btnConfirmDelete">确认删除</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 文件预览弹窗 -->
-<div class="kb-file-preview-overlay" id="kbFilePreviewOverlay">
-  <div class="kb-file-preview-modal">
-    <div class="kb-file-preview-header">
-      <div class="kb-file-preview-title" id="kbFilePreviewTitle">产品需求文档.docx</div>
-      <div class="kb-file-preview-toolbar">
-        <div class="kb-file-preview-zoom">
-          <button class="kb-file-preview-zoom-btn" id="kbPreviewZoomOut" title="缩小">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-          <span class="kb-file-preview-zoom-level" id="kbPreviewZoomLevel">100%</span>
-          <button class="kb-file-preview-zoom-btn" id="kbPreviewZoomIn" title="放大">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-        <div class="kb-file-preview-page" id="kbPreviewPage">1 / 21</div>
-        <div class="kb-file-preview-actions">
-          <button class="kb-file-preview-action-btn" id="kbPreviewDownload" title="下载">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </button>
-          <button class="kb-file-preview-action-btn" id="kbPreviewClose" title="关闭">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="kb-file-preview-content" id="kbFilePreviewContent">
-      <!-- 动态内容 -->
-    </div>
-  </div>
-</div>
-
-<!-- 全局提示 -->
-<div class="kb-toast" id="kbToast">
-  <span class="kb-toast-icon">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-  </span>
-  <span id="kbToastText">操作成功</span>
-</div>
+<!-- 以图搜图：本地图片选择 -->
+<input type="file" id="resImgSearchInput" accept="image/*" hidden>
 
 <script>
   const sidebarWrapper = document.getElementById('sidebarWrapper');
@@ -4752,1519 +5795,661 @@
     });
   });
 
-/* ============ 知识库交互逻辑 ============ */
+  /* ============ 动物图片宫格 ============ */
 
-  // ---- 知识库数据模型：名称 -> { 描述, 总数量, 文件列表(样例) } ----
-  const kbData = {
-    '产品迭代': {
-      desc: '产品迭代相关的需求、规划与复盘文档',
-      count: 24,
-      files: [
-        { name: '产品需求文档.docx', size: '2.4 MB', date: '2026/08/10' },
-        { name: '迭代规划.md', size: '86 KB', date: '2026/08/09' },
-        { name: '竞品分析报告.pdf', size: '5.1 MB', date: '2026/08/08' },
-        { name: '季度复盘.pptx', size: '12.8 MB', date: '2026/08/06' },
-        { name: '设计规范.docx', size: '1.1 MB', date: '2026/08/05' },
-        { name: '用户访谈记录.md', size: '45 KB', date: '2026/08/03' },
-        { name: '技术架构.pdf', size: '3.7 MB', date: '2026/07/28' },
-        { name: '市场调研汇总.xlsx', size: '2.9 MB', date: '2026/07/25' }
-      ]
-    },
-    '项目启动': {
-      desc: '项目立项、目标拆解与干系人管理文档',
-      count: 12,
-      files: [
-        { name: '项目立项书.docx', size: '1.8 MB', date: '2026/08/12' },
-        { name: '目标拆解.md', size: '62 KB', date: '2026/08/11' },
-        { name: '干系人清单.xlsx', size: '38 KB', date: '2026/08/10' },
-        { name: '风险评估.pdf', size: '2.2 MB', date: '2026/08/07' },
-        { name: '里程碑计划.pptx', size: '8.6 MB', date: '2026/08/04' },
-        { name: '启动会纪要.md', size: '28 KB', date: '2026/08/02' },
-        { name: '预算明细.xlsx', size: '96 KB', date: '2026/07/30' },
-        { name: '章程草案.docx', size: '420 KB', date: '2026/07/26' }
-      ]
-    },
-    'UI设计评审': {
-      desc: '界面规范、视觉走查与交互评审资料',
-      count: 18,
-      files: [
-        { name: '组件库清单.md', size: '74 KB', date: '2026/08/13' },
-        { name: '视觉走查.pdf', size: '9.3 MB', date: '2026/08/11' },
-        { name: '交互原型.pptx', size: '15.2 MB', date: '2026/08/09' },
-        { name: '设计规范.docx', size: '1.1 MB', date: '2026/08/08' },
-        { name: '字号色板.xlsx', size: '52 KB', date: '2026/08/05' },
-        { name: '无障碍检查清单.md', size: '21 KB', date: '2026/08/03' },
-        { name: '高保真稿.pdf', size: '12.6 MB', date: '2026/07/31' },
-        { name: '评审会议纪要.md', size: '33 KB', date: '2026/07/29' }
-      ]
-    },
-    '运维部署': {
-      desc: '部署手册、监控告警与容量规划文档',
-      count: 9,
-      files: [
-        { name: '部署手册.pdf', size: '6.2 MB', date: '2026/08/14' },
-        { name: '监控告警配置.md', size: '58 KB', date: '2026/08/12' },
-        { name: '容量规划.xlsx', size: '1.4 MB', date: '2026/08/10' },
-        { name: '灾备方案.docx', size: '980 KB', date: '2026/08/06' },
-        { name: '上线检查清单.md', size: '18 KB', date: '2026/08/04' },
-        { name: '故障复盘报告.pdf', size: '3.1 MB', date: '2026/07/30' },
-        { name: '安全加固指南.md', size: '44 KB', date: '2026/07/27' },
-        { name: '密钥轮换流程.docx', size: '260 KB', date: '2026/07/22' }
-      ]
-    },
-    '收藏': {
-      desc: '收藏的图片与视频',
-      count: 0,
-      files: []
-    }
+  const resGrid = document.getElementById('igResGrid');
+
+  const RES_ICONS = {
+    download: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+    copy: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    view: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+    trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
   };
 
-  // ---- 当前状态 ----
-  let currentKb = '产品迭代';
-  let fileSortMode = 'time';          // time | name
-  let editingKb = null;               // 正在编辑的知识库名（null 表示创建模式）
-  let batchMode = false;              // 是否处于批量操作模式
-  const batchSelected = new Set();    // 批量模式下已勾选的文件名
-  let kbPendingDeleteFiles = null;    // 待批量删除的文件列表
+  // 动物图片（本地资源 images/animals/）
+  // 除文件名与创建日期外，附带筛选 / 排序所需的元数据
+  const animalImages = [
+    { file: 'animal-01.jpg', date: '2026/09/17 09:12', folder: '野生动物', resolution: 2160, place: '云南西双版纳', size: 3480 },
+    { file: 'animal-02.jpg', date: '2026/09/17 09:05', folder: '家养宠物', resolution: 1080, place: '上海', size: 1220 },
+    { file: 'animal-03.jpg', date: '2026/09/16 21:48', folder: '鸟类', resolution: 2160, place: '杭州西湖', size: 2640 },
+    { file: 'animal-04.jpg', date: '2026/09/16 20:31', folder: '野生动物', resolution: 4320, place: '云南西双版纳', size: 7840 },
+    { file: 'animal-05.jpg', date: '2026/09/16 18:07', folder: '野生动物', resolution: 1440, place: '北京动物园', size: 1980 },
+    { file: 'animal-06.jpg', date: '2026/09/16 14:22', folder: '家养宠物', resolution: 720, place: '广州', size: 640 },
+    { file: 'animal-07.jpg', date: '2026/09/15 19:36', folder: '鸟类', resolution: 1080, place: '成都', size: 1150 },
+    { file: 'animal-08.jpg', date: '2026/09/15 16:50', folder: '野生动物', resolution: 2160, place: '北京动物园', size: 3020 },
+    { file: 'animal-09.jpg', date: '2026/09/15 11:28', folder: '家养宠物', resolution: 1440, place: '上海', size: 2260 },
+    { file: 'animal-10.jpg', date: '2026/09/14 22:14', folder: '野生动物', resolution: 1080, place: '云南西双版纳', size: 1420 },
+    { file: 'animal-11.jpg', date: '2026/09/14 15:43', folder: '鸟类', resolution: 720, place: '成都', size: 720 },
+    { file: 'animal-12.jpg', date: '2026/09/14 10:09', folder: '野生动物', resolution: 4320, place: '杭州西湖', size: 6120 },
+    { file: 'animal-13.jpg', date: '2026/09/13 20:57', folder: '家养宠物', resolution: 1080, place: '广州', size: 1080 },
+    { file: 'animal-14.jpg', date: '2026/09/13 17:25', folder: '鸟类', resolution: 1440, place: '上海', size: 1640 },
+    { file: 'animal-15.jpg', date: '2026/09/12 21:03', folder: '野生动物', resolution: 2160, place: '北京动物园', size: 2880 },
+    { file: 'animal-16.jpg', date: '2026/09/12 13:46', folder: '家养宠物', resolution: 720, place: '成都', size: 620 },
+    { file: 'animal-17.jpg', date: '2026/09/11 19:18', folder: '鸟类', resolution: 1080, place: '杭州西湖', size: 1340 },
+    { file: 'animal-18.jpg', date: '2026/09/11 09:52', folder: '野生动物', resolution: 1440, place: '云南西双版纳', size: 2040 },
+    { file: 'animal-19.jpg', date: '2026/09/10 16:31', folder: '家养宠物', resolution: 2160, place: '广州', size: 2560 },
+    { file: 'animal-20.jpg', date: '2026/09/10 08:44', folder: '野生动物', resolution: 1080, place: '北京动物园', size: 1180 }
+  ];
 
-  // ---- 元素引用 ----
-  const kbChat = document.getElementById('kbChat');
-  const kbWelcome = document.getElementById('kbWelcome');
-  const kbSloganSub = document.getElementById('kbSloganSub');
-  const kbInput = document.getElementById('kbInput');
-  const kbLibName = document.getElementById('kbLibName');
-  const kbChatTitle = document.getElementById('kbChatTitle');
-  const kbFileCount = document.getElementById('kbFileCount');
-  const kbFileList = document.getElementById('kbFileList');
+  // 分辨率档位文案（与筛选栏一致）
+  function resResolutionLabel(resolution) {
+    if (resolution >= 4320) return '8K';
+    if (resolution >= 2160) return '4K';
+    if (resolution >= 1440) return '2K';
+    if (resolution >= 1080) return '1080P';
+    return '720P';
+  }
+
+  function resFileSize(kb) {
+    return kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : kb + ' KB';
+  }
+
+  function resFileFormat(item) {
+    return item.file.split('.').pop().toLowerCase();
+  }
+
+  function renderAnimalGrid(list) {
+    if (!resGrid) return;
+    const items = list || animalImages;
+    if (items.length) {
+      resGrid.innerHTML = items.map(function (item, index) {
+        return '<div class="ig-res-item" data-file="' + item.file + '">' +
+          '<img src="images/animals/' + item.file + '" alt="动物图片 ' + (index + 1) + '" loading="lazy">' +
+          '<div class="ig-res-overlay">' +
+            '<div class="ig-res-info">' +
+              '<span class="ig-res-name">' + item.file + '</span>' +
+              '<span class="ig-res-date">' + item.date + '</span>' +
+              '<span class="ig-res-meta">' + resResolutionLabel(item.resolution) + ' · ' + resFileFormat(item) + ' · ' + resFileSize(item.size) + ' · ' + item.place + '</span>' +
+            '</div>' +
+            '<div class="ig-res-actions">' +
+              '<button type="button" title="下载">' + RES_ICONS.download + '</button>' +
+              '<button type="button" title="复制">' + RES_ICONS.copy + '</button>' +
+              '<button type="button" title="查看">' + RES_ICONS.view + '</button>' +
+              '<button type="button" title="删除">' + RES_ICONS.trash + '</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    } else {
+      resGrid.innerHTML = '<div class="ig-res-empty">没有匹配的图片</div>';
+    }
+    syncResDetailSelection();
+  }
+
+  /* ============ 中间：图片详情（点击网格图片查看） ============ */
+
+  const fdThumbImg = document.getElementById('fdThumbImg');
+  const fdThumbBadge = document.getElementById('fdThumbBadge');
+  const fdName = document.getElementById('fdName');
+  const fdDim = document.getElementById('fdDim');
+  const fdSize = document.getElementById('fdSize');
+  const fdFormat = document.getElementById('fdFormat');
+  const fdRes = document.getElementById('fdRes');
+  const fdDate = document.getElementById('fdDate');
+
+  const fdFields = [fdDim, fdSize, fdFormat, fdRes, fdDate];
+  let fdSelectedFile = null;
+
+  function renderImageDetail(item) {
+    if (!item) {
+      fdThumbImg.removeAttribute('src');
+      fdThumbBadge.textContent = '';
+      fdName.textContent = '未选择图片';
+      fdFields.forEach(function (el) { el.textContent = '—'; });
+      return;
+    }
+
+    fdThumbImg.src = 'images/animals/' + item.file;
+    fdThumbBadge.textContent = resFileFormat(item).toUpperCase();
+    fdName.textContent = item.file;
+    fdSize.textContent = resFileSize(item.size);
+    fdFormat.textContent = resFileFormat(item).toUpperCase();
+    fdRes.textContent = resResolutionLabel(item.resolution);
+    fdDate.textContent = item.date;
+    fdDim.textContent = fdThumbImg.naturalWidth
+      ? fdThumbImg.naturalWidth + ' × ' + fdThumbImg.naturalHeight
+      : '—';
+  }
+
+  // 缩略图加载完成后补上真实像素尺寸
+  fdThumbImg.addEventListener('load', function () {
+    if (fdThumbImg.naturalWidth) {
+      fdDim.textContent = fdThumbImg.naturalWidth + ' × ' + fdThumbImg.naturalHeight;
+    }
+  });
+
+  function findAnimalImage(file) {
+    return animalImages.filter(function (item) { return item.file === file; })[0] || null;
+  }
+
+  function selectResImage(file) {
+    fdSelectedFile = file;
+    if (resGrid) {
+      resGrid.querySelectorAll('.ig-res-item').forEach(function (el) {
+        el.classList.toggle('selected', el.getAttribute('data-file') === file);
+      });
+    }
+    renderImageDetail(findAnimalImage(file));
+  }
+
+  // 每次重绘后保持选中：沿用当前选中项，否则默认选中第一张
+  function syncResDetailSelection() {
+    const items = resGrid ? resGrid.querySelectorAll('.ig-res-item') : [];
+    const kept = fdSelectedFile && Array.prototype.some.call(items, function (el) {
+      return el.getAttribute('data-file') === fdSelectedFile;
+    });
+    selectResImage(kept ? fdSelectedFile : (items.length ? items[0].getAttribute('data-file') : null));
+  }
+
+  if (resGrid) {
+    resGrid.addEventListener('click', function (e) {
+      const el = e.target.closest('.ig-res-item');
+      if (!el || e.target.closest('.ig-res-actions')) return;
+      selectResImage(el.getAttribute('data-file'));
+    });
+  }
+
+  /* ============ 右侧顶部栏工具 ============ */
+
+  const resSearchInput = document.getElementById('igResSearchInput');
+  const resImgSearchInput = document.getElementById('resImgSearchInput');
+  const btnResImgSearch = document.getElementById('btnResImgSearch');
+  const btnResGridToggle = document.getElementById('btnResGridToggle');
+  const btnResFilter = document.getElementById('btnResFilter');
+  const btnResSettings = document.getElementById('btnResSettings');
+  const resLayoutMenu = document.getElementById('resLayoutMenu');
+  const resSettingsMenu = document.getElementById('resSettingsMenu');
+  const resSortDir = document.getElementById('resSortDir');
+  const resFilterBar = document.getElementById('resFilterBar');
+  const resFolderChips = document.getElementById('resFolderChips');
+  const resDateFrom = document.getElementById('resDateFrom');
+  const resDateTo = document.getElementById('resDateTo');
+  const resPlaceInput = document.getElementById('resPlaceInput');
+  const resFilterCount = document.getElementById('resFilterCount');
+  const resFilterReset = document.getElementById('resFilterReset');
+  const resWeight = document.getElementById('resWeight');
+  const resWeightVal = document.getElementById('resWeightVal');
+  const resRecall = document.getElementById('resRecall');
+
+  const resState = {
+    keyword: '',
+    layout: 'masonry',
+    sortBy: 'global',
+    sortDir: 'desc',
+    model: 'hybrid',
+    weight: 0.7,
+    recall: 20,
+    dateFrom: '',
+    dateTo: '',
+    place: '',
+    folders: [],
+    resolutions: [],
+    formats: []
+  };
+
+  // 筛选栏：文件夹选项来自数据中出现过的文件夹
+  if (resFolderChips) {
+    const folderList = animalImages.map(function (item) { return item.folder; })
+      .filter(function (folder, i, arr) { return arr.indexOf(folder) === i; });
+    resFolderChips.innerHTML = folderList.map(function (folder) {
+      return '<button type="button" class="ig-res-chip" data-folder="' + folder + '" aria-pressed="false"><span class="ig-res-chip-box"></span>' + folder + '</button>';
+    }).join('');
+  }
+
+  function getFilteredImages() {
+    const kw = resState.keyword.trim().toLowerCase();
+    const place = resState.place.trim().toLowerCase();
+
+    const matched = animalImages.filter(function (item) {
+      if (kw && (item.file + ' ' + item.date + ' ' + item.place).toLowerCase().indexOf(kw) === -1) return false;
+
+      const day = item.date.slice(0, 10).replace(/\//g, '-');
+      if (resState.dateFrom && day < resState.dateFrom) return false;
+      if (resState.dateTo && day > resState.dateTo) return false;
+
+      if (resState.folders.length && resState.folders.indexOf(item.folder) === -1) return false;
+      if (resState.resolutions.length && resState.resolutions.indexOf(item.resolution) === -1) return false;
+      if (resState.formats.length && resState.formats.indexOf(resFileFormat(item)) === -1) return false;
+      if (place && item.place.toLowerCase().indexOf(place) === -1) return false;
+
+      return true;
+    });
+
+    // 排列顺序：「使用全局设置」时按全局默认字段（创建日期），方向由「排序方向」决定
+    const isGlobal = resState.sortBy === 'global';
+    const field = isGlobal ? 'date' : resState.sortBy;
+    const sign = resState.sortDir === 'desc' ? -1 : 1;
+
+    return matched.sort(function (a, b) {
+      const diff = field === 'size'
+        ? a.size - b.size
+        : new Date(a.date.replace(/\//g, '-')) - new Date(b.date.replace(/\//g, '-'));
+      return diff * sign;
+    });
+  }
+
+  function hasActiveResFilter() {
+    return !!(resState.dateFrom || resState.dateTo || resState.place.trim() ||
+      resState.folders.length || resState.resolutions.length || resState.formats.length);
+  }
+
+  function refreshResGrid() {
+    const matched = getFilteredImages();
+    renderAnimalGrid(matched.slice(0, resState.recall));
+    if (resFilterCount) resFilterCount.textContent = '命中 ' + matched.length + ' 张';
+    if (resFilterReset) resFilterReset.disabled = !hasActiveResFilter();
+    syncResDropLabels();
+  }
+
+  // 排版菜单内的两个下拉选择器（排版方式 / 排列顺序）
+  const resLayoutDrops = resLayoutMenu
+    ? Array.prototype.slice.call(resLayoutMenu.querySelectorAll('.ig-res-ldrop'))
+    : [];
+
+  function closeResLayoutDrops() {
+    resLayoutDrops.forEach(function (drop) {
+      drop.classList.remove('open');
+      const btn = drop.querySelector('.ig-res-fdrop-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // 下拉浮层开合与定位
+  let resActiveMenu = null;
+  let resActiveBtn = null;
+
+  function closeResOverlayMenu() {
+    if (resActiveMenu) {
+      resActiveMenu.classList.remove('show');
+      resActiveMenu = null;
+    }
+    if (resActiveBtn) {
+      resActiveBtn.classList.remove('active');
+      resActiveBtn.setAttribute('aria-expanded', 'false');
+      resActiveBtn = null;
+    }
+  }
+
+  // 排版栏（工具栏下方一行）：与筛选栏同构，就地展开而非浮层
+  function setResLayoutBar(open) {
+    if (!resLayoutMenu) return;
+    resLayoutMenu.classList.toggle('show', open);
+    if (btnResGridToggle) {
+      btnResGridToggle.classList.toggle('active', open);
+      btnResGridToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    if (!open) closeResLayoutDrops();
+  }
+
+  function closeResMenu() {
+    closeResLayoutDrops();
+    setResLayoutBar(false);
+    closeResOverlayMenu();
+  }
+
+  function toggleResMenu(menu, btn, e) {
+    e.stopPropagation();
+    if (!menu || !btn) return;
+    if (resActiveMenu === menu) {
+      closeResMenu();
+      return;
+    }
+    closeResMenu();
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
+    menu.classList.add('show');
+    btn.classList.add('active');
+    btn.setAttribute('aria-expanded', 'true');
+    resActiveMenu = menu;
+    resActiveBtn = btn;
+  }
+
+  [resLayoutMenu, resSettingsMenu].forEach(function (menu) {
+    if (menu) menu.addEventListener('click', function (e) { e.stopPropagation(); });
+  });
+
+  document.addEventListener('click', closeResMenu);
+  window.addEventListener('resize', closeResMenu);
+
+  // 搜索框
+  if (resSearchInput) {
+    resSearchInput.addEventListener('input', function () {
+      resState.keyword = resSearchInput.value;
+      refreshResGrid();
+    });
+  }
+
+  // 以图搜图
+  if (btnResImgSearch && resImgSearchInput) {
+    btnResImgSearch.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closeResMenu();
+      resImgSearchInput.click();
+    });
+    resImgSearchInput.addEventListener('change', function () {
+      const file = resImgSearchInput.files && resImgSearchInput.files[0];
+      if (!file) return;
+      resState.keyword = '';
+      if (resSearchInput) resSearchInput.value = '';
+      refreshResGrid();
+      resImgSearchInput.value = '';
+    });
+  }
+
+  /* -------- 排版布局：排版方式 + 排列顺序 -------- */
+
+  function applyResLayout(mode) {
+    if (!resGrid) return;
+    resState.layout = mode;
+    resGrid.classList.remove('masonry', 'grid', 'list');
+    resGrid.classList.add(mode);
+  }
+
+  if (btnResGridToggle && resLayoutMenu) {
+    btnResGridToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const willOpen = !resLayoutMenu.classList.contains('show');
+      closeResMenu();
+      if (willOpen) setResLayoutBar(true);
+    });
+
+    // 排版栏内的两个下拉选择器（排版方式 / 排列顺序）
+    function syncResLayoutDrop(drop) {
+      const label = drop.querySelector('.ig-res-fdrop-value');
+      const icon = drop.querySelector('.ig-res-fdrop-icon');
+      const active = drop.querySelector('.ig-res-menu-item.active');
+      if (label && active) label.textContent = active.textContent.trim();
+      if (icon) {
+        const svg = active && active.querySelector('svg');
+        icon.innerHTML = svg ? svg.outerHTML : '';
+      }
+    }
+
+    // 首次渲染时让触发按钮跟随当前选项（文案 + 图标）
+    resLayoutDrops.forEach(function (drop) {
+      syncResLayoutDrop(drop);
+    });
+
+    resLayoutDrops.forEach(function (drop) {
+      const btn = drop.querySelector('.ig-res-fdrop-btn');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        const willOpen = !drop.classList.contains('open');
+        closeResLayoutDrops();
+        if (!willOpen) return;
+        drop.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+      });
+    });
+
+    // 点击下拉以外的区域时收起已展开的下拉
+    resLayoutMenu.addEventListener('click', function (e) {
+      if (e.target.closest('.ig-res-ldrop')) return;
+      closeResLayoutDrops();
+    });
+
+    resLayoutMenu.querySelectorAll('[data-layout]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        resLayoutMenu.querySelectorAll('[data-layout]').forEach(function (i) {
+          i.classList.remove('active');
+          i.setAttribute('aria-pressed', 'false');
+        });
+        item.classList.add('active');
+        item.setAttribute('aria-pressed', 'true');
+        applyResLayout(item.getAttribute('data-layout'));
+        syncResLayoutDrop(item.closest('.ig-res-ldrop'));
+        closeResLayoutDrops();
+      });
+    });
+
+    resLayoutMenu.querySelectorAll('[data-sort]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        resLayoutMenu.querySelectorAll('[data-sort]').forEach(function (i) {
+          i.classList.remove('active');
+          i.setAttribute('aria-pressed', 'false');
+        });
+        item.classList.add('active');
+        item.setAttribute('aria-pressed', 'true');
+        resState.sortBy = item.getAttribute('data-sort');
+        refreshResGrid();
+        syncResLayoutDrop(item.closest('.ig-res-ldrop'));
+        closeResLayoutDrops();
+      });
+    });
+
+    if (resSortDir) {
+      resSortDir.querySelectorAll('button').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          resSortDir.querySelectorAll('button').forEach(function (b) {
+            b.classList.remove('on');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('on');
+          btn.setAttribute('aria-pressed', 'true');
+          resState.sortDir = btn.getAttribute('data-dir');
+          refreshResGrid();
+        });
+      });
+    }
+  }
+
+  /* -------- 设置：模型 / 相似度权重 / 召回数量 -------- */
+
+  function syncResWeightUI() {
+    if (resWeightVal) resWeightVal.textContent = resState.weight.toFixed(2);
+    if (resWeight) resWeight.style.setProperty('--pct', (resState.weight * 100) + '%');
+  }
+
+  if (btnResSettings && resSettingsMenu) {
+    btnResSettings.addEventListener('click', function (e) {
+      toggleResMenu(resSettingsMenu, btnResSettings, e);
+    });
+
+    resSettingsMenu.querySelectorAll('[data-model]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        resSettingsMenu.querySelectorAll('[data-model]').forEach(function (i) {
+          i.classList.remove('on');
+          i.setAttribute('aria-pressed', 'false');
+        });
+        item.classList.add('on');
+        item.setAttribute('aria-pressed', 'true');
+        resState.model = item.getAttribute('data-model');
+      });
+    });
+
+    if (resWeight) {
+      resWeight.addEventListener('input', function () {
+        resState.weight = Number(resWeight.value);
+        syncResWeightUI();
+      });
+    }
+
+    if (resRecall) {
+      var normalizeResRecall = function () {
+        resState.recall = Math.max(1, Math.min(200, Number(resRecall.value) || 20));
+        resRecall.value = resState.recall;
+        refreshResGrid();
+      };
+      resRecall.addEventListener('input', function () {
+        resState.recall = Math.max(1, Math.min(200, Number(resRecall.value) || 20));
+        refreshResGrid();
+      });
+      resRecall.addEventListener('change', normalizeResRecall);
+      resRecall.addEventListener('blur', normalizeResRecall);
+    }
+  }
+
+  /* -------- 筛选栏 -------- */
+
+  function resetResFilters() {
+    resState.dateFrom = '';
+    resState.dateTo = '';
+    resState.place = '';
+    resState.folders = [];
+    resState.resolutions = [];
+    resState.formats = [];
+    if (resDateFrom) resDateFrom.value = '';
+    if (resDateTo) resDateTo.value = '';
+    if (resPlaceInput) resPlaceInput.value = '';
+    if (resFilterBar) resFilterBar.querySelectorAll('.ig-res-chip.on').forEach(function (chip) {
+      chip.classList.remove('on');
+      chip.setAttribute('aria-pressed', 'false');
+    });
+    refreshResGrid();
+  }
+
+  if (btnResFilter && resFilterBar) {
+    btnResFilter.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closeResOverlayMenu();
+      const open = resFilterBar.classList.toggle('show');
+      btnResFilter.classList.toggle('active', open);
+      btnResFilter.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) closeResDrops();
+    });
+  }
+
+  /* -------- 筛选栏：文件夹 / 分辨率 / 格式 下拉选择器 -------- */
+
+  const resDropMeta = {
+    folder: { key: 'folders', empty: '全部文件夹' },
+    resolution: { key: 'resolutions', empty: '全部分辨率' },
+    format: { key: 'formats', empty: '全部格式' }
+  };
+  const resDrops = resFilterBar ? Array.prototype.slice.call(resFilterBar.querySelectorAll('.ig-res-fdrop')) : [];
+
+  // 触发器文案跟随已选项：未选显示占位，单选显示选项名，多选显示数量
+  function syncResDropLabels() {
+    resDrops.forEach(function (drop) {
+      const meta = resDropMeta[drop.getAttribute('data-drop')];
+      const label = drop.querySelector('.ig-res-fdrop-value');
+      if (!meta || !label) return;
+
+      const count = resState[meta.key].length;
+      drop.classList.toggle('has-value', count > 0);
+
+      if (count === 0) {
+        label.textContent = meta.empty;
+      } else if (count === 1) {
+        const on = drop.querySelector('.ig-res-chip.on');
+        label.textContent = on ? on.textContent.trim() : meta.empty;
+      } else {
+        label.textContent = '已选 ' + count + ' 项';
+      }
+    });
+  }
+
+  function closeResDrops() {
+    resDrops.forEach(function (drop) {
+      drop.classList.remove('open');
+      const btn = drop.querySelector('.ig-res-fdrop-btn');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  resDrops.forEach(function (drop) {
+    const btn = drop.querySelector('.ig-res-fdrop-btn');
+    if (!btn) return;
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const willOpen = !drop.classList.contains('open');
+      closeResDrops();
+      if (!willOpen) return;
+      drop.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+    });
+  });
+
+  // 点击筛选栏内部不收起下拉（便于连续多选），点击外部才收起
+  if (resFilterBar) resFilterBar.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', closeResDrops);
+
+  if (resFilterBar) {
+    const chipGroups = {
+      folder: { key: 'folders', numeric: false },
+      resolution: { key: 'resolutions', numeric: true },
+      format: { key: 'formats', numeric: false }
+    };
+
+    resFilterBar.addEventListener('click', function (e) {
+      const chip = e.target.closest ? e.target.closest('.ig-res-chip') : null;
+      if (!chip) return;
+
+      Object.keys(chipGroups).forEach(function (name) {
+        if (!chip.hasAttribute('data-' + name)) return;
+        const group = chipGroups[name];
+        const value = group.numeric ? Number(chip.getAttribute('data-' + name)) : chip.getAttribute('data-' + name);
+        const on = chip.classList.toggle('on');
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const list = resState[group.key];
+        const at = list.indexOf(value);
+        if (on && at === -1) list.push(value);
+        if (!on && at !== -1) list.splice(at, 1);
+      });
+
+      refreshResGrid();
+    });
+
+    if (resDateFrom) resDateFrom.addEventListener('change', function () {
+      resState.dateFrom = resDateFrom.value;
+      refreshResGrid();
+    });
+
+    if (resDateTo) resDateTo.addEventListener('change', function () {
+      resState.dateTo = resDateTo.value;
+      refreshResGrid();
+    });
+
+    if (resPlaceInput) resPlaceInput.addEventListener('input', function () {
+      resState.place = resPlaceInput.value;
+      refreshResGrid();
+    });
+
+    if (resFilterReset) resFilterReset.addEventListener('click', resetResFilters);
+  }
+
+  applyResLayout(resState.layout);
+  syncResWeightUI();
+  refreshResGrid();
+
+  /* ============ 知识库分类收起 / 展开 ============ */
+
   const kbList = document.querySelector('.kb-list');
-  const kbModelSelectBtn = document.getElementById('kbModelSelectBtn');
-  const kbSelectedModelName = document.getElementById('kbSelectedModelName');
-  const kbAddFileBtn = document.getElementById('kbAddFileBtn');
-
-  // ---- Toast 提示 ----
-  const kbToastEl = document.getElementById('kbToast');
-  const kbToastText = document.getElementById('kbToastText');
-  let kbToastTimer = null;
-
-  function kbToast(msg, success) {
-    kbToastText.textContent = msg;
-    kbToastEl.classList.toggle('success', !!success);
-    kbToastEl.classList.add('show');
-    clearTimeout(kbToastTimer);
-    kbToastTimer = setTimeout(function () {
-      kbToastEl.classList.remove('show');
-    }, 2200);
-  }
-
-  // ---- 工具函数 ----
-  function escHtml(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  function typeInfo(name) {
-    if (/\.(docx?)$/i.test(name)) return { label: 'W', cls: 'word' };
-    if (/\.md$/i.test(name)) return { label: 'M', cls: 'md' };
-    if (/\.pdf$/i.test(name)) return { label: 'P', cls: 'pdf' };
-    if (/\.(pptx?)$/i.test(name)) return { label: 'P', cls: 'ppt' };
-    if (/\.(xlsx?|csv)$/i.test(name)) return { label: 'X', cls: 'xls' };
-    return { label: 'F', cls: 'md' };
-  }
-
-  // 文件项状态文字（上传中 / 解析中 / 正常信息）
-  function fileMetaText(f) {
-    if (f.status === 'uploading') {
-      return '<span class="kb-file-meta-spinner"></span>上传中...';
-    }
-    if (f.status === 'parsing') {
-      return '<span class="kb-file-meta-spinner"></span>解析中...';
-    }
-    return f.size + ' · ' + f.date;
-  }
-
-  // ---- 知识库切换 ----
-  function selectKb(el) {
-    if (!el || el.getAttribute('data-kb') === currentKb) return;
-    if (batchMode) toggleBatchMode();
-    document.querySelectorAll('.kb-item').forEach(function (i) { i.classList.remove('active'); });
-    el.classList.add('active');
-    currentKb = el.getAttribute('data-kb');
-    kbLibName.textContent = currentKb;
-    kbChatTitle.textContent = '知识库问答';
-    renderFiles();
-    resetChat();
-  }
-
-  // ---- 分类收起 / 展开 ----
   const collapsedCats = new Set();
-  let kbSearchQuery = '';
 
-  function applyKbListVisibility() {
-    kbList.querySelectorAll('.kb-cat-title').forEach(function (title) {
+  if (kbList) {
+    kbList.addEventListener('click', function (e) {
+      const toggle = e.target.closest ? e.target.closest('.kb-cat-toggle') : null;
+      if (!toggle) return;
+      const title = toggle.closest('.kb-cat-title');
+      if (!title) return;
       const cat = title.getAttribute('data-cat') || '';
+      if (collapsedCats.has(cat)) {
+        collapsedCats.delete(cat);
+      } else {
+        collapsedCats.add(cat);
+      }
       const collapsed = collapsedCats.has(cat);
       title.classList.toggle('collapsed', collapsed);
       let node = title.nextElementSibling;
-      let hasMatch = false;
       while (node && !node.classList.contains('kb-cat-title')) {
         if (node.classList.contains('kb-item')) {
-          const match = node.getAttribute('data-kb').indexOf(kbSearchQuery) > -1;
-          if (match) hasMatch = true;
-          node.style.display = (match && !collapsed) ? '' : 'none';
+          node.style.display = collapsed ? 'none' : '';
         }
         node = node.nextElementSibling;
       }
-      title.style.display = hasMatch ? '' : 'none';
     });
   }
 
-  kbList.addEventListener('click', function (e) {
-    const toggle = e.target.closest ? e.target.closest('.kb-cat-toggle') : null;
-    if (!toggle) return;
-    const title = toggle.closest('.kb-cat-title');
-    const cat = title.getAttribute('data-cat') || '';
-    if (collapsedCats.has(cat)) {
-      collapsedCats.delete(cat);
-    } else {
-      collapsedCats.add(cat);
-    }
-    applyKbListVisibility();
-  });
+  /* ============ 创建知识库入口 ============ */
 
-  // ---- 文件列表渲染 ----
-  function renderFiles() {
-    const kb = kbData[currentKb];
-    const files = kb ? kb.files.slice() : [];
-    if (fileSortMode === 'name') {
-      files.sort(function (a, b) { return a.name.localeCompare(b.name, 'zh'); });
-    } else {
-      files.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
-    }
-    kbFileCount.textContent = (kb ? kb.count : files.length) + ' 个文件';
-    kbFileList.innerHTML = '';
-
-    if (!files.length) {
-      const empty = document.createElement('div');
-      empty.style.cssText = 'padding:26px 0;text-align:center;color:var(--text-dim);font-size:0.78rem;opacity:.7;';
-      empty.textContent = '暂无文档，可上传文件到该知识库';
-      kbFileList.appendChild(empty);
-      return;
-    }
-
-    files.forEach(function (f) {
-      const t = typeInfo(f.name);
-      const checked = batchSelected.has(f.name);
-      const el = document.createElement('div');
-      el.className = 'kb-file' + (checked ? ' checked' : '');
-      el.setAttribute('data-file', f.name);
-      el.innerHTML =
-        '<div class="kb-file-icon ' + t.cls + '">' + t.label + '</div>' +
-        '<div class="kb-file-info">' +
-        '<div class="kb-file-name">' + escHtml(f.name) + '</div>' +
-        '<div class="kb-file-meta">' + fileMetaText(f) + '</div>' +
-        '</div>' +
-        '<button type="button" class="kb-check' + (checked ? ' checked' : '') + '" title="选择文件">' +
-        '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
-        '</button>' +
-        '<button type="button" class="kb-file-more" title="更多">' +
-        '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>' +
-        '</button>';
-      el.addEventListener('click', function () {
-        if (batchMode) {
-          toggleBatchCheck(el, f.name);
-        } else {
-          selectFile(el);
-          openFilePreview(f);
-        }
-      });
-      const checkBtn = el.querySelector('.kb-check');
-      checkBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        toggleBatchCheck(el, f.name);
-      });
-      const moreBtn = el.querySelector('.kb-file-more');
-      moreBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        selectFile(el);
-        showKbFileMenu(moreBtn, f.name);
-      });
-      kbFileList.appendChild(el);
-    });
-    updateBatchUI();
-  }
-
-  function selectFile(el) {
-    document.querySelectorAll('.kb-file').forEach(function (f) { f.classList.remove('selected'); });
-    el.classList.add('selected');
-  }
-
-  // ---- 批量操作 ----
-  const btnBatchToggle = document.getElementById('btnBatchToggle');
-  const btnBatchSelectAll = document.getElementById('btnBatchSelectAll');
-  const btnBatchDeleteFab = document.getElementById('btnBatchDeleteFab');
-  const kbBatchDeleteCount = document.getElementById('kbBatchDeleteCount');
-
-  function toggleBatchMode() {
-    batchMode = !batchMode;
-    btnBatchToggle.classList.toggle('active', batchMode);
-    document.getElementById('igSettings').classList.toggle('kb-batch-mode', batchMode);
-    if (!batchMode) batchSelected.clear();
-    renderFiles();
-  }
-
-  function updateBatchUI() {
-    const total = document.querySelectorAll('#kbFileList .kb-file').length;
-    const allChecked = batchSelected.size > 0 && batchSelected.size === total;
-    btnBatchSelectAll.classList.toggle('active', allChecked);
-    btnBatchSelectAll.textContent = allChecked ? '取消全选' : '全选';
-    btnBatchSelectAll.title = allChecked ? '取消全选' : '全选';
-    kbBatchDeleteCount.textContent = batchSelected.size;
-    btnBatchDeleteFab.disabled = batchSelected.size === 0;
-    btnBatchDeleteFab.title = batchSelected.size > 0 ? '删除选中（' + batchSelected.size + '）' : '请先勾选要删除的文件';
-  }
-
-  function toggleBatchCheck(el, name) {
-    if (batchSelected.has(name)) {
-      batchSelected.delete(name);
-      el.classList.remove('checked');
-      el.querySelector('.kb-check').classList.remove('checked');
-    } else {
-      batchSelected.add(name);
-      el.classList.add('checked');
-      el.querySelector('.kb-check').classList.add('checked');
-    }
-    updateBatchUI();
-  }
-
-  function requestBatchDelete(names) {
-    if (!names.length) return;
-    kbPendingDeleteFiles = names.slice();
-    kbDeleteConfirmText.textContent = '确定要删除选中的 ' + names.length + ' 个文件吗？删除后不可恢复。';
-    closeKbFileMenu();
-    kbDeleteConfirmOverlay.classList.add('show');
-  }
-
-  btnBatchToggle.addEventListener('click', toggleBatchMode);
-
-  btnBatchSelectAll.addEventListener('click', function () {
-    const allChecked = batchSelected.size > 0 && batchSelected.size === document.querySelectorAll('#kbFileList .kb-file').length;
-    document.querySelectorAll('#kbFileList .kb-file').forEach(function (f) {
-      const name = f.getAttribute('data-file');
-      if (allChecked) {
-        batchSelected.delete(name);
-        f.classList.remove('checked');
-        f.querySelector('.kb-check').classList.remove('checked');
-      } else {
-        batchSelected.add(name);
-        f.classList.add('checked');
-        f.querySelector('.kb-check').classList.add('checked');
-      }
-    });
-    updateBatchUI();
-  });
-
-  btnBatchDeleteFab.addEventListener('click', function () {
-    if (!batchSelected.size) {
-      kbToast('请先勾选要删除的文件', false);
-      return;
-    }
-    requestBatchDelete(Array.from(batchSelected));
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && batchMode && !kbDeleteConfirmOverlay.classList.contains('show')) {
-      toggleBatchMode();
-    }
-  });
-
-  // ---- 文件操作菜单（重命名 / 删除，浮层挂载 body） ----
-  const kbFileMenu = document.createElement('div');
-  kbFileMenu.className = 'kb-file-menu';
-  kbFileMenu.innerHTML =
-    '<button class="kb-file-menu-item" id="kbMenuRename">' +
-    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>重命名</button>' +
-    '<button class="kb-file-menu-item danger" id="kbMenuDelete">' +
-    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>删除</button>';
-  document.body.appendChild(kbFileMenu);
-
-  const kbRenamePop = document.createElement('div');
-  kbRenamePop.className = 'kb-rename-pop';
-  kbRenamePop.innerHTML =
-    '<div class="kb-rename-title">重命名文档</div>' +
-    '<input id="kbRenameInput" spellcheck="false" />' +
-    '<div class="kb-rename-actions">' +
-    '<button class="kb-rename-cancel" id="kbRenameCancel">取消</button>' +
-    '<button class="kb-rename-ok" id="kbRenameOk">确定</button>' +
-    '</div>';
-  document.body.appendChild(kbRenamePop);
-
-  let kbMenuFile = null;
-
-  function closeKbFileMenu() {
-    kbFileMenu.classList.remove('show');
-    kbRenamePop.classList.remove('show');
-  }
-
-  function showKbFileMenu(btn, name) {
-    kbMenuFile = name;
-    kbRenamePop.classList.remove('show');
-    const rect = btn.getBoundingClientRect();
-    const mh = 88;
-    let top = rect.bottom + 4;
-    let left = rect.right - 118;
-    if (top + mh > window.innerHeight) top = rect.top - mh - 4;
-    if (left < 8) left = 8;
-    kbFileMenu.style.top = top + 'px';
-    kbFileMenu.style.left = left + 'px';
-    kbFileMenu.classList.add('show');
-  }
-
-  function openKbRename(name) {
-    kbFileMenu.classList.remove('show');
-    kbMenuFile = name;
-    const kb = kbData[currentKb];
-    const f = kb.files.find(function (x) { return x.name === name; });
-    const input = document.getElementById('kbRenameInput');
-    input.value = f ? f.name : name;
-    const dot = input.value.lastIndexOf('.');
-    if (dot > 0) {
-      input.setSelectionRange(0, dot);
-    } else {
-      input.select();
-    }
-    kbRenamePop.style.top = Math.min(140, window.innerHeight - 150) + 'px';
-    kbRenamePop.style.left = Math.max(8, window.innerWidth / 2 - 115) + 'px';
-    kbRenamePop.classList.add('show');
-    input.focus();
-  }
-
-  document.getElementById('kbMenuRename').addEventListener('click', function () {
-    if (kbMenuFile) openKbRename(kbMenuFile);
-  });
-
-  document.getElementById('kbMenuDelete').addEventListener('click', function () {
-    if (!kbMenuFile) return;
-    const kb = kbData[currentKb];
-    const idx = kb.files.findIndex(function (x) { return x.name === kbMenuFile; });
-    const deleted = kbMenuFile;
-    if (idx > -1) {
-      kb.files.splice(idx, 1);
-      kb.count = Math.max(0, kb.count - 1);
-    }
-    closeKbFileMenu();
-    renderFiles();
-    kbToast('已删除：' + deleted, true);
-  });
-
-  document.getElementById('kbRenameCancel').addEventListener('click', closeKbFileMenu);
-
-  document.getElementById('kbRenameOk').addEventListener('click', function () {
-    const input = document.getElementById('kbRenameInput');
-    const newName = input.value.trim();
-    if (!newName) {
-      kbToast('文件名不能为空', false);
-      return;
-    }
-    const kb = kbData[currentKb];
-    if (kb.files.some(function (x) { return x.name === newName; })) {
-      kbToast('已存在同名文档', false);
-      return;
-    }
-    const f = kb.files.find(function (x) { return x.name === kbMenuFile; });
-    if (f) f.name = newName;
-    closeKbFileMenu();
-    renderFiles();
-    kbToast('已重命名', true);
-  });
-
-  document.addEventListener('click', function (e) {
-    if (!e.target.closest('.kb-file-menu') && !e.target.closest('.kb-rename-pop') && !e.target.closest('.kb-file-more')) {
-      closeKbFileMenu();
-    }
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeKbFileMenu();
-  });
-
-  // ---- 对话渲染 ----
-  function appendMsg(kind, textHtml, meta) {
-    kbWelcome.style.display = 'none';
-    const wrap = document.createElement('div');
-    wrap.className = 'kb-msg kb-msg-' + kind;
-    if (kind === 'user') {
-      wrap.innerHTML =
-        '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div></div>';
-    } else {
-      wrap.innerHTML =
-        '<div class="kb-msg-bubble"><div class="kb-msg-text">' + textHtml + '</div>' +
-        (meta ? '<div class="kb-msg-meta">' + meta + '</div>' : '') + '</div>';
-    }
-    kbChat.appendChild(wrap);
-    kbChat.scrollTop = kbChat.scrollHeight;
-  }
-
-  function appendTyping() {
-    const wrap = document.createElement('div');
-    wrap.className = 'kb-msg kb-msg-assistant kb-msg-typing';
-    wrap.innerHTML =
-      '<div class="kb-msg-bubble"><div class="kb-msg-text">正在检索知识库文档...</div></div>';
-    kbChat.appendChild(wrap);
-    kbChat.scrollTop = kbChat.scrollHeight;
-    return wrap;
-  }
-
-  function resetChat() {
-    kbChat.querySelectorAll('.kb-msg').forEach(function (m) { m.remove(); });
-    if (!currentKb) {
-      kbSloganSub.textContent = '请先创建或选择知识库，再开始提问';
-      kbWelcome.style.display = 'flex';
-      return;
-    }
-    const kb = kbData[currentKb];
-    const cnt = kb ? kb.count : 0;
-    kbSloganSub.textContent = '我会结合「' + currentKb + '」知识库中的 ' + cnt + ' 个文档回答你的问题';
-    kbWelcome.style.display = 'flex';
-  }
-
-  // ---- 发送消息 ----
-  function sendKbMessage() {
-    const text = kbInput.value.trim();
-    if (!text) return;
-    appendMsg('user', escHtml(text));
-    kbInput.value = '';
-    kbInput.style.height = 'auto';
-
-    if (/核心功能/.test(text)) {
-      showThinkingThenStream();
-    } else {
-      const typing = appendTyping();
-      setTimeout(function () {
-        typing.remove();
-        const kb = kbData[currentKb];
-        const files = kb ? kb.files.slice() : [];
-        const docs = files.map(function (f) { return f.name; });
-        let answer;
-        if (/总结|重点/.test(text)) {
-          answer = '根据「' + escHtml(currentKb) + '」库内的 ' + (files.length ? escHtml(docs.slice(0, 3).join('、')) : '已有文档') + '，核心要点如下：' +
-            '<br>1. 明确业务目标与验收标准，各阶段可量化追踪；' +
-            '<br>2. 关键流程已有书面规范，含责任人与时间节点；' +
-            '<br>3. 风险项已登记并配置了对应的应对预案。' +
-            '<br>如需逐条展开，可继续追问具体章节。';
-        } else if (/对比|区别/.test(text)) {
-          answer = '对比结论：两者定位不同。库内文档显示，前者侧重流程覆盖与稳定性，后者更关注效率与体验细节。' +
-            '<br>建议结合具体业务场景选择，详细维度对比可见相关分析文档。';
-        } else if (/删除|清理/.test(text)) {
-          answer = '已找到相关操作说明：删除文档前请先归档备份，确认无下游引用后再移除，并在变更记录中登记。';
-        } else {
-          answer = '我已在「' + escHtml(currentKb) + '」知识库中检索到相关内容：' +
-            '<br>该问题与 ' + escHtml(docs[0] || '库内文档') + ' 及 ' + escHtml(docs[1] || '关联记录') + ' 相关，' +
-            '核心信息已整理如上，建议先核对原始文档的上下文后再做决策。';
-        }
-        const used = Math.min(2, Math.max(1, files.length));
-        appendMsg('assistant', answer, '刚刚 · 引用 ' + used + ' 个文档');
-      }, 900);
-    }
-  }
-
-  // ---- 思考动效 + 流式输出 ----
-  function showThinkingThenStream() {
-    kbWelcome.style.display = 'none';
-
-    const wrap = document.createElement('div');
-    wrap.className = 'kb-msg kb-msg-assistant';
-    wrap.innerHTML =
-      '<div class="kb-msg-bubble"><div class="kb-msg-text" id="kbStreamContent">' +
-      '<div class="kb-ai-header">' +
-      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' +
-      '知识库</div>' +
-      '<div class="kb-ai-thinking">我基于已生成文档的知识库内容来回答。让我先检索知识库中关于产品核心功能的完整信息。<span class="kb-thinking-dots"><span></span><span></span><span></span></span></div>' +
-      '</div></div>';
-    kbChat.appendChild(wrap);
-    kbChat.scrollTop = kbChat.scrollHeight;
-
-    setTimeout(function () {
-      streamCoreFeaturesAnswer();
-    }, 5000);
-  }
-
-  function streamCoreFeaturesAnswer() {
-    var container = document.getElementById('kbStreamContent');
-    if (!container) return;
-
-    var chunks = [
-      '<div class="kb-search-results">' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 模型面板</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 路由模式配置项功能清单</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 本地模型商店界面-功能清单</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 模型管理</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 高级设置</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> GENT 配置模块</div>' +
-        '<div class="kb-search-item"><span class="check-icon">&#10003;</span> 知识库界面功能清单</div>' +
-        '<div class="kb-search-more">知识库搜索 产品的核心功能模块和功能定位,本地模型商店 模型管理 模型面板 路由模式 监控面板 知识库 GENT配置 高...</div>' +
-      '</div>' +
-      '<div class="kb-ai-summary">该产品包含 <strong>8大核心功能模块</strong>，下面是各模块的核心功能总结：</div>',
-
-      '<div class="kb-section-header kb-stream-in"><span class="star-icon">&#10024;</span> 产品核心功能一览</div>',
-
-      '<div class="kb-feature-section kb-stream-in">' +
-        '<div class="kb-feature-title"><span class="num-badge">1</span> 本地模型商店</div>' +
-        '<ul class="kb-feature-list">' +
-        '<li><strong>模型浏览与搜索：</strong>网格布局展示模型卡片，支持按名称/描述搜索</li>' +
-        '<li><strong>分类标签筛选：</strong>11类标签（对话/语言、多模态、视觉语言、图像生成、语音合成/识别、向量嵌入、重排序、OCR、文档处理、NPU系列等）</li>' +
-        '<li><strong>模型下载与安装：</strong>查看详情 &rarr; 下载模型 &rarr; 已安装状态标识</li>' +
-        '<li><strong>左侧导航：</strong>模型中心、性能测试、接口文档、调用统计 <span class="ref-num kb-ref-num">1</span></li>' +
-        '</ul>' +
-      '</div>',
-
-      '<div class="kb-feature-section kb-stream-in">' +
-        '<div class="kb-feature-title"><span class="num-badge">2</span> 模型管理</div>' +
-        '<ul class="kb-feature-list">' +
-        '<li><strong>系统资源监控：</strong>实时显示 CPU、GPU、RAM、VRAM 占用率进度条</li>' +
-        '<li><strong>模型列表管理：</strong>表格展示已安装模型，含名称、性能、能力标签</li>' +
-        '<li><strong>模型开关：</strong>一键开启/关闭模型</li>' +
-        '<li><strong>模型操作：</strong>管理（配置上下文大小和高级设置）、删除（含确认弹窗）、版本升级提示 <span class="ref-num kb-ref-num">2</span></li>' +
-        '</ul>' +
-      '</div>',
-
-      '<div class="kb-feature-section kb-stream-in">' +
-        '<div class="kb-feature-title"><span class="num-badge">3</span> 模型面板（双端模型选择）</div>' +
-        '<ul class="kb-feature-list">' +
-        '<li><strong>双端布局：</strong>左侧 Herdsman 本地模型面板 + 右侧 Flowy 云端模型面板</li>' +
-        '<li><strong>三种部署模式：</strong>全端侧、全云端、智能路由/先端后云</li>' +
-        '<li><strong>云端模型库：</strong>接入多个商大模型（Claude、Deepseek、Gemini、GLM、GPT、Kimi、Minimax、Qwen等），统一接口地址</li>' +
-        '<li><strong>Token配额管控：</strong>5小时滑动窗口限额，10K&ndash;1T 可调预算滑块 <span class="ref-num kb-ref-num">3</span></li>' +
-        '</ul>' +
-      '</div>',
-
-      '<div class="kb-feature-section kb-stream-in">' +
-        '<div class="kb-feature-title"><span class="num-badge">4</span> 路由模式配置（调度总控）</div>' +
-        '<ul class="kb-feature-list">' +
-        '<li><strong>四种策略：</strong>auto（智能路由）、edge（全端侧）、cloud（全云端）、cascade（先端后云）</li>' +
-        '<li><strong>三种路由模式（auto策略下）：</strong>single（单路径）、cascade（级联）、split（分流/并行）</li>' +
-        '<li><strong>四种Profile：</strong>economy（更多端侧）、balanced（均衡）、premium（更多云端）、privacy（尽量端侧/隐私优先）</li>' +
-        '</ul>' +
-      '</div>'
-    ];
-
-    var idx = 0;
-    function revealNext() {
-      if (idx >= chunks.length) return;
-      container.insertAdjacentHTML('beforeend', chunks[idx]);
-      idx++;
-      kbChat.scrollTop = kbChat.scrollHeight;
-      if (idx < chunks.length) {
-        setTimeout(revealNext, 350 + Math.random() * 200);
-      }
-    }
-    revealNext();
-  }
-
-  // ---- 创建 / 编辑知识库弹窗 ----
-  const kbModalOverlay = document.getElementById('kbModalOverlay');
-  const kbModalTitle = document.getElementById('kbModalTitle');
-  const kbModalName = document.getElementById('kbModalName');
-  const kbModalConfirmBtn = document.getElementById('kbModalConfirmBtn');
-  const kbTypeSelect = document.getElementById('kbTypeSelect');
-  const kbSelectTrigger = document.getElementById('kbSelectTrigger');
-  const kbSelectValue = document.getElementById('kbSelectValue');
-  const kbSelectMenu = document.getElementById('kbSelectMenu');
-  let kbSelectedCat = 'doc';
-
-  const KB_CAT_LABEL = { doc: '文档', media: '图片 / 视频' };
-  const KB_ITEM_ICON = {
-    doc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-    media: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>'
-  };
-
-  // 读取条目所属分类（按列表中的分组位置判断）
-  function catOfItem(item) {
-    let node = item.previousElementSibling;
-    while (node) {
-      if (node.classList.contains('kb-cat-title')) return node.getAttribute('data-cat') || 'doc';
-      node = node.previousElementSibling;
-    }
-    return 'doc';
-  }
-
-  // 按分类插入条目
-  function insertKbItem(item, cat) {
-    if (cat === 'media') {
-      kbList.appendChild(item);
-      return;
-    }
-    const mediaTitle = kbList.querySelector('.kb-cat-title[data-cat="media"]');
-    if (mediaTitle) {
-      kbList.insertBefore(item, mediaTitle);
-    } else {
-      kbList.appendChild(item);
-    }
-  }
-
-  function setKbCat(cat) {
-    kbSelectedCat = KB_CAT_LABEL[cat] ? cat : 'doc';
-    kbSelectValue.textContent = KB_CAT_LABEL[kbSelectedCat];
-    kbSelectMenu.querySelectorAll('.kb-select-option').forEach(function (opt) {
-      opt.classList.toggle('selected', opt.getAttribute('data-value') === kbSelectedCat);
+  const btnCreateKb = document.getElementById('btnCreateKb');
+  if (btnCreateKb) {
+    btnCreateKb.addEventListener('click', function () {
+      location.href = 'knowledge.html';
     });
   }
-
-  function toggleKbSelect(open) {
-    kbTypeSelect.classList.toggle('open', open);
-  }
-
-  kbSelectTrigger.addEventListener('click', function (e) {
-    e.stopPropagation();
-    toggleKbSelect(!kbTypeSelect.classList.contains('open'));
-  });
-
-  kbSelectMenu.addEventListener('click', function (e) {
-    const opt = e.target.closest('.kb-select-option');
-    if (!opt) return;
-    setKbCat(opt.getAttribute('data-value'));
-    toggleKbSelect(false);
-  });
-
-  document.addEventListener('click', function (e) {
-    if (!kbTypeSelect.contains(e.target)) toggleKbSelect(false);
-  });
-
-  function openKbModal(mode, name) {
-    editingKb = mode === 'edit' ? name : null;
-    kbModalTitle.textContent = editingKb ? '修改知识库' : '创建知识库';
-    kbModalName.value = editingKb || '';
-    kbModalConfirmBtn.textContent = editingKb ? '保存' : '创建';
-    btnDeleteKb.style.display = editingKb ? 'inline-flex' : 'none';
-    let cat = 'doc';
-    if (editingKb) {
-      const cur = document.querySelector('.kb-item[data-kb="' + editingKb + '"]');
-      if (cur) cat = catOfItem(cur);
-    }
-    setKbCat(cat);
-    toggleKbSelect(false);
-    kbModalOverlay.classList.add('show');
-    setTimeout(function () { kbModalName.focus(); }, 60);
-  }
-
-  function closeKbModal() {
-    kbModalOverlay.classList.remove('show');
-    toggleKbSelect(false);
-  }
-
-  function confirmKbModal() {
-    const name = kbModalName.value.trim();
-    if (!name) {
-      kbToast('请输入知识库名称', false);
-      return;
-    }
-    if (editingKb) {
-      if (name !== editingKb && kbData[name]) {
-        kbToast('已存在同名知识库', false);
-        return;
-      }
-      kbData[name] = kbData[editingKb];
-      if (name !== editingKb) delete kbData[editingKb];
-      const item = document.querySelector('.kb-item[data-kb="' + editingKb + '"]');
-      if (item) {
-        item.setAttribute('data-kb', name);
-        item.querySelector('.kb-item-name').textContent = name;
-        if (catOfItem(item) !== kbSelectedCat) {
-          insertKbItem(item, kbSelectedCat);
-        }
-      }
-      if (currentKb === editingKb) currentKb = name;
-      kbLibName.textContent = currentKb;
-      kbChatTitle.textContent = '知识库问答';
-      applyKbListVisibility();
-      closeKbModal();
-      kbToast('知识库已更新', true);
-    } else {
-      if (kbData[name]) {
-        kbToast('已存在同名知识库', false);
-        return;
-      }
-      kbData[name] = { desc: '', count: 0, files: [] };
-      const item = document.createElement('div');
-      item.className = 'kb-item';
-      item.setAttribute('data-kb', name);
-      item.innerHTML =
-        KB_ITEM_ICON[kbSelectedCat] +
-        '<span class="kb-item-name">' + escHtml(name) + '</span>' +
-        '<span class="kb-item-count">0</span>';
-      item.addEventListener('click', function () { selectKb(item); });
-      insertKbItem(item, kbSelectedCat);
-      applyKbListVisibility();
-      closeKbModal();
-      kbToast('知识库创建成功', true);
-      selectKb(item);
-    }
-  }
-
-  // ---- 事件绑定 ----
-  const btnDeleteKb = document.getElementById('btnDeleteKb');
-
-  document.getElementById('btnCreateKb').addEventListener('click', function () {
-    openKbModal('create');
-  });
-
-  document.getElementById('btnEditKb').addEventListener('click', function () {
-    openKbModal('edit', currentKb);
-  });
-
-  document.getElementById('btnCloseKbModal').addEventListener('click', closeKbModal);
-  document.getElementById('btnCancelKbModal').addEventListener('click', closeKbModal);
-  kbModalConfirmBtn.addEventListener('click', confirmKbModal);
-
-  kbModalOverlay.addEventListener('click', function (e) {
-    if (e.target === kbModalOverlay) closeKbModal();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && kbModalOverlay.classList.contains('show')) {
-      closeKbModal();
-    }
-  });
-
-  // ---- 删除知识库（二次确认） ----
-  const kbDeleteConfirmOverlay = document.getElementById('kbDeleteConfirmOverlay');
-  const kbDeleteConfirmText = document.getElementById('kbDeleteConfirmText');
-  let kbDeleteTarget = null;
-
-  function closeKbDeleteConfirm() {
-    kbDeleteConfirmOverlay.classList.remove('show');
-  }
-
-  btnDeleteKb.addEventListener('click', function () {
-    if (!editingKb) return;
-    kbDeleteTarget = editingKb;
-    kbDeleteConfirmText.textContent = '确定要删除知识库「' + editingKb + '」及其中的所有 ' + (kbData[editingKb] ? kbData[editingKb].count : 0) + ' 个文件吗？';
-    closeKbModal();
-    kbDeleteConfirmOverlay.classList.add('show');
-  });
-
-  document.getElementById('btnCloseDeleteConfirm').addEventListener('click', closeKbDeleteConfirm);
-  document.getElementById('btnCancelDeleteConfirm').addEventListener('click', closeKbDeleteConfirm);
-
-  kbDeleteConfirmOverlay.addEventListener('click', function (e) {
-    if (e.target === kbDeleteConfirmOverlay) closeKbDeleteConfirm();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && kbDeleteConfirmOverlay.classList.contains('show')) {
-      closeKbDeleteConfirm();
-    }
-  });
-
-  document.getElementById('btnConfirmDelete').addEventListener('click', function () {
-    if (kbPendingDeleteFiles && kbPendingDeleteFiles.length) {
-      const kb = kbData[currentKb];
-      const names = kbPendingDeleteFiles;
-      if (kb) {
-        kb.files = kb.files.filter(function (x) { return names.indexOf(x.name) === -1; });
-        kb.count = kb.files.length;
-      }
-      names.forEach(function (n) { batchSelected.delete(n); });
-      kbPendingDeleteFiles = null;
-      closeKbDeleteConfirm();
-      renderFiles();
-      updateBatchUI();
-      kbToast('已删除 ' + names.length + ' 个文件', true);
-      return;
-    }
-    if (!kbDeleteTarget) return;
-    if (batchMode) toggleBatchMode();
-    const deletedName = kbDeleteTarget;
-    const deletedCurrent = (currentKb === deletedName);
-    delete kbData[deletedName];
-    const item = kbList.querySelector('.kb-item[data-kb="' + deletedName + '"]');
-    if (item) item.remove();
-    const keys = Object.keys(kbData);
-    if (keys.length === 0) {
-      currentKb = '';
-      kbLibName.textContent = '无知识库';
-      kbChatTitle.textContent = '知识库问答';
-      renderFiles();
-      resetChat();
-    } else if (deletedCurrent) {
-      const visibleItems = Array.prototype.filter.call(
-        kbList.querySelectorAll('.kb-item'),
-        function (i) { return i.style.display !== 'none'; }
-      );
-      const firstItem = visibleItems[0] || kbList.querySelector('.kb-item');
-      if (firstItem) {
-        selectKb(firstItem);
-      } else {
-        currentKb = keys[0];
-        kbLibName.textContent = currentKb;
-        kbChatTitle.textContent = '知识库问答';
-        renderFiles();
-        resetChat();
-      }
-    }
-    closeKbDeleteConfirm();
-    kbDeleteTarget = null;
-    kbToast('知识库「' + deletedName + '」已删除', true);
-  });
-
-  // 知识库搜索（左栏）
-  const btnKbSearch = document.getElementById('btnKbSearch');
-  btnKbSearch.addEventListener('click', function () {
-    let box = document.getElementById('kbSearchBox');
-    if (!box) {
-      box = document.createElement('div');
-      box.id = 'kbSearchBox';
-      box.style.cssText = 'padding:8px 10px 2px;display:none;';
-      const input = document.createElement('input');
-      input.id = 'kbSearchInput';
-      input.placeholder = '搜索知识库名称...';
-      input.style.cssText = 'width:100%;height:30px;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.75rem;padding:0 10px;outline:none;';
-      input.addEventListener('input', function () {
-        kbSearchQuery = this.value.trim();
-        applyKbListVisibility();
-      });
-      box.appendChild(input);
-      document.querySelector('.kb-side-header').after(box);
-    }
-    const showing = box.style.display !== 'none';
-    box.style.display = showing ? 'none' : 'block';
-    if (!showing) box.querySelector('input').focus();
-  });
-
-  // 文件搜索（中栏）
-  document.getElementById('btnFileSearch').addEventListener('click', function () {
-    let box = document.getElementById('kbFileSearchBox');
-    if (!box) {
-      box = document.createElement('div');
-      box.id = 'kbFileSearchBox';
-      box.style.cssText = 'padding:0 10px 8px;display:none;';
-      const input = document.createElement('input');
-      input.id = 'kbFileSearchInput';
-      input.placeholder = '搜索文件名...';
-      input.style.cssText = 'width:100%;height:30px;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.75rem;padding:0 10px;outline:none;';
-      input.addEventListener('input', function () {
-        const q = this.value.trim();
-        document.querySelectorAll('#kbFileList .kb-file').forEach(function (f) {
-          f.style.display = f.getAttribute('data-file').indexOf(q) > -1 ? '' : 'none';
-        });
-      });
-      box.appendChild(input);
-      document.querySelector('.kb-toolbar').after(box);
-    }
-    const showing = box.style.display !== 'none';
-    box.style.display = showing ? 'none' : 'block';
-    if (!showing) box.querySelector('input').focus();
-  });
-
-  // 排序切换
-  document.getElementById('btnFileSort').addEventListener('click', function () {
-    fileSortMode = fileSortMode === 'time' ? 'name' : 'time';
-    renderFiles();
-    kbToast(fileSortMode === 'time' ? '已按时间排序' : '已按名称排序', true);
-  });
-
-  // 刷新
-  document.getElementById('btnFileRefresh').addEventListener('click', function () {
-    renderFiles();
-    kbToast('文件列表已刷新', true);
-  });
-
-  // 工具栏：上传文档到当前知识库
-  const kbToolFileInput = document.createElement('input');
-  kbToolFileInput.type = 'file';
-  kbToolFileInput.style.display = 'none';
-  document.body.appendChild(kbToolFileInput);
-
-  document.getElementById('btnFileUpload').addEventListener('click', function () {
-    kbToolFileInput.click();
-  });
-
-  kbToolFileInput.addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const now = new Date();
-    const pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    const kb = kbData[currentKb];
-    const entry = {
-      name: file.name,
-      size: kbFormatFileSize(file.size),
-      date: now.getFullYear() + '/' + pad(now.getMonth() + 1) + '/' + pad(now.getDate()),
-      status: 'uploading'
-    };
-    kb.files.unshift(entry);
-    kb.count += 1;
-    renderFiles();
-    kbToast('开始上传：' + file.name, true);
-    kbToolFileInput.value = '';
-
-    // 上传中 -> 解析中（5s 后）
-    setTimeout(function () {
-      entry.status = 'parsing';
-      renderFiles();
-    }, 5000);
-
-    // 解析中 -> 完成，显示大小与时间（再 5s 后）
-    setTimeout(function () {
-      entry.status = null;
-      renderFiles();
-      kbToast('上传完成：' + file.name, true);
-    }, 10000);
-  });
-
-  // 发送
-  document.getElementById('btnKbSend').addEventListener('click', sendKbMessage);
-  kbInput.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendKbMessage();
-    }
-  });
-  kbInput.addEventListener('input', function () {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
-  });
-
-  // 历史对话 / 新建对话
-  const kbHistoryPanel = document.createElement('div');
-  kbHistoryPanel.className = 'kb-history-panel';
-  document.body.appendChild(kbHistoryPanel);
-
-  // 模拟历史对话数据
-  const kbHistoryData = [
-    { id: 1, title: '生成思维导图', date: '2026/08/18', time: '14:32' },
-    { id: 2, title: '总结', date: '2026/08/18', time: '11:05' },
-    { id: 3, title: '产品需求分析', date: '2026/08/17', time: '16:48' },
-    { id: 4, title: '竞品对比报告', date: '2026/08/17', time: '09:20' },
-    { id: 5, title: '技术架构评审', date: '2026/08/16', time: '15:10' }
-  ];
-
-  let kbHistoryActiveId = 1;
-
-  function renderHistoryPanel() {
-    let html = '<div class="kb-history-title">历史记录</div>';
-    kbHistoryData.forEach(function (item) {
-      const isActive = item.id === kbHistoryActiveId ? ' active' : '';
-      html += '<div class="kb-history-item' + isActive + '" data-id="' + item.id + '">' +
-        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
-        '<span class="kb-history-item-title">' + escHtml(item.title) + '</span>' +
-        '<button type="button" class="kb-history-item-more" title="更多" data-id="' + item.id + '">' +
-        '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>' +
-        '</button>' +
-        '</div>';
-    });
-    if (!kbHistoryData.length) {
-      html = '<div class="kb-history-title">历史记录</div><div class="kb-history-empty">暂无历史对话</div>';
-    }
-    kbHistoryPanel.innerHTML = html;
-
-    // 点击对话项
-    kbHistoryPanel.querySelectorAll('.kb-history-item').forEach(function (el) {
-      el.addEventListener('click', function (e) {
-        if (e.target.closest('.kb-history-item-more')) return;
-        const id = parseInt(el.getAttribute('data-id'));
-        kbHistoryActiveId = id;
-        closeHistoryPanel();
-        const item = kbHistoryData.find(function (x) { return x.id === id; });
-        if (item) {
-          // 切换对话，无提示
-        }
-      });
-    });
-
-    // 点击更多按钮
-    kbHistoryPanel.querySelectorAll('.kb-history-item-more').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const id = parseInt(btn.getAttribute('data-id'));
-        const item = kbHistoryData.find(function (x) { return x.id === id; });
-        if (item) {
-          kbToast('对话「' + item.title + '」更多操作', true);
-        }
-      });
-    });
-  }
-
-  function openHistoryPanel() {
-    renderHistoryPanel();
-    const btn = document.getElementById('btnKbHistory');
-    const rect = btn.getBoundingClientRect();
-    const panelW = 280;
-    const panelH = 360;
-    let left = rect.right - panelW;
-    let top = rect.bottom + 6;
-    if (left < 8) left = 8;
-    if (top + panelH > window.innerHeight) top = rect.top - panelH - 6;
-    kbHistoryPanel.style.left = left + 'px';
-    kbHistoryPanel.style.top = top + 'px';
-    kbHistoryPanel.classList.add('show');
-  }
-
-  function closeHistoryPanel() {
-    kbHistoryPanel.classList.remove('show');
-  }
-
-  document.getElementById('btnKbHistory').addEventListener('click', function (e) {
-    e.stopPropagation();
-    if (kbHistoryPanel.classList.contains('show')) {
-      closeHistoryPanel();
-    } else {
-      openHistoryPanel();
-    }
-  });
-
-  document.addEventListener('click', function (e) {
-    if (!kbHistoryPanel.contains(e.target) && e.target.id !== 'btnKbHistory') {
-      closeHistoryPanel();
-    }
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && kbHistoryPanel.classList.contains('show')) {
-      closeHistoryPanel();
-    }
-  });
-  document.getElementById('btnNewChat').addEventListener('click', function () {
-    resetChat();
-    // 新建对话，无提示
-  });
-
-  // ===== 模型选择下拉（参照首页，浮层挂载到 body 避免被卡片裁剪） =====
-  const kbModelDropdown = document.createElement('div');
-  kbModelDropdown.className = 'model-dropdown';
-  kbModelDropdown.innerHTML =
-    '<div class="model-dropdown-section">' +
-    '<div class="model-dropdown-label">推理模式</div>' +
-    '<div class="model-mode-group">' +
-    '<button class="model-mode-item active" data-mode="speed">' +
-    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>速度</button>' +
-    '<button class="model-mode-item" data-mode="balance">' +
-    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>平衡</button>' +
-    '<button class="model-mode-item" data-mode="quality">' +
-    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M11 3l1 10"/><path d="M2 9h20"/><path d="M13 3l-2 6"/><path d="M11 3l2 6"/></svg>质量</button>' +
-    '</div>' +
-    '</div>' +
-    '<div class="model-dropdown-divider"></div>' +
-    '<div class="model-dropdown-section">' +
-    '<div class="model-dropdown-label">选择模型</div>' +
-    '<div class="model-list">' +
-    '<button class="model-list-item active" data-model="gemma-4-12b" data-name="Gemma4 12B 指令版"><span class="model-indicator green"></span><span class="model-name">Gemma4 12B 指令版</span></button>' +
-    '<button class="model-list-item" data-model="llama4-70b" data-name="Llama4 70B 对话版"><span class="model-indicator gray"></span><span class="model-name">Llama4 70B 对话版</span></button>' +
-    '<button class="model-list-item" data-model="qwen3-32b" data-name="Qwen3 32B 工具版"><span class="model-indicator gray"></span><span class="model-name">Qwen3 32B 工具版</span></button>' +
-    '</div>' +
-    '</div>';
-  document.body.appendChild(kbModelDropdown);
-
-  // 上传文件下拉（参照首页）
-  const kbUploadDropdown = document.createElement('div');
-  kbUploadDropdown.className = 'upload-dropdown';
-  kbUploadDropdown.innerHTML =
-    '<button class="upload-item" id="kbBtnUploadFile">' +
-    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="12" y2="12"/><line x1="15" y1="15" x2="12" y2="12"/></svg>' +
-    '<span>本地文件</span></button>' +
-    '<button class="upload-item" id="kbBtnUploadKb">' +
-    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>' +
-    '<span>知识库</span></button>';
-  document.body.appendChild(kbUploadDropdown);
-
-  // 定位浮层（fixed 相对视口）
-  function positionKbDropdown(trigger, menu, width) {
-    const rect = trigger.getBoundingClientRect();
-    const h = menu.offsetHeight || 200;
-    let top = rect.top - h - 8;
-    let left = rect.left;
-    if (top < 8) top = rect.bottom + 8;
-    if (left + width > window.innerWidth) left = window.innerWidth - width - 16;
-    menu.style.top = top + 'px';
-    menu.style.left = left + 'px';
-  }
-
-  // 模型下拉交互
-  kbModelSelectBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    kbUploadDropdown.classList.remove('show');
-    const showing = kbModelDropdown.classList.contains('show');
-    if (!showing) positionKbDropdown(kbModelSelectBtn, kbModelDropdown, 240);
-    kbModelDropdown.classList.toggle('show');
-  });
-
-  kbModelDropdown.querySelectorAll('.model-mode-item').forEach(function (item) {
-    item.addEventListener('click', function (e) {
-      e.stopPropagation();
-      kbModelDropdown.querySelectorAll('.model-mode-item').forEach(function (i) { i.classList.remove('active'); });
-      item.classList.add('active');
-    });
-  });
-
-  kbModelDropdown.querySelectorAll('.model-list-item').forEach(function (item) {
-    item.addEventListener('click', function (e) {
-      e.stopPropagation();
-      kbModelDropdown.querySelectorAll('.model-list-item').forEach(function (i) { i.classList.remove('active'); });
-      item.classList.add('active');
-      const name = item.getAttribute('data-name');
-      kbSelectedModelName.textContent = name;
-      kbModelDropdown.classList.remove('show');
-      kbToast('已切换模型：' + name, true);
-    });
-  });
-
-  // 上传下拉交互
-  kbAddFileBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    kbModelDropdown.classList.remove('show');
-    const showing = kbUploadDropdown.classList.contains('show');
-    if (!showing) positionKbDropdown(kbAddFileBtn, kbUploadDropdown, 180);
-    kbUploadDropdown.classList.toggle('show');
-  });
-
-  kbUploadDropdown.querySelectorAll('.upload-item').forEach(function (item) {
-    item.addEventListener('click', function (e) {
-      e.stopPropagation();
-      kbUploadDropdown.classList.remove('show');
-    });
-  });
-
-  // 点击外部关闭下拉
-  document.addEventListener('click', function () {
-    kbModelDropdown.classList.remove('show');
-    kbUploadDropdown.classList.remove('show');
-  });
-
-  // 引用编号悬浮卡片
-  const kbRefTooltip = document.createElement('div');
-  kbRefTooltip.className = 'kb-ref-tooltip';
-  document.body.appendChild(kbRefTooltip);
-
-  const kbRefData = {
-    1: {
-      title: '1.本地模型商店界面-功能清单',
-      desc: '接口文档：查看本地模型调用 API 接口说明文档 调用统计：统计模型调用次数、资源消耗等运行数据',
-      docTitle: '本地模型商店界面-功能清单',
-      docHtml:
-        '<h2>一、左侧全局导航栏</h2>' +
-        '<ol>' +
-          '<li><strong>模型中心（当前选中）：</strong>模型浏览、下载、安装、管理主页面</li>' +
-          '<li><strong>性能测试：</strong>对已加载模型执行性能基准测试</li>' +
-          '<li><strong>接口文档：</strong>查看本地模型调用 API 接口说明文档</li>' +
-          '<li><strong>调用统计：</strong>统计模型调用次数、资源消耗等运行数据</li>' +
-        '</ol>' +
-        '<h2>二、右侧模型商店</h2>' +
-        '<h3>顶部区域</h3>' +
-        '<p><strong>搜索框：</strong>根据模型名称、描述、标签检索过滤模型列表。</p>' +
-        '<h3>模型分类标签栏</h3>' +
-        '<ul>' +
-          '<li>对话 / 语言</li>' +
-          '<li>多模态</li>' +
-          '<li>视觉语言</li>' +
-          '<li>图像生成</li>' +
-          '<li>语音合成</li>' +
-          '<li>语音识别</li>' +
-          '<li>向量嵌入</li>' +
-          '<li>重排序</li>' +
-          '<li>OCR</li>' +
-          '<li>文档处理</li>' +
-          '<li>NPU 系列模型 (WinML)</li>' +
-        '</ul>'
-    },
-    2: {
-      title: '2.模型管理',
-      desc: '管理：进入启动模型配置，进入的就是文件index 首页点击发送按钮后弹出的启动模型弹窗，可以设置上下文大小和高级设置 删除：删除当前模型，弹出弹窗再次确认是否删除，确认后删除。',
-      docTitle: '模型管理',
-      docHtml:
-        '<h2>一、系统资源监控</h2>' +
-        '<p>实时显示 CPU、GPU、RAM、VRAM 占用率进度条，帮助用户了解当前系统资源使用情况。</p>' +
-        '<h2>二、模型列表管理</h2>' +
-        '<p>表格展示已安装模型，包含以下信息：</p>' +
-        '<ul>' +
-          '<li>模型名称</li>' +
-          '<li>性能指标</li>' +
-          '<li>能力标签</li>' +
-        '</ul>' +
-        '<h2>三、模型开关</h2>' +
-        '<p>一键开启/关闭模型，快速控制模型的运行状态。</p>' +
-        '<h2>四、模型操作</h2>' +
-        '<ol>' +
-          '<li><strong>管理：</strong>进入启动模型配置，进入的就是文件 index 首页点击发送按钮后弹出的启动模型弹窗，可以设置上下文大小和高级设置</li>' +
-          '<li><strong>删除：</strong>删除当前模型，弹出弹窗再次确认是否删除，确认后删除。</li>' +
-          '<li><strong>版本升级提示：</strong>当有新版本可用时，提示用户进行升级。</li>' +
-        '</ol>'
-    },
-    3: {
-      title: '3.模型面板',
-      desc: '每个模型标注上下文窗口上限（1M / 262K / 203K / 205K等），选中模型高亮区分 ## 三、配额与认证模块（限流管控） 开关：启用云端 Token 配额 关闭状态：云端 Token 不限量开启状态：启用 5 小时滑动窗口限额 Token 预算…',
-      docTitle: '模型面板',
-      docHtml:
-        '<h2>一、双端模型选择</h2>' +
-        '<p>左侧 Herdsman 本地模型面板 + 右侧 Flowy 云端模型面板。</p>' +
-        '<h3>三种部署模式</h3>' +
-        '<ul>' +
-          '<li>全端侧</li>' +
-          '<li>全云端</li>' +
-          '<li>智能路由 / 先端后云</li>' +
-        '</ul>' +
-        '<h2>二、云端模型库</h2>' +
-        '<p>接入多个商用大模型（Claude、Deepseek、Gemini、GLM、GPT、Kimi、Minimax、Qwen 等），统一接口地址。</p>' +
-        '<h2>三、配额与认证模块（限流管控）</h2>' +
-        '<p>每个模型标注上下文窗口上限（1M / 262K / 203K / 205K 等），选中模型高亮区分。</p>' +
-        '<ul>' +
-          '<li><strong>开关：</strong>启用云端 Token 配额</li>' +
-          '<li><strong>关闭状态：</strong>云端 Token 不限量</li>' +
-          '<li><strong>开启状态：</strong>启用 5 小时滑动窗口限额</li>' +
-          '<li><strong>Token 预算：</strong>10K–1T 可调预算滑块</li>' +
-        '</ul>'
-    }
-  };
-
-  function showRefTooltip(el) {
-    const num = parseInt(el.textContent.trim(), 10);
-    const data = kbRefData[num];
-    if (!data) return;
-    kbRefTooltip.innerHTML =
-      '<div class="kb-ref-tooltip-title">' + data.title + '</div>' +
-      '<div class="kb-ref-tooltip-desc">' + data.desc + '</div>' +
-      '<div class="kb-ref-tooltip-footer">' +
-        '<div class="kb-ref-tooltip-footer-left">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
-          '<span>markdown</span>' +
-        '</div>' +
-        '<div class="kb-ref-tooltip-footer-right">@产品迭代</div>' +
-      '</div>';
-    const rect = el.getBoundingClientRect();
-    let top = rect.bottom + 8;
-    let left = rect.left;
-    if (left + 340 > window.innerWidth) left = window.innerWidth - 356;
-    if (left < 8) left = 8;
-    if (top + 200 > window.innerHeight) top = rect.top - 200 - 8;
-    kbRefTooltip.style.top = top + 'px';
-    kbRefTooltip.style.left = left + 'px';
-    requestAnimationFrame(function () { kbRefTooltip.classList.add('show'); });
-  }
-
-  function hideRefTooltip() {
-    kbRefTooltip.classList.remove('show');
-  }
-
-  var kbRefHideTimer = null;
-  var kbRefCurrentEl = null;
-
-  function scheduleHideRefTooltip() {
-    clearTimeout(kbRefHideTimer);
-    kbRefHideTimer = setTimeout(function () {
-      hideRefTooltip();
-      kbRefCurrentEl = null;
-    }, 200);
-  }
-
-  function cancelHideRefTooltip() {
-    clearTimeout(kbRefHideTimer);
-  }
-
-  document.addEventListener('mouseover', function (e) {
-    const ref = e.target.closest('.kb-ref-num');
-    if (ref) {
-      cancelHideRefTooltip();
-      kbRefCurrentEl = ref;
-      showRefTooltip(ref);
-    }
-    if (e.target === kbRefTooltip || kbRefTooltip.contains(e.target)) {
-      cancelHideRefTooltip();
-    }
-  });
-
-  document.addEventListener('mouseout', function (e) {
-    const ref = e.target.closest('.kb-ref-num');
-    if (ref) {
-      const related = e.relatedTarget;
-      if (!related || (!kbRefTooltip.contains(related) && !related.closest('.kb-ref-num'))) {
-        scheduleHideRefTooltip();
-      }
-    }
-    if (e.target === kbRefTooltip || kbRefTooltip.contains(e.target)) {
-      const related = e.relatedTarget;
-      if (!related || (!related.closest('.kb-ref-num') && !kbRefTooltip.contains(related))) {
-        scheduleHideRefTooltip();
-      }
-    }
-  });
-
-  // 点击悬浮卡片打开文件预览弹窗
-  kbRefTooltip.addEventListener('click', function (e) {
-    e.stopPropagation();
-    const num = parseInt(kbRefTooltip.querySelector('.kb-ref-tooltip-title').textContent.trim().charAt(0), 10);
-    const data = kbRefData[num];
-    if (!data) return;
-    hideRefTooltip();
-    kbFilePreviewTitle.textContent = data.docTitle;
-    kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content doc">' +
-      '<h1>' + data.docTitle + '</h1>' +
-      data.docHtml +
-      '</div>';
-    kbFilePreviewOverlay.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  });
-
-  // 文件上传与附件展示（参照首页）
-  const kbFileInput = document.createElement('input');
-  kbFileInput.type = 'file';
-  kbFileInput.style.display = 'none';
-  document.body.appendChild(kbFileInput);
-
-  const kbFileAttachment = document.getElementById('kbFileAttachment');
-  const kbFileAttachmentName = document.getElementById('kbFileAttachmentName');
-  const kbFileAttachmentStatus = document.getElementById('kbFileAttachmentStatus');
-  const kbFileAttachmentClose = document.getElementById('kbFileAttachmentClose');
-
-  document.getElementById('kbBtnUploadFile').addEventListener('click', function (e) {
-    e.stopPropagation();
-    kbFileInput.click();
-  });
-  document.getElementById('kbBtnUploadKb').addEventListener('click', function (e) {
-    e.stopPropagation();
-    kbUploadDropdown.classList.remove('show');
-    kbToast('从知识库选择文档（待接入）', true);
-  });
-
-  kbFileInput.addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    kbFileAttachment.style.display = 'flex';
-    kbFileAttachmentName.textContent = file.name;
-    kbFileAttachmentStatus.innerHTML = '<span class="file-spinner"></span><span class="file-status-text">转换中</span>';
-    setTimeout(function () {
-      kbFileAttachmentStatus.innerHTML = '<span class="file-status-text">已就绪 · ' + kbFormatFileSize(file.size) + '</span>';
-    }, 3000);
-  });
-
-  if (kbFileAttachmentClose) {
-    kbFileAttachmentClose.addEventListener('click', function (e) {
-      e.stopPropagation();
-      kbFileAttachment.style.display = 'none';
-      kbFileInput.value = '';
-    });
-  }
-
-  function kbFormatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  // ---- 文件预览弹窗 ----
-  const kbFilePreviewOverlay = document.getElementById('kbFilePreviewOverlay');
-  const kbFilePreviewTitle = document.getElementById('kbFilePreviewTitle');
-  const kbFilePreviewContent = document.getElementById('kbFilePreviewContent');
-  const kbPreviewZoomLevel = document.getElementById('kbPreviewZoomLevel');
-  const kbPreviewPage = document.getElementById('kbPreviewPage');
-  const kbPreviewZoomIn = document.getElementById('kbPreviewZoomIn');
-  const kbPreviewZoomOut = document.getElementById('kbPreviewZoomOut');
-
-  let previewZoom = 100;
-  let previewCurrentPage = 1;
-  let previewTotalPages = 21;
-  let previewCurrentFile = null;
-
-  // 模拟文件内容数据
-  const fileContentData = {
-    '产品需求文档.docx': {
-      pages: 21,
-      content: [
-        { type: 'cover', title: 'Connect AI with Real Life', subtitle: 'AI as a Service', badge: 'AI as a Service' },
-        { type: 'toc', title: 'WHO WE ARE', items: ['WHO WE ARE', 'BRAND & PRODUCT', 'INTEGRATED BUSINESS SOLUTION', 'AI PRODUCT MATRIX', 'CORE TECHNOLOGY', 'TEAM & CULTURE'] }
-      ]
-    }
-  };
-
-  function openFilePreview(file) {
-    previewCurrentFile = file;
-    previewCurrentPage = 1;
-    previewZoom = 100;
-    const data = fileContentData[file.name] || { pages: 10, content: [] };
-    previewTotalPages = data.pages;
-
-    kbFilePreviewTitle.textContent = file.name;
-    updatePreviewUI();
-    renderPreviewContent(data.content[0]);
-
-    kbFilePreviewOverlay.classList.add('show');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeFilePreview() {
-    kbFilePreviewOverlay.classList.remove('show');
-    document.body.style.overflow = '';
-    previewCurrentFile = null;
-  }
-
-  function updatePreviewUI() {
-    kbPreviewZoomLevel.textContent = previewZoom + '%';
-    kbPreviewPage.textContent = previewCurrentPage + ' / ' + previewTotalPages;
-    kbPreviewZoomOut.disabled = previewZoom <= 50;
-    kbPreviewZoomIn.disabled = previewZoom >= 200;
-  }
-
-  function renderPreviewContent(pageData) {
-    if (!pageData) {
-      kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content"><p>暂无预览内容</p></div>';
-      return;
-    }
-
-    if (pageData.type === 'cover') {
-      kbFilePreviewContent.innerHTML =
-        '<div class="kb-file-preview-page-content cover">' +
-        '<div style="font-size: 1.2rem; letter-spacing: 4px; margin-bottom: 60px; opacity: 0.9;">PLAUD.AI</div>' +
-        '<h1>' + escHtml(pageData.title) + '</h1>' +
-        '<div class="subtitle">' + escHtml(pageData.subtitle) + '</div>' +
-        '<div class="badge">' + escHtml(pageData.badge) + '</div>' +
-        '<div style="margin-top: 80px; font-size: 0.85rem; opacity: 0.6;">Website: www.plaud.ai | Email: hi@plaud.ai</div>' +
-        '</div>';
-    } else if (pageData.type === 'toc') {
-      let itemsHtml = pageData.items.map(function (item, idx) {
-        return '<li class="' + (idx === 0 ? 'active' : '') + '">' + escHtml(item) + '</li>';
-      }).join('');
-      kbFilePreviewContent.innerHTML =
-        '<div class="kb-file-preview-page-content toc">' +
-        '<h2>' + escHtml(pageData.title) + '</h2>' +
-        '<ol>' + itemsHtml + '</ol>' +
-        '</div>';
-    } else {
-      kbFilePreviewContent.innerHTML = '<div class="kb-file-preview-page-content"><p>第 ' + previewCurrentPage + ' 页内容</p></div>';
-    }
-  }
-
-  kbPreviewZoomIn.addEventListener('click', function () {
-    if (previewZoom < 200) {
-      previewZoom += 10;
-      updatePreviewUI();
-    }
-  });
-
-  kbPreviewZoomOut.addEventListener('click', function () {
-    if (previewZoom > 50) {
-      previewZoom -= 10;
-      updatePreviewUI();
-    }
-  });
-
-  document.getElementById('kbPreviewDownload').addEventListener('click', function () {
-    if (previewCurrentFile) {
-      kbToast('开始下载：' + previewCurrentFile.name, true);
-    }
-  });
-
-  document.getElementById('kbPreviewClose').addEventListener('click', closeFilePreview);
-
-  kbFilePreviewOverlay.addEventListener('click', function (e) {
-    if (e.target === kbFilePreviewOverlay) closeFilePreview();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && kbFilePreviewOverlay.classList.contains('show')) {
-      closeFilePreview();
-    }
-  });
-
-  // ---- 初始化 ----
-  renderFiles();
-  resetChat();
 </script>
 
 </body>
