@@ -1814,6 +1814,18 @@
     white-space: nowrap;
   }
 
+  /* 模型设置：图标 + 文字按钮 */
+  .ig-res-model-btn {
+    width: auto;
+    gap: 6px;
+    padding: 0 10px;
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    font-family: inherit;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
   /* 以图搜图：图标 + 文字按钮 */
   .ig-res-imgsearch-btn {
     width: auto;
@@ -2141,6 +2153,114 @@
     color: var(--text-dim);
   }
 
+  /* 模型设置面板：版本 + 多模态模型 ID 配置 */
+  .ig-res-menu.model {
+    min-width: 386px;
+    padding: 2px;
+    max-height: min(620px, calc(100vh - 92px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .ig-res-menu.model::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-res-menu.model::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  /* 版本选项：名称 + 版本标签同排 */
+  .ig-res-opt-head {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 1px;
+  }
+
+  .ig-res-ver-tag {
+    padding: 1px 6px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    font-size: 0.6rem;
+    letter-spacing: 0.4px;
+    color: var(--text-dim);
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+
+  .ig-res-opt.on .ig-res-ver-tag {
+    border-color: rgba(255,255,255,0.24);
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  /* 模型 ID 配置行：名称 + 模型 ID 选择器 */
+  .ig-res-mrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 5px 9px;
+  }
+
+  .ig-res-mrow + .ig-res-mrow {
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .ig-res-mrow-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .ig-res-msel {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 0 0 148px;
+    width: 148px;
+    height: 27px;
+    padding: 0 22px 0 9px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background-color: rgba(255,255,255,0.04);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    color: var(--text);
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0;
+    outline: none;
+    cursor: pointer;
+    color-scheme: dark;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ig-res-msel:hover {
+    background-color: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.16);
+  }
+
+  .ig-res-msel:focus {
+    background-color: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.24);
+  }
+
+  /* 模型 ID 文本框：仅展示，不可下拉 */
+  .ig-res-msel.is-static {
+    padding-right: 9px;
+    background-image: none;
+    cursor: default;
+  }
+
+  .ig-res-msel.is-static:hover,
+  .ig-res-msel.is-static:focus {
+    background-color: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.10);
+  }
+
   /* 权重滑块 */
   .ig-res-slider {
     -webkit-appearance: none;
@@ -2419,6 +2539,57 @@
   .ig-res-fdrop-menu .ig-res-chip.on {
     background: rgba(255,255,255,0.12);
     border-color: transparent;
+  }
+
+  /* 模型面板内的下拉（Rerank）：尺寸对齐同排只读文本框，菜单复用分类下拉样式 */
+  .ig-res-mfdrop {
+    width: 148px;
+    flex: 0 0 148px;
+  }
+
+  .ig-res-mfdrop .ig-res-fdrop-btn {
+    height: 27px;
+    padding: 0 8px 0 9px;
+    border-color: rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+  }
+
+  .ig-res-mfdrop .ig-res-fdrop-btn:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.16);
+  }
+
+  .ig-res-mfdrop.open .ig-res-fdrop-btn {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.24);
+  }
+
+  /* 菜单向上展开，避免被面板滚动容器裁剪 */
+  .ig-res-mfdrop .ig-res-fdrop-menu {
+    top: auto;
+    bottom: calc(100% + 6px);
+    left: auto;
+    right: 0;
+    width: auto;
+    min-width: 148px;
+    max-height: 180px;
+  }
+
+  .ig-res-mfdrop .ig-res-fdrop-menu .ig-res-menu-item {
+    font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+  }
+
+  .ig-res-mfdrop.open .ig-res-fdrop-menu {
+    animation: igFdropUpIn 0.16s ease both;
+  }
+
+  @keyframes igFdropUpIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .ig-res-chip {
@@ -5881,6 +6052,12 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
             <span>上传</span>
           </button>
+
+          <!-- 模型设置：位于工具栏最右侧，点击展开模型选择面板 -->
+          <button type="button" class="ig-res-icon-btn ig-res-model-btn" id="btnResModel" title="模型设置" aria-haspopup="true" aria-expanded="false" aria-controls="resModelMenu" aria-label="模型设置">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+            <span>模型</span>
+          </button>
         </div>
       </div>
       <!-- 筛选栏：点击工具栏「筛选」后展开 -->
@@ -6116,6 +6293,88 @@
 
   <div class="ig-res-field">
     <div class="ig-res-hint">模型与相似度权重在下次检索时生效</div>
+  </div>
+</div>
+
+<!-- 模型设置：版本 + 多模态模型 ID 配置 -->
+<div class="ig-res-menu wide model" id="resModelMenu" aria-label="模型设置">
+  <div class="ig-res-field">
+    <div class="ig-res-field-label">版本</div>
+    <button type="button" class="ig-res-opt on" data-version="pro" aria-pressed="true">
+      <span class="ig-res-opt-dot"></span>
+      <span class="ig-res-opt-text">
+        <span class="ig-res-opt-head">
+          <span class="ig-res-opt-name">Pro</span>
+          <span class="ig-res-ver-tag">完整版</span>
+        </span>
+        <span class="ig-res-opt-sub">加载全部多模态模型，检索精度高，硬件资源消耗大</span>
+      </span>
+    </button>
+    <button type="button" class="ig-res-opt" data-version="lite" aria-pressed="false">
+      <span class="ig-res-opt-dot"></span>
+      <span class="ig-res-opt-text">
+        <span class="ig-res-opt-head">
+          <span class="ig-res-opt-name">Lite</span>
+          <span class="ig-res-ver-tag">轻量版</span>
+        </span>
+        <span class="ig-res-opt-sub">模型精简，占用资源更低，适合低配机器</span>
+      </span>
+    </button>
+  </div>
+
+  <div class="ig-res-field">
+    <div class="ig-res-field-label">
+      <span>多模态模型 ID 配置</span>
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">Embedding</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelEmbedding" value="BGE_M3" readonly aria-label="Embedding 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">VLM</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelVlm" value="minicpmv26" readonly aria-label="VLM 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">Video CLIP</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelVideoClip" value="clip_pro" readonly aria-label="Video CLIP 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">Audio CLIP</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelAudioClip" value="clip_pro" readonly aria-label="Audio CLIP 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">OCR</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelOcr" value="paddle" readonly aria-label="OCR 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">ASR</span>
+      <input type="text" class="ig-res-msel is-static" id="resModelAsr" value="whisper" readonly aria-label="ASR 模型 ID">
+    </div>
+
+    <div class="ig-res-mrow">
+      <span class="ig-res-mrow-label">Rerank</span>
+      <!-- 自定义下拉：菜单样式与「分类」中的下拉保持一致 -->
+      <div class="ig-res-fdrop ig-res-mfdrop">
+        <button type="button" class="ig-res-fdrop-btn" aria-haspopup="true" aria-expanded="false" aria-label="Rerank 模型 ID">
+          <span class="ig-res-fdrop-value" id="resModelRerankVal">BGE</span>
+          <span class="ig-res-fdrop-arrow" aria-hidden="true"></span>
+        </button>
+        <div class="ig-res-fdrop-menu" id="resModelRerankMenu">
+          <button type="button" class="ig-res-menu-item active" aria-pressed="true">BGE</button>
+          <button type="button" class="ig-res-menu-item" aria-pressed="false">Qwen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ig-res-field">
+    <div class="ig-res-hint">版本与模型 ID 在下次检索时生效</div>
   </div>
 </div>
 
@@ -6611,6 +6870,10 @@
   const resWeight = document.getElementById('resWeight');
   const resWeightVal = document.getElementById('resWeightVal');
   const resRecall = document.getElementById('resRecall');
+  const btnResModel = document.getElementById('btnResModel');
+  const resModelMenu = document.getElementById('resModelMenu');
+  const resModelRerankDrop = resModelMenu ? resModelMenu.querySelector('.ig-res-mfdrop') : null;
+  const resModelRerankVal = document.getElementById('resModelRerankVal');
 
   const resState = {
     keyword: '',
@@ -6799,6 +7062,7 @@
 
   function closeResMenu() {
     closeResLayoutDrops();
+    closeResModelDrop();
     setResLayoutBar(false);
     setResCategoryBar(false);
     closeResOverlayMenu();
@@ -6822,7 +7086,7 @@
     resActiveBtn = btn;
   }
 
-  [resLayoutMenu, resSettingsMenu].forEach(function (menu) {
+  [resLayoutMenu, resSettingsMenu, resModelMenu].forEach(function (menu) {
     if (menu) menu.addEventListener('click', function (e) { e.stopPropagation(); });
   });
 
@@ -7139,6 +7403,65 @@
       });
       resRecall.addEventListener('change', normalizeResRecall);
       resRecall.addEventListener('blur', normalizeResRecall);
+    }
+  }
+
+  /* -------- 模型设置：版本 + 多模态模型 ID 配置 -------- */
+
+  // Rerank 下拉：菜单样式与「分类」中的下拉一致
+  function closeResModelDrop() {
+    if (!resModelRerankDrop) return;
+    resModelRerankDrop.classList.remove('open');
+    const btn = resModelRerankDrop.querySelector('.ig-res-fdrop-btn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+
+  if (btnResModel && resModelMenu) {
+    btnResModel.addEventListener('click', function (e) {
+      toggleResMenu(resModelMenu, btnResModel, e);
+    });
+
+    resModelMenu.querySelectorAll('[data-version]').forEach(function (item) {
+      item.addEventListener('click', function () {
+        resModelMenu.querySelectorAll('[data-version]').forEach(function (i) {
+          i.classList.remove('on');
+          i.setAttribute('aria-pressed', 'false');
+        });
+        item.classList.add('on');
+        item.setAttribute('aria-pressed', 'true');
+      });
+    });
+
+    if (resModelRerankDrop) {
+      const rerankBtn = resModelRerankDrop.querySelector('.ig-res-fdrop-btn');
+
+      rerankBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const willOpen = !resModelRerankDrop.classList.contains('open');
+        closeResModelDrop();
+        if (!willOpen) return;
+        resModelRerankDrop.classList.add('open');
+        rerankBtn.setAttribute('aria-expanded', 'true');
+      });
+
+      // 点击面板内下拉以外的区域时收起
+      resModelMenu.addEventListener('click', function (e) {
+        if (e.target.closest('.ig-res-mfdrop')) return;
+        closeResModelDrop();
+      });
+
+      resModelRerankDrop.querySelectorAll('.ig-res-menu-item').forEach(function (item) {
+        item.addEventListener('click', function () {
+          resModelRerankDrop.querySelectorAll('.ig-res-menu-item').forEach(function (i) {
+            i.classList.remove('active');
+            i.setAttribute('aria-pressed', 'false');
+          });
+          item.classList.add('active');
+          item.setAttribute('aria-pressed', 'true');
+          if (resModelRerankVal) resModelRerankVal.textContent = item.textContent.trim();
+          closeResModelDrop();
+        });
+      });
     }
   }
 
