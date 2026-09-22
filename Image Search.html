@@ -2835,7 +2835,8 @@
     border-color: rgba(255,255,255,0.13);
   }
 
-  .ig-res-grid.list .ig-res-item img {
+  .ig-res-grid.list .ig-res-item img,
+  .ig-res-grid.list .ig-res-item video {
     width: 46px;
     height: 46px;
     flex-shrink: 0;
@@ -2843,7 +2844,8 @@
     object-fit: cover;
   }
 
-  .ig-res-grid.list .ig-res-item:hover img {
+  .ig-res-grid.list .ig-res-item:hover img,
+  .ig-res-grid.list .ig-res-item:hover video {
     transform: none;
   }
 
@@ -3046,15 +3048,18 @@
     color: var(--text);
   }
 
-  .ig-res-item img {
+  .ig-res-item img,
+  .ig-res-item video {
     width: 100%;
     height: auto;
     object-fit: cover;
     display: block;
+    background: #000;
     transition: transform 0.3s ease;
   }
 
-  .ig-res-item:hover img {
+  .ig-res-item:hover img,
+  .ig-res-item:hover video {
     transform: scale(1.03);
   }
 
@@ -3078,7 +3083,12 @@
     border: 1px solid rgba(255,255,255,0.35);
     color: #ffffff;
     pointer-events: none;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* 悬浮即播放：播放角标淡出，避免遮挡正在播放的画面 */
+  .ig-res-item.is-video:hover .ig-res-play {
+    opacity: 0;
   }
 
   .ig-res-item:hover .ig-res-play {
@@ -6047,16 +6057,16 @@
             <span>以图搜图</span>
           </button>
 
+          <!-- 模型设置：点击展开模型选择面板 -->
+          <button type="button" class="ig-res-icon-btn ig-res-model-btn" id="btnResModel" title="模型设置" aria-haspopup="true" aria-expanded="false" aria-controls="resModelMenu" aria-label="模型设置">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+            <span>模型</span>
+          </button>
+
           <!-- 上传：位于工具栏最右侧，点击打开文件资源管理器 -->
           <button type="button" class="ig-res-icon-btn ig-res-upload-btn" id="btnResUpload" title="上传" aria-label="上传">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
             <span>上传</span>
-          </button>
-
-          <!-- 模型设置：位于工具栏最右侧，点击展开模型选择面板 -->
-          <button type="button" class="ig-res-icon-btn ig-res-model-btn" id="btnResModel" title="模型设置" aria-haspopup="true" aria-expanded="false" aria-controls="resModelMenu" aria-label="模型设置">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
-            <span>模型</span>
           </button>
         </div>
       </div>
@@ -6614,8 +6624,12 @@
       resGrid.innerHTML = items.map(function (item, index) {
         const isVideo = resMediaType(item) === 'video';
         const thumb = item.poster || item.file;
+        // 视频卡片用 <video> 承载（静音循环），悬浮时自动播放；图片仍是 <img>
+        const media = isVideo
+          ? '<video src="images/animals/' + item.file + '" poster="images/animals/' + thumb + '" style="aspect-ratio:' + item.width + ' / ' + item.height + '" muted loop playsinline preload="metadata" aria-label="动物视频 ' + (index + 1) + '"></video>'
+          : '<img src="images/animals/' + thumb + '" alt="动物图片 ' + (index + 1) + '" loading="lazy">';
         return '<div class="ig-res-item' + (isVideo ? ' is-video' : '') + '" data-file="' + item.file + '">' +
-          '<img src="images/animals/' + thumb + '" alt="动物' + (isVideo ? '视频' : '图片') + ' ' + (index + 1) + '" loading="lazy">' +
+          media +
           (isVideo
             ? '<span class="ig-res-play" aria-hidden="true">' + RES_ICONS.play + '</span>' +
               '<span class="ig-res-dur">' + item.duration + '</span>'
@@ -6794,6 +6808,28 @@
         return;
       }
       selectResImage(el.getAttribute('data-file'));
+    });
+  }
+
+  // 视频卡片：鼠标悬浮自动播放（静音循环），移出暂停并回到首帧
+  if (resGrid) {
+    resGrid.addEventListener('mouseover', function (e) {
+      const el = e.target.closest('.ig-res-item.is-video');
+      if (!el || el.contains(e.relatedTarget)) return;
+      const video = el.querySelector('video');
+      if (!video) return;
+      video.muted = true;
+      const played = video.play();
+      if (played && played.catch) played.catch(function () {});
+    });
+
+    resGrid.addEventListener('mouseout', function (e) {
+      const el = e.target.closest('.ig-res-item.is-video');
+      if (!el || el.contains(e.relatedTarget)) return;
+      const video = el.querySelector('video');
+      if (!video) return;
+      video.pause();
+      video.currentTime = 0;
     });
   }
 
