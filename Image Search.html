@@ -1341,26 +1341,6 @@
     letter-spacing: 0.5px;
   }
 
-  /* 文件夹封面：与图片 / 视频缩略图占用同一处版心，居中一枚文件夹图标 */
-  .fd-thumb--folder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 4 / 3;
-  }
-
-  .fd-folder-cover {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 62px;
-    height: 62px;
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.06);
-    color: var(--text-dim);
-  }
-
   .fd-name {
     margin-top: 12px;
     flex-shrink: 0;
@@ -1820,6 +1800,18 @@
     width: 22px;
     height: 22px;
     border-radius: 6px;
+  }
+
+  /* 上传：图标 + 文字按钮 */
+  .ig-res-upload-btn {
+    width: auto;
+    gap: 6px;
+    padding: 0 10px;
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    font-family: inherit;
+    font-size: 0.76rem;
+    white-space: nowrap;
   }
 
   /* 以图搜图：图标 + 文字按钮 */
@@ -2819,6 +2811,68 @@
     text-align: center;
     font-size: 0.78rem;
     color: var(--text-dim);
+  }
+
+  /* 上传进度：主 div 底部整条状态栏 */
+  .ig-res-uploadbar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-res-uploadbar[hidden] {
+    display: none;
+  }
+
+  /* 进度条轨道 + 蓝色填充 */
+  .ig-res-uploadtrack {
+    flex: 1;
+    min-width: 0;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.10);
+    overflow: hidden;
+  }
+
+  .ig-res-uploadfill {
+    width: 0;
+    height: 100%;
+    border-radius: 999px;
+    background: #3b82f6;
+    transition: width 0.2s linear;
+  }
+
+  .ig-res-uploadtext {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ig-res-uploadclose {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-res-uploadclose:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
   }
 
   .ig-res-item img {
@@ -5708,7 +5762,7 @@
         <h2 class="fd-title" id="fdTitle">图片详情</h2>
       </div>
 
-      <div class="fd-body" id="fdMediaBody">
+      <div class="fd-body">
         <div class="fd-thumb">
           <img id="fdThumbImg" alt="图片缩略图">
           <video id="fdThumbVideo" controls muted loop playsinline preload="metadata" hidden></video>
@@ -5761,56 +5815,10 @@
         <div class="fd-path" id="fdPath">—</div>
 
         <div class="fd-section-label">文字描述</div>
-        <p class="fd-desc-text" id="fdDescText">画面中央是一只停在枯枝上的短耳鸮——它侧身面向镜头，右眼周围那圈深色羽毛在逆光里被压成一条细线，瞳孔微微收缩。清晨六点半，气温接近零下五度，薄雾还没散尽，光线从主体的左后方斜切进来，把胸腹的绒羽照出半透明的质感；背景是一片收割后的草场，枯黄与浅褐层层退后，最终融成柔和的散景。拍摄时我把机位压到与鸟眼齐平的高度，用长焦压缩前后景的距离，焦点落在虹膜与喙的交界处，前景几根杂草被刻意保留，作为画面下缘的引导线。器材是两百毫米定焦加增距镜，参数定在光圈f/4、快门一千分之一秒、感光度四百——连拍十几张，最后只有三张对焦点足够扎实，这一张是其中唯一目光朝向镜头的。整张照片的色调偏冷，只在羽毛的受光面留了一点暖色，用来平衡大面积的灰蓝。后期处理很轻：压低背景高光，提亮胸口暗部，去掉两粒浮尘。取景、等待、按下快门——真正重要的其实不是参数，而是它在我离开之前始终没有飞走。</p>
+        <p class="fd-desc-text">画面中央是一只停在枯枝上的短耳鸮——它侧身面向镜头，右眼周围那圈深色羽毛在逆光里被压成一条细线，瞳孔微微收缩。清晨六点半，气温接近零下五度，薄雾还没散尽，光线从主体的左后方斜切进来，把胸腹的绒羽照出半透明的质感；背景是一片收割后的草场，枯黄与浅褐层层退后，最终融成柔和的散景。拍摄时我把机位压到与鸟眼齐平的高度，用长焦压缩前后景的距离，焦点落在虹膜与喙的交界处，前景几根杂草被刻意保留，作为画面下缘的引导线。器材是两百毫米定焦加增距镜，参数定在光圈f/4、快门一千分之一秒、感光度四百——连拍十几张，最后只有三张对焦点足够扎实，这一张是其中唯一目光朝向镜头的。整张照片的色调偏冷，只在羽毛的受光面留了一点暖色，用来平衡大面积的灰蓝。后期处理很轻：压低背景高光，提亮胸口暗部，去掉两粒浮尘。取景、等待、按下快门——真正重要的其实不是参数，而是它在我离开之前始终没有飞走。</p>
       </div>
 
-      <!-- 文件夹详情：点击左侧知识库中的文件夹时显示，与图片 / 视频详情共用同一套版式 -->
-      <div class="fd-body" id="fdFolderBody" hidden>
-        <div class="fd-thumb fd-thumb--folder">
-          <span class="fd-folder-cover" aria-hidden="true">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          </span>
-          <span class="fd-thumb-badge">文件夹</span>
-        </div>
-
-        <div class="fd-name" id="fdFolderName">动物图片</div>
-
-        <div class="fd-section-label">基本信息</div>
-        <div class="fd-rows">
-          <div class="fd-row">
-            <span class="fd-key">资源总数</span>
-            <span class="fd-val" id="fdFolderTotal">—</span>
-          </div>
-          <div class="fd-row">
-            <span class="fd-key">图片</span>
-            <span class="fd-val" id="fdFolderImages">—</span>
-          </div>
-          <div class="fd-row">
-            <span class="fd-key">视频</span>
-            <span class="fd-val" id="fdFolderVideos">—</span>
-          </div>
-          <div class="fd-row">
-            <span class="fd-key">文件夹大小</span>
-            <span class="fd-val" id="fdFolderSize">—</span>
-          </div>
-          <div class="fd-row">
-            <span class="fd-key">子文件夹</span>
-            <span class="fd-val" id="fdFolderSubs">—</span>
-          </div>
-          <div class="fd-row">
-            <span class="fd-key">最近更新</span>
-            <span class="fd-val" id="fdFolderUpdated">—</span>
-          </div>
-        </div>
-
-        <div class="fd-section-label">文件位置</div>
-        <div class="fd-path" id="fdFolderPath">—</div>
-
-        <div class="fd-section-label">文字描述</div>
-        <p class="fd-desc-text" id="fdFolderDesc">—</p>
-      </div>
-
-      <div class="fd-footer" id="fdMediaFooter">
+      <div class="fd-footer">
         <div class="fd-actions">
           <button type="button" class="fd-action-btn" id="fdViewBtn" title="查看" aria-label="查看">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -5866,6 +5874,12 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </span>
             <span>以图搜图</span>
+          </button>
+
+          <!-- 上传：位于工具栏最右侧，点击打开文件资源管理器 -->
+          <button type="button" class="ig-res-icon-btn ig-res-upload-btn" id="btnResUpload" title="上传" aria-label="上传">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+            <span>上传</span>
           </button>
         </div>
       </div>
@@ -5996,6 +6010,17 @@
       </div>
 
       <div class="ig-res-grid masonry" id="igResGrid"></div>
+
+      <!-- 上传进度：显示在主 div 底部，5 秒后进度完成并消失 -->
+      <div class="ig-res-uploadbar" id="resUploadBar" hidden>
+        <div class="ig-res-uploadtrack">
+          <div class="ig-res-uploadfill" id="resUploadFill"></div>
+        </div>
+        <span class="ig-res-uploadtext" id="resUploadText">正在添加文件...</span>
+        <button type="button" class="ig-res-uploadclose" id="resUploadClose" title="关闭" aria-label="关闭">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -6096,6 +6121,9 @@
 
 <!-- 以图搜图：本地图片选择 -->
 <input type="file" id="resImgSearchInput" accept="image/*" hidden>
+
+<!-- 上传：本地图片 / 视频选择 -->
+<input type="file" id="resUploadInput" accept="image/*,video/*" multiple hidden>
 
 <script>
   const sidebarWrapper = document.getElementById('sidebarWrapper');
@@ -6357,9 +6385,6 @@
   /* ============ 中间：图片详情（点击网格图片查看） ============ */
 
   const fdTitle = document.getElementById('fdTitle');
-  const fdMediaBody = document.getElementById('fdMediaBody');
-  const fdFolderBody = document.getElementById('fdFolderBody');
-  const fdMediaFooter = document.getElementById('fdMediaFooter');
   const fdThumbImg = document.getElementById('fdThumbImg');
   const fdThumbVideo = document.getElementById('fdThumbVideo');
   const fdThumbBadge = document.getElementById('fdThumbBadge');
@@ -6370,15 +6395,7 @@
   const fdRes = document.getElementById('fdRes');
   const fdDate = document.getElementById('fdDate');
   const fdPath = document.getElementById('fdPath');
-  const fdDescText = document.getElementById('fdDescText');
-
-  // 中间卡片只有两种形态：媒体详情（图片 / 视频）与文件夹详情，共用同一套 .fd-* 版式
-  function fdSetView(mode) {
-    const isFolder = mode === 'folder';
-    if (fdMediaBody) fdMediaBody.hidden = isFolder;
-    if (fdMediaFooter) fdMediaFooter.hidden = isFolder;
-    if (fdFolderBody) fdFolderBody.hidden = !isFolder;
-  }
+  const fdDescText = document.querySelector('.fd-desc-text');
 
   // 视频专属字段：选中视频时展示，选中图片时整行隐藏
   const fdVideoRows = [
@@ -6404,8 +6421,6 @@
   }
 
   function renderImageDetail(item) {
-    fdSetView('media');
-
     if (!item) {
       fdTitle.textContent = '图片详情';
       fdThumbImg.hidden = false;
@@ -6466,58 +6481,6 @@
       fdDim.textContent = fdThumbImg.naturalWidth + ' × ' + fdThumbImg.naturalHeight;
     }
   });
-
-  /* ============ 中间：文件夹详情（点击左侧知识库的文件夹） ============ */
-
-  const FOLDER_KB_NAME = '动物图片';
-
-  const fdFolderName = document.getElementById('fdFolderName');
-  const fdFolderTotal = document.getElementById('fdFolderTotal');
-  const fdFolderImages = document.getElementById('fdFolderImages');
-  const fdFolderVideos = document.getElementById('fdFolderVideos');
-  const fdFolderSize = document.getElementById('fdFolderSize');
-  const fdFolderSubs = document.getElementById('fdFolderSubs');
-  const fdFolderUpdated = document.getElementById('fdFolderUpdated');
-  const fdFolderPath = document.getElementById('fdFolderPath');
-  const fdFolderDesc = document.getElementById('fdFolderDesc');
-
-  const FOLDER_DESC = '「动物图片」是知识库里第一批成型的素材集，从去年冬天在西双版纳拍下第一只短耳鸮开始，陆续攒到现在的二十二个文件。素材按拍摄对象分成三个子文件夹：野生动物占了将近一半，多是动物园和野外蹲守等来的瞬间；家养宠物是日常随手记录的部分，光线和机位都不讲究，胜在情绪松弛；鸟类素材最杂，笼养的、野生的、停在枯枝上的都有，两段视频也都归在这里。整个文件夹按拍摄日期倒序整理，重名文件在导入时就已改名，统一为「动物-序号」的命名规则，方便在检索页直接按关键词命中。';
-
-  // 文件夹统计全部由媒体列表派生，新增图片 / 视频时无需改动数字
-  function folderMeta() {
-    let images = 0;
-    let videos = 0;
-    let size = 0;
-    let updated = '';
-    const subs = [];
-    animalMedia.forEach(function (item) {
-      if (resMediaType(item) === 'video') { videos += 1; } else { images += 1; }
-      size += item.size || 0;
-      if (item.date && item.date > updated) updated = item.date;
-      if (item.folder && subs.indexOf(item.folder) === -1) subs.push(item.folder);
-    });
-    return { images: images, videos: videos, size: size, updated: updated, subs: subs };
-  }
-
-  // 文件夹详情：与图片 / 视频详情共用同一套 .fd-* 版式，显示时隐藏媒体详情与底部操作
-  function renderFolderDetail(name) {
-    const meta = folderMeta();
-    const title = name || FOLDER_KB_NAME;
-
-    fdTitle.textContent = '文件夹详情';
-    fdFolderName.textContent = title;
-    fdFolderTotal.textContent = (meta.images + meta.videos) + ' 个';
-    fdFolderImages.textContent = meta.images + ' 张';
-    fdFolderVideos.textContent = meta.videos + ' 个';
-    fdFolderSize.textContent = resFileSize(meta.size);
-    fdFolderSubs.textContent = meta.subs.length + ' 个';
-    fdFolderSubs.title = meta.subs.join(' / ');
-    fdFolderUpdated.textContent = meta.updated || '—';
-    fdFolderPath.textContent = ANIMAL_KB_DIR.replace(/[\\/]+$/, '');
-    fdFolderPath.title = fdFolderPath.textContent;
-    fdFolderDesc.textContent = FOLDER_DESC;
-    fdSetView('folder');
-  }
 
   function findAnimalImage(file) {
     return animalMedia.filter(function (item) { return item.file === file; })[0] || null;
@@ -6925,6 +6888,72 @@
     }
   }
 
+  // 上传：点击工具栏最右侧「上传」打开文件资源管理器，选图后在主 div 底部显示进度条
+  const btnResUpload = document.getElementById('btnResUpload');
+  const resUploadInput = document.getElementById('resUploadInput');
+  const resUploadBar = document.getElementById('resUploadBar');
+  const resUploadFill = document.getElementById('resUploadFill');
+  const resUploadText = document.getElementById('resUploadText');
+  const resUploadClose = document.getElementById('resUploadClose');
+
+  // 进度条模拟：5 秒走完
+  const RES_UPLOAD_DURATION = 5000;
+  let resUploadInterval = null;
+  let resUploadHideTimer = null;
+
+  function resetResUpload() {
+    if (resUploadInterval) { clearInterval(resUploadInterval); resUploadInterval = null; }
+    if (resUploadHideTimer) { clearTimeout(resUploadHideTimer); resUploadHideTimer = null; }
+    if (resUploadBar) resUploadBar.hidden = true;
+    if (resUploadFill) resUploadFill.style.width = '0';
+  }
+
+  function startResUpload(total) {
+    if (!resUploadBar || !resUploadFill || !resUploadText) return;
+    resetResUpload();
+    resUploadBar.hidden = false;
+    resUploadFill.style.width = '0';
+    resUploadText.textContent = '正在添加文件...';
+    const startAt = Date.now();
+
+    resUploadInterval = setInterval(function () {
+      const elapsed = Date.now() - startAt;
+      const ratio = Math.min(elapsed / RES_UPLOAD_DURATION, 1);
+      const done = Math.min(total, Math.floor(ratio * total));
+      const seconds = String(Math.floor(elapsed / 1000)).padStart(2, '0');
+
+      resUploadFill.style.width = (ratio * 100).toFixed(1) + '%';
+      resUploadText.textContent = '正在添加文件... ' + done + '/' + total + ' (0:00:' + seconds + ')';
+
+      // 进度完成：稍作停留后让加载状态消失
+      if (ratio >= 1) {
+        if (resUploadInterval) { clearInterval(resUploadInterval); resUploadInterval = null; }
+        resUploadFill.style.width = '100%';
+        resUploadText.textContent = '正在添加文件... ' + total + '/' + total + ' (0:00:05)';
+        resUploadHideTimer = setTimeout(resetResUpload, 400);
+      }
+    }, 80);
+  }
+
+  if (btnResUpload && resUploadInput) {
+    btnResUpload.addEventListener('click', function (e) {
+      e.stopPropagation();
+      closeResMenu();
+      resUploadInput.click();
+    });
+
+    resUploadInput.addEventListener('change', function () {
+      const files = resUploadInput.files;
+      if (!files || !files.length) return;
+      startResUpload(files.length);
+      resUploadInput.value = '';
+    });
+  }
+
+  if (resUploadClose) {
+    resUploadClose.addEventListener('click', resetResUpload);
+  }
+
   /* -------- 排版布局：排版方式 + 排列顺序 -------- */
 
   function applyResLayout(mode) {
@@ -7252,13 +7281,6 @@
 
   if (kbList) {
     kbList.addEventListener('click', function (e) {
-      // 点击「动物图片」文件夹：中间卡片切回文件夹详情，覆盖当前的图片 / 视频详情
-      const kbItem = e.target.closest ? e.target.closest('.kb-item') : null;
-      if (kbItem && kbItem.getAttribute('data-kb') === FOLDER_KB_NAME) {
-        renderFolderDetail(FOLDER_KB_NAME);
-        return;
-      }
-
       const toggle = e.target.closest ? e.target.closest('.kb-cat-toggle') : null;
       if (!toggle) return;
       const title = toggle.closest('.kb-cat-title');
