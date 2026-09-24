@@ -1366,52 +1366,6 @@
     filter: drop-shadow(0 6px 16px rgba(0,0,0,0.45));
   }
 
-  /* 子文件夹清单：名称 + 文件数 + 体积 */
-  .fd-subs {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    margin-top: 4px;
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 9px;
-    background: rgba(255,255,255,0.04);
-    overflow: hidden;
-  }
-
-  .fd-sub {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 9px;
-    font-size: 0.74rem;
-    line-height: 1.3;
-  }
-
-  .fd-sub + .fd-sub {
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-
-  .fd-sub-icon {
-    flex-shrink: 0;
-    display: flex;
-    color: var(--text-dim);
-  }
-
-  .fd-sub-name {
-    flex: 1;
-    min-width: 0;
-    color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .fd-sub-meta {
-    flex-shrink: 0;
-    color: var(--text-dim);
-    font-variant-numeric: tabular-nums;
-  }
-
   /* 网格中当前选中的图片 */
   .ig-res-item.selected::after {
     content: '';
@@ -6228,15 +6182,6 @@
             <span class="fd-val" id="fdUpdated">—</span>
           </div>
         </div>
-
-        <div class="fd-section-label">文件夹位置</div>
-        <div class="fd-path" id="fdPath">—</div>
-
-        <div class="fd-section-label">子文件夹</div>
-        <div class="fd-subs" id="fdSubs"></div>
-
-        <div class="fd-section-label">文件夹说明</div>
-        <p class="fd-desc-text">动物图片知识库收录的图片与视频素材，按拍摄主题分为野生动物、家养宠物、鸟类三个子文件夹。索引会读取每个文件的画面内容与元数据，检索时不需要联网，全部在本机完成。</p>
       </div>
 
       <div class="fd-footer">
@@ -6681,9 +6626,6 @@
 
   /* ============ 知识库文件夹数据（图片 / 视频） ============ */
 
-  // 本地知识库根目录，用于文件夹详情的「文件夹位置」展示
-  const ANIMAL_KB_DIR = 'D:\\Herdsman\\知识库\\动物图片\\';
-
   const animalImages = [
     { file: 'animal-01.jpg', date: '2026/09/17 09:12', folder: '野生动物', resolution: 2160, place: '云南西双版纳', size: 3480 },
     { file: 'animal-02.jpg', date: '2026/09/17 09:05', folder: '家养宠物', resolution: 1080, place: '上海', size: 1220 },
@@ -6762,16 +6704,12 @@
 
   const fdTitle = document.getElementById('fdTitle');
   const fdName = document.getElementById('fdName');
-  const fdPath = document.getElementById('fdPath');
   const fdFolderSize = document.getElementById('fdFolderSize');
   const fdFileCount = document.getElementById('fdFileCount');
   const fdMediaCount = document.getElementById('fdMediaCount');
   const fdSubCount = document.getElementById('fdSubCount');
   const fdCreated = document.getElementById('fdCreated');
   const fdUpdated = document.getElementById('fdUpdated');
-  const fdSubs = document.getElementById('fdSubs');
-
-  const FD_SUB_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
 
   // 按子文件夹聚合文件数量与体积，文件多的排前面
   function collectSubFolders(items) {
@@ -6788,7 +6726,7 @@
     return subs.sort(function (a, b) { return b.count - a.count; });
   }
 
-  // 文件夹详情：大小 / 数量 / 子文件夹 / 时间范围都由文件夹内的文件实时汇总
+  // 文件夹详情：大小 / 数量 / 时间范围都由文件夹内的文件实时汇总
   function renderFolderDetail() {
     const items = animalMedia;
     const totalKb = items.reduce(function (sum, item) { return sum + (item.size || 0); }, 0);
@@ -6805,19 +6743,6 @@
     if (fdSubCount) fdSubCount.textContent = subs.length + ' 个';
     if (fdCreated) fdCreated.textContent = dates.length ? dates[0] : '—';
     if (fdUpdated) fdUpdated.textContent = dates.length ? dates[dates.length - 1] : '—';
-    if (fdPath) {
-      fdPath.textContent = ANIMAL_KB_DIR;
-      fdPath.title = ANIMAL_KB_DIR;
-    }
-    if (fdSubs) {
-      fdSubs.innerHTML = subs.map(function (sub) {
-        return '<div class="fd-sub">' +
-          '<span class="fd-sub-icon">' + FD_SUB_ICON + '</span>' +
-          '<span class="fd-sub-name">' + sub.name + '</span>' +
-          '<span class="fd-sub-meta">' + sub.count + ' 个 · ' + resFileSize(sub.size) + '</span>' +
-        '</div>';
-      }).join('');
-    }
   }
 
   renderFolderDetail();
