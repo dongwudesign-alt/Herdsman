@@ -1,0 +1,2714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 20;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar {
+    justify-content: center;
+    position: relative;
+  }
+
+  .sidebar-group.top {
+    margin-bottom: 0;
+  }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Sidebar wrapper */
+  .sidebar-wrapper {
+    display: flex;
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-wrapper.expanded .secondary-sidebar {
+    width: 240px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Secondary sidebar */
+  .secondary-sidebar {
+    width: 0;
+    height: calc(100% - 60px);
+    margin: 48px 0 12px 0;
+    background: rgba(20, 20, 22, 0.45);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    position: relative;
+  }
+
+  .secondary-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .secondary-sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.45) 0%,
+      rgba(95, 95, 110, 0.28) 18%,
+      rgba(65, 65, 78, 0.14) 38%,
+      rgba(35, 35, 48, 0.06) 58%,
+      rgba(20, 20, 30, 0.02) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sec-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-title-header {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    padding: 4px 2px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sec-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .sec-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .sec-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    justify-content: flex-start;
+    box-sizing: border-box;
+  }
+
+  .sec-action:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .sec-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .sec-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sec-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .sec-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .sec-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .sec-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .sec-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: #fff;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .sec-thumb.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+  .sec-thumb.red { background: linear-gradient(135deg, #f87171, #ef4444); }
+  .sec-thumb.orange { background: linear-gradient(135deg, #fb923c, #f97316); }
+  .sec-thumb.green { background: linear-gradient(135deg, #4ade80, #22c55e); }
+  .sec-thumb.purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+  .sec-thumb.gray { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+  .sec-thumb.dark { background: linear-gradient(135deg, #4b5563, #374151); }
+  .sec-thumb.pink { background: linear-gradient(135deg, #f472b6, #ec4899); }
+  .sec-thumb.teal { background: linear-gradient(135deg, #2dd4bf, #14b8a6); }
+  .sec-thumb.gold { background: linear-gradient(135deg, #facc15, #eab308); }
+  .sec-thumb.cyan { background: linear-gradient(135deg, #67e8f9, #06b6d4); }
+  .sec-thumb.slate { background: linear-gradient(135deg, #94a3b8, #64748b); }
+  .sec-thumb.navy { background: linear-gradient(135deg, #818cf8, #6366f1); }
+  .sec-thumb.rose { background: linear-gradient(135deg, #fda4af, #f43f5e); }
+  .sec-thumb.indigo { background: linear-gradient(135deg, #a5b4fc, #818cf8); }
+
+  .sec-title {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.2s ease;
+  }
+
+  .sec-item:hover .sec-title,
+  .sec-item.active .sec-title {
+    color: var(--text);
+  }
+
+  .sec-more {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-left: auto;
+    opacity: 0;
+    flex-shrink: 0;
+  }
+
+  .sec-item:hover .sec-more {
+    opacity: 1;
+  }
+
+  .sec-more:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .sec-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    transform: none;
+    background: rgba(25, 25, 28, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    min-width: 80px;
+  }
+
+  .sec-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sec-menu-item {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .sec-menu-item:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .sec-menu-item.delete:hover {
+    background: rgba(255, 60, 60, 0.12);
+    color: rgba(255, 120, 120, 0.9);
+  }
+
+  /* Asset Panel */
+  .asset-panel {
+    position: absolute;
+    top: 48px;
+    right: 20px;
+    width: 0;
+    height: calc(100% - 60px);
+    background: rgba(20, 20, 22, 0.45);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      0 0 0 1px rgba(255,255,255,0.06) inset;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    z-index: 20;
+  }
+
+  .asset-panel.show {
+    width: 260px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .asset-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .asset-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.45) 0%,
+      rgba(95, 95, 110, 0.28) 18%,
+      rgba(65, 65, 78, 0.14) 38%,
+      rgba(35, 35, 48, 0.06) 58%,
+      rgba(20, 20, 30, 0.02) 75%,
+      transparent 90%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .asset-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .asset-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .asset-tabs {
+    display: flex;
+    padding: 0 14px;
+    gap: 4px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-tab {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .asset-tab:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .asset-tab.active {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .asset-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .asset-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .asset-section {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+  }
+
+  .asset-section-label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+
+  .asset-section-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .asset-card {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .asset-card-label {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .asset-file-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .asset-file-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  .asset-file-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .asset-file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .asset-file-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .asset-file-meta {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .asset-empty {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 4px 0;
+  }
+
+  /* Image Generation View */
+  .image-gen-view {
+    position: absolute;
+    top: 48px;
+    left: 0px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .image-gen-view.show {
+    display: flex;
+  }
+
+  .ig-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ig-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ig-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left - History */
+  .ig-history {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ig-header {
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-all-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin: 0 12px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-search svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .ig-search input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .ig-search input::placeholder {
+    color: var(--text-dim);
+  }
+
+  /* 技能入口区域 */
+  .ig-skills {
+    padding: 8px 10px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-skill-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    text-decoration: none;
+  }
+
+  .ig-skill-btn:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ig-skill-btn.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ig-skill-btn svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ig-skill-btn.active svg {
+    color: var(--text);
+  }
+
+  /* 分隔线 */
+  .ig-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 8px 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 历史区域标题 */
+  .ig-history-title {
+    padding: 6px 14px 4px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-list::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-item {
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .ig-item.active {
+    background: rgba(255,255,255,0.07);
+  }
+
+  .ig-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Center - Settings */
+  .ig-settings {
+    width: 320px;
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  .ig-tabs {
+    display: flex;
+    padding: 12px 14px 0;
+    gap: 6px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-tab:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+  }
+
+  .ig-tab.active {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: var(--text);
+  }
+
+  .ig-tab svg {
+    flex-shrink: 0;
+  }
+
+  .ig-section {
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .ig-textarea-wrap {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ig-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    padding: 10px 12px;
+    resize: none;
+    line-height: 1.5;
+  }
+
+  .ig-textarea::placeholder {
+    color: var(--text-dim);
+  }
+
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .ig-char-count {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .ig-size-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .ig-size-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-size-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .ig-size-btn.active {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.18);
+    color: var(--text);
+  }
+
+  .ig-size-icon {
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  /* Custom Size Picker */
+  .ig-size-custom {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-size-custom.show {
+    display: flex;
+  }
+
+  .ig-size-field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 0 12px;
+    height: 34px;
+    gap: 8px;
+    transition: border-color 0.2s ease;
+  }
+
+  .ig-size-field:focus-within {
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .ig-size-field-label {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  .ig-size-field input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: right;
+    min-width: 0;
+  }
+
+  .ig-size-field input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  .ig-size-field input::-webkit-outer-spin-button,
+  .ig-size-field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ig-size-field input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .ig-size-lock {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .ig-size-lock:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-size-lock.locked {
+    color: rgba(140, 180, 255, 0.7);
+  }
+
+  .ig-size-unit {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    user-select: none;
+    letter-spacing: 0.02em;
+  }
+
+  .ig-advanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-advanced:hover {
+    color: var(--text);
+  }
+
+  .ig-adv-arrow {
+    font-size: 0.75rem;
+  }
+
+  .ig-generate-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: auto 14px 14px;
+    padding: 12px 0;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1;
+    /* 毛玻璃基底 */
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.16) 0%,
+      rgba(255,255,255,0.08) 25%,
+      rgba(255,255,255,0.04) 50%,
+      rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.10) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    /* 玻璃内部漫反射 */
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.22),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.06),
+      inset 1px 0 0 0 rgba(255,255,255,0.10),
+      inset -1px 0 0 0 rgba(255,255,255,0.10),
+      inset 0 0 20px 0 rgba(255,255,255,0.04),
+      0 4px 20px rgba(0,0,0,0.25),
+      0 0 24px rgba(255,255,255,0.05);
+    text-shadow: 0 0 6px rgba(255,255,255,0.12);
+  }
+
+  /* 顶部强光晕 */
+  .ig-generate-btn::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 8%;
+    right: 8%;
+    height: 16px;
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.18), transparent 70%);
+    pointer-events: none;
+    filter: blur(2px);
+  }
+
+  /* 底部柔和漫反射光晕 */
+  .ig-generate-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 12%;
+    right: 12%;
+    height: 14px;
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.10), transparent 70%);
+    pointer-events: none;
+    filter: blur(3px);
+  }
+
+  .ig-generate-btn:hover {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.22) 0%,
+      rgba(255,255,255,0.12) 25%,
+      rgba(255,255,255,0.06) 50%,
+      rgba(255,255,255,0.08) 75%,
+      rgba(255,255,255,0.14) 100%
+    );
+    border-color: rgba(255,255,255,0.28);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255,255,255,0.30),
+      inset 0 -1px 1px 0 rgba(255,255,255,0.10),
+      inset 1px 0 0 0 rgba(255,255,255,0.16),
+      inset -1px 0 0 0 rgba(255,255,255,0.16),
+      inset 0 0 24px 0 rgba(255,255,255,0.06),
+      0 6px 28px rgba(0,0,0,0.3),
+      0 0 32px rgba(255,255,255,0.08);
+    text-shadow: 0 0 10px rgba(255,255,255,0.20);
+  }
+
+  .ig-generate-btn:hover::before {
+    background: radial-gradient(ellipse 85% 100% at 50% 100%, rgba(255,255,255,0.26), transparent 70%);
+  }
+
+  .ig-generate-btn:hover::after {
+    background: radial-gradient(ellipse 75% 100% at 50% 0%, rgba(255,255,255,0.14), transparent 70%);
+  }
+
+  .ig-generate-btn svg {
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
+  }
+
+  .ig-generate-btn:hover svg {
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+  }
+
+  /* Right - Results */
+  .ig-res-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ig-res-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-res-grid-toggle {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-res-grid-toggle:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  .ig-result {
+    flex: 1;
+    min-width: 0;
+    container-type: inline-size;
+    container-name: result-panel;
+  }
+
+  .ig-res-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px 12px;
+    columns: 1;
+    column-gap: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  @container result-panel (min-width: 200px) {
+    .ig-res-grid { columns: 2; }
+  }
+
+  @container result-panel (min-width: 400px) {
+    .ig-res-grid { columns: 3; }
+  }
+
+  @container result-panel (min-width: 600px) {
+    .ig-res-grid { columns: 4; }
+  }
+
+  @container result-panel (min-width: 800px) {
+    .ig-res-grid { columns: 5; }
+  }
+
+  .ig-res-grid::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .ig-res-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+  }
+
+  .ig-res-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .ig-res-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ig-res-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .ig-res-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ig-res-item:hover .ig-res-overlay {
+    opacity: 1;
+  }
+
+  .ig-res-date {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+
+  .ig-res-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  .ig-res-actions button {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-res-actions button:hover {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  .main {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .image-gen-view {
+    display: flex;
+  }
+
+  /* Dictionary button */
+  .ig-textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .ig-dict-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .ig-dict-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .ig-dict-btn svg {
+    color: rgba(255, 200, 100, 0.7);
+  }
+
+  /* Inspiration Modal */
+  .ig-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .ig-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ig-modal {
+    width: 720px;
+    max-height: 560px;
+    background: rgba(28, 28, 32, 0.96);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ig-modal-overlay.show .ig-modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .ig-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px 14px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ig-modal-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .ig-modal-close:hover {
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+  }
+
+  .ig-modal-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    margin: 0 22px;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 22px 10px;
+    flex-shrink: 0;
+    overflow-x: auto;
+  }
+
+  .ig-modal-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ig-modal-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .ig-modal-tab:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .ig-modal-tab.active {
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+  }
+
+  .ig-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 22px 18px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ig-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ig-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .ig-modal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .ig-modal-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .ig-modal-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .ig-modal-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .ig-modal-item-title {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ig-modal-item-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ================= AI Video 主区 ================= */
+  .av-layout {
+    position: absolute;
+    top: 48px;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    gap: 12px;
+    padding: 0 12px 0 0;
+    overflow: hidden;
+  }
+
+  .av-view {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 18px 26px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .av-view::-webkit-scrollbar { width: 6px; }
+  .av-view::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+  /* 问候语 */
+  .av-greeting {
+    text-align: center;
+    flex-shrink: 0;
+    padding: 16px 0 4px;
+  }
+
+  .av-greeting h1 {
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .av-agent-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* 输入面板 */
+  .av-composer {
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    flex-shrink: 0;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 18px;
+    padding: 14px 16px 12px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .av-composer textarea {
+    width: 100%;
+    min-height: 84px;
+    resize: none;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .av-composer textarea::placeholder { color: var(--text-dim); }
+
+  .av-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 11px;
+  }
+
+  .av-tool {
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 9px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .av-tool:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+    border-color: rgba(255,255,255,0.14);
+  }
+
+  .av-tool.icon {
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .av-tool svg { flex-shrink: 0; }
+
+  .av-tool-spacer { flex: 1; }
+
+  .av-send {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: none;
+    background: rgba(255,255,255,0.9);
+    color: #101010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .av-send:hover { background: #fff; }
+
+  /* 主导航 Tab */
+  .av-navtabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 2px 0;
+  }
+
+  .av-navtab {
+    height: 34px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .av-navtab:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+  }
+
+  .av-navtab.active {
+    background: rgba(255,255,255,0.09);
+    border-color: rgba(255,255,255,0.16);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .av-navtab svg { flex-shrink: 0; }
+
+  /* 标题栏 */
+  .av-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .av-titlebar-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .av-more {
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .av-more:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  /* 技能卡片行 */
+  .av-cards {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    padding-bottom: 6px;
+  }
+
+  .av-cards::-webkit-scrollbar { height: 5px; }
+  .av-cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+
+  .av-card {
+    width: 200px;
+    flex-shrink: 0;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.4),
+      inset 0 0 40px rgba(255,255,255,0.02);
+  }
+
+  .av-card:hover {
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+  }
+
+  .av-card-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: rgba(255,255,255,0.04);
+    overflow: hidden;
+  }
+
+  .av-card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .av-card:hover .av-card-preview img { transform: scale(1.05); }
+
+  .av-card-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .av-card-play span {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .av-card-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 11px 12px 12px;
+  }
+
+  .av-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .av-card-title {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .av-card-date {
+    margin-top: 5px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .av-card-more {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .av-card-more:hover {
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+  }
+
+  /* 作品网格 */
+  .av-works {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .av-works-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .av-works-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .av-works-tag {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    white-space: nowrap;
+  }
+
+  .av-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .av-thumb {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    aspect-ratio: 16 / 10;
+    cursor: pointer;
+  }
+
+  .av-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .av-thumb:hover img { transform: scale(1.05); }
+
+  .av-thumb-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .av-thumb-play span {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  .av-thumb-title {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px 10px 9px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #fff;
+    background: linear-gradient(to top, rgba(0,0,0,0.78), transparent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+<div class="sidebar-wrapper" id="sidebarWrapper">
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" id="btnHome" href="index.html">
+        <!-- logo icon -->
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item active" id="btnImageGen" href="index.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item" href="route.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <a class="s-item" href="setting.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="secondary-sidebar" id="secondarySidebar">
+    <div class="sec-header">
+      <div class="sec-title-header">
+        <span>历史对话</span>
+        <button class="sec-close" id="btnCloseSidebar" title="收起">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+        </button>
+      </div>
+      <button class="sec-action" id="btnNewChat">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        新对话
+      </button>
+    </div>
+    <div class="sec-list">
+      <div class="sec-item active">
+        <div class="sec-title">背景改左上角渐浅蓝色系...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">去除文字背景框</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四种风格行业去向分布图...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">企业微信图标3D风格设计</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">AgestraAI文字logo设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">保留UI格中英文英文</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">拒绝中文及英文请求</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">图片清晰扩展至2K</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">插画式3D立体风格</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">四角宽亮渐金色</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">删文字图片卡片居中</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">2024-08-05/06-25 1...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">他信国放展台片设计绝佳...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">现代抽象几何未来风格设计...</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+      <div class="sec-item">
+        <div class="sec-title">炫风格展台片并排同</div>
+        <button class="sec-more" title="更多"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+        <div class="sec-menu"><button class="sec-menu-item">置顶</button><button class="sec-menu-item delete">删除</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<main class="main">
+  <div class="av-layout">
+
+    <!-- 左侧：智能体 -->
+    <div class="ig-card ig-history" id="igHistory">
+      <div class="ig-header">
+        <span class="ig-title">智能体</span>
+      </div>
+
+      <!-- 技能入口 -->
+      <div class="ig-skills">
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          对话
+        </button>
+        <a class="ig-skill-btn" href="image-gen.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          图片
+        </a>
+        <a class="ig-skill-btn active" href="ai-video.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="16" rx="2"/><polygon points="16 10 22 7 22 17 16 14"/></svg>
+          视频
+        </a>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6"/><path d="M4 14l6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="M22 22l-5-10-5 10"/><path d="M14 18h6"/></svg>
+          翻译
+        </button>
+        <button class="ig-skill-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          总结
+        </button>
+        <a class="ig-skill-btn" href="meeting-home.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          会议
+        </a>
+        <a class="ig-skill-btn" href="knowledge.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          知识库
+        </a>
+      </div>
+
+      <!-- 分隔线 -->
+      <div class="ig-divider"></div>
+
+      <!-- 历史对话标题 -->
+      <div class="ig-history-title">历史对话</div>
+
+      <!-- 历史记录列表 -->
+      <div class="ig-list">
+        <div class="ig-item active">
+          <div class="ig-item-title">壁炉反转！短剧...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">拍个悬疑大片吧...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">Seedance 样片...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">百岁幼儿园预告...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">知识讲解视频脚...</div>
+        </div>
+        <div class="ig-item">
+          <div class="ig-item-title">沉浸式短片测试</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="av-view" id="avView">
+
+    <!-- 问候语 -->
+    <div class="av-greeting">
+      <h1>聊聊创作想法 <span class="av-agent-tag">Agent</span></h1>
+    </div>
+
+    <!-- 主导航 Tab -->
+    <div class="av-navtabs" id="avNavTabs">
+      <button class="av-navtab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+        无限画布
+      </button>
+      <button class="av-navtab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+        短剧制作
+      </button>
+      <button class="av-navtab active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="14" height="16" rx="2"/><polygon points="16 10 22 7 22 17 16 14"/></svg>
+        视频生成
+      </button>
+      <button class="av-navtab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        音频生成
+      </button>
+    </div>
+
+    <!-- 输入面板 -->
+    <div class="av-composer">
+      <textarea id="avPrompt" placeholder="描述你想创作的视频，或直接把剧本丢给我…"></textarea>
+      <div class="av-toolbar">
+        <button class="av-tool icon" title="添加附件">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="av-tool">@ Agent模式 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <button class="av-tool">技能</button>
+        <button class="av-tool">② 智能匹配模型</button>
+        <button class="av-tool">创作偏好 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <span class="av-tool-spacer"></span>
+        <button class="av-send" title="发送">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 标题栏 -->
+    <div class="av-titlebar" id="avSecTabs">
+      <span class="av-titlebar-text">历史记录</span>
+      <button class="av-more" title="更多">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    </div>
+
+    <!-- 视频卡片 -->
+    <div class="av-cards">
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-video-01-poster.jpg" alt="Seedance 2.5 样片模式" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">Seedance 2.5 样片模式</div>
+            <div class="av-card-date">2026/10/08</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-video-02-poster.jpg" alt="视频拉片" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">视频拉片</div>
+            <div class="av-card-date">2026/09/25</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-05.jpg" alt="沉浸式短片" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">沉浸式短片</div>
+            <div class="av-card-date">2026/09/18</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-09.jpg" alt="知识讲解视频" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">知识讲解视频</div>
+            <div class="av-card-date">2026/09/12</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-13.jpg" alt="剧本创作" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">剧本创作</div>
+            <div class="av-card-date">2026/09/06</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="av-card">
+        <div class="av-card-preview">
+          <img src="images/animals/animal-18.jpg" alt="音乐" loading="lazy">
+          <div class="av-card-play"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+        </div>
+        <div class="av-card-body">
+          <div class="av-card-info">
+            <div class="av-card-title">音乐</div>
+            <div class="av-card-date">2026/08/30</div>
+          </div>
+          <button class="av-card-more" title="更多">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 作品网格 -->
+    <div class="av-works">
+      <div class="av-works-head">
+        <span class="av-works-title">精选作品</span>
+        <span class="av-works-tag">专业创作流程</span>
+      </div>
+      <div class="av-grid">
+        <div class="av-thumb">
+          <img src="images/animals/animal-video-01-poster.jpg" alt="壁炉反转！" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">壁炉反转！</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-video-02-poster.jpg" alt="拍个悬疑大片吧" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">拍个悬疑大片吧</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-03.jpg" alt="我搞懵了" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">我搞懵了</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-07.jpg" alt="百岁幼儿园" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">百岁幼儿园</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-11.jpg" alt="短剧营销开场" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">短剧营销开场</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-14.jpg" alt="赛博街角" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">赛博街角</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-17.jpg" alt="深夜食堂" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">深夜食堂</div>
+        </div>
+        <div class="av-thumb">
+          <img src="images/animals/animal-20.jpg" alt="云端旅行" loading="lazy">
+          <div class="av-thumb-play"><span><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20"/></svg></span></div>
+          <div class="av-thumb-title">云端旅行</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+</main>
+</div>
+
+<script>
+  const sidebarWrapper = document.getElementById('sidebarWrapper');
+  const closeBtn = document.getElementById('btnCloseSidebar');
+
+  function closeSidebar() {
+    sidebarWrapper.classList.remove('expanded');
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeSidebar();
+    });
+  }
+
+  document.querySelector('.main').addEventListener('click', function() {
+    if (sidebarWrapper.classList.contains('expanded')) {
+      closeSidebar();
+    }
+  });
+
+  // 历史记录更多菜单
+  const moreBtns = document.querySelectorAll('.sec-more');
+  let activeMenu = null;
+
+  moreBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var menu = btn.nextElementSibling;
+      if (activeMenu && activeMenu !== menu) {
+        activeMenu.classList.remove('show');
+      }
+      menu.classList.toggle('show');
+      activeMenu = menu.classList.contains('show') ? menu : null;
+    });
+  });
+
+  document.addEventListener('click', function() {
+    if (activeMenu) {
+      activeMenu.classList.remove('show');
+      activeMenu = null;
+    }
+  });
+
+  // 菜单项点击
+  const menuItems = document.querySelectorAll('.sec-menu-item');
+  menuItems.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var action = item.textContent.trim();
+      var secItem = item.closest('.sec-item');
+      if (action === '置顶') {
+        var list = document.querySelector('.sec-list');
+        list.insertBefore(secItem, list.firstChild);
+      } else if (action === '删除') {
+        secItem.remove();
+      }
+      if (activeMenu) {
+        activeMenu.classList.remove('show');
+        activeMenu = null;
+      }
+    });
+  });
+
+  // 主导航 Tab 切换
+  const navTabs = document.querySelectorAll('.av-navtab');
+  navTabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      navTabs.forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+    });
+  });
+
+  // 提示词回车发送
+  const avPrompt = document.getElementById('avPrompt');
+  const avSend = document.querySelector('.av-send');
+  if (avPrompt && avSend) {
+    avSend.addEventListener('click', function() {
+      if (!avPrompt.value.trim()) return;
+      avPrompt.value = '';
+      avPrompt.placeholder = '已提交，正在为你生成视频…';
+    });
+  }
+</script>
+
+</body>
+</html>

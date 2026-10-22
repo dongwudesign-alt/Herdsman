@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>团队路由 - AI Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="laser-flow.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.169.0/build/three.module.js"
+  }
+}
+</script>
+<style>
+  :root {
+    --bg: #060606;
+    --panel: rgba(255,255,255,0.025);
+    --glass: rgba(255,255,255,0.035);
+    --glass-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text: #ececec;
+    --text-dim: #9a9a9a;
+    --accent-glow: rgba(255,255,255,0.15);
+    --state-ready: rgb(104, 222, 146);
+    --state-busy: rgb(238, 190, 110);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #030303;
+    color: var(--text);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.01em;
+  }
+
+  .app-window {
+    width: calc(100vw - 48px);
+    height: calc(100vh - 40px);
+    max-width: 1440px;
+    max-height: 900px;
+    background: #080808;
+    border: 1.5px solid rgba(255,255,255,0.22);
+    border-radius: 28px;
+    overflow: hidden;
+    display: flex;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.5),
+      0 24px 80px rgba(0,0,0,0.6),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .app-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    padding: 1.5px;
+    background: conic-gradient(
+      from 180deg at 50% 50%,
+      transparent 0deg,
+      rgba(200, 200, 215, 0.15) 30deg,
+      rgba(255, 255, 255, 0.35) 45deg,
+      rgba(200, 200, 215, 0.15) 60deg,
+      transparent 90deg,
+      transparent 180deg,
+      rgba(200, 200, 215, 0.12) 210deg,
+      rgba(255, 255, 255, 0.25) 225deg,
+      rgba(200, 200, 215, 0.12) 240deg,
+      transparent 270deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 100;
+    mix-blend-mode: screen;
+  }
+
+  .app-window::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 30px;
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0.6;
+  }
+
+  .window-controls {
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    display: flex;
+    gap: 6px;
+    z-index: 200;
+  }
+
+  .win-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+  }
+
+  .win-btn:hover {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .win-btn.close:hover {
+    background: rgba(255,80,80,0.18);
+    color: rgba(255,120,120,0.9);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 68px;
+    height: 100%;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 0 20px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    justify-content: center;
+  }
+
+  .sidebar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .sidebar-group.top { margin-bottom: 0; }
+
+  .sidebar-group.bottom {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+  }
+
+  .sidebar-logo {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .s-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .s-item:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .s-item.active {
+    color: var(--text);
+  }
+
+  .s-item.active::before {
+    content: '';
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: #fff;
+    border-radius: 0 3px 3px 0;
+    opacity: 0.8;
+  }
+
+  #primarySidebar > .sidebar-group.top > .s-item:nth-child(3) > svg {
+    transform: rotate(90deg);
+  }
+
+  /* Route View */
+  .route-view {
+    position: absolute;
+    top: 48px;
+    left: 68px;
+    right: 0;
+    bottom: 12px;
+    display: flex;
+    padding: 0 12px 0 0;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  /* Card base style */
+  .ms-card {
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .ms-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-card::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  /* Left Navigation Card */
+  .ms-nav {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  .ms-nav-header {
+    padding: 14px 14px 10px;
+    height: 49px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-nav-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-nav-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ms-nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+  }
+
+  .ms-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .ms-nav-item:hover {
+    background: rgba(255,255,255,0.06);
+  }
+
+  .ms-nav-item.active {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .ms-nav-item svg {
+    flex-shrink: 0;
+    color: var(--text-dim);
+  }
+
+  .ms-nav-item.active svg {
+    color: var(--text);
+  }
+
+  /* Main Area */
+  .ms-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 30, 34, 0.55);
+    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(40px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.5),
+      0 16px 48px rgba(0,0,0,0.45),
+      inset 0 0 40px rgba(255,255,255,0.02);
+  }
+
+  .ms-main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1.5px;
+    background: radial-gradient(
+      ellipse 100% 60% at 80% 100%,
+      rgba(180, 180, 195, 0.5) 0%,
+      rgba(140, 140, 160, 0.2) 25%,
+      rgba(80, 80, 95, 0.06) 55%,
+      transparent 75%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .ms-main::after {
+    content: '';
+    position: absolute;
+    bottom: -80%;
+    right: -60%;
+    width: 300%;
+    height: 180%;
+    background: radial-gradient(
+      ellipse 140% 100% at 60% 90%,
+      rgba(120, 120, 135, 0.18) 0%,
+      rgba(95, 95, 110, 0.10) 18%,
+      rgba(65, 65, 78, 0.05) 38%,
+      rgba(35, 35, 48, 0.02) 58%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.5;
+  }
+
+  .ms-main-header {
+    padding: 16px 20px 0;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-page-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ms-page-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .ms-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.02);
+    border-radius: 3px;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.12);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+
+  .ms-content-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.22);
+  }
+
+  .ms-content-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
+  }
+
+  /* Section */
+  .config-section {
+    margin-bottom: 16px;
+  }
+
+  .config-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .section-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .section-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,255,255,0.06) 20%,
+      rgba(255,255,255,0.06) 80%,
+      transparent 100%
+    );
+    margin: 12px 0;
+  }
+
+  /* ========== 本机服务 ========== */
+  .host-panel {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 18px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    animation: riseIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .host-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 18px;
+    right: 18px;
+    height: 1px;
+    background: linear-gradient(to right,
+      transparent 0%,
+      rgba(255,255,255,0.28) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .host-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .host-id {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .host-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .host-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .host-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .host-tag {
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.68);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+
+  .host-sub {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .host-share {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .share-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-align: right;
+  }
+
+  .share-state {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+    transition: color 0.25s ease;
+  }
+
+  .share-state.off { color: rgba(255,255,255,0.38); }
+
+  .ms-switch {
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    position: relative;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .ms-switch .ms-switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .ms-switch.on {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .ms-switch.on .ms-switch-knob {
+    transform: translateX(16px);
+    background: #fff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+  }
+
+  .host-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    min-width: 0;
+  }
+
+  .meta-key {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.46);
+    text-transform: uppercase;
+  }
+
+  .meta-val {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.86);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .host-usage {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  .meter-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .meter-label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .meter-val {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    transition: color 0.25s ease;
+  }
+
+  .meter-track {
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    width: var(--v);
+    border-radius: 3px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0.72) 100%);
+    transform-origin: left center;
+    animation: meterGrow 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .host-usage.paused .meter-fill { opacity: 0.35; }
+  .host-usage.paused .meter-val { color: rgba(255,255,255,0.38); }
+
+  /* ========== 团队设备 ========== */
+  .dev-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .dev-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 148px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+    animation: riseIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+  }
+
+  .dev-card:nth-child(1) { animation-delay: 0.04s; }
+  .dev-card:nth-child(2) { animation-delay: 0.08s; }
+  .dev-card:nth-child(3) { animation-delay: 0.12s; }
+  .dev-card:nth-child(4) { animation-delay: 0.16s; }
+  .dev-card:nth-child(5) { animation-delay: 0.20s; }
+
+  .dev-card:hover {
+    background: rgba(255,255,255,0.045);
+    border-color: rgba(255,255,255,0.16);
+    transform: translateY(-2px);
+  }
+
+  .dev-head {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+  }
+
+  .dev-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    flex-shrink: 0;
+    transition: border-color 0.22s ease, background 0.22s ease;
+  }
+
+  .dev-card:hover .dev-icon {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .dev-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .dev-name {
+    width: 100%;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dev-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    font-size: 0.68rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .dev-status .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .dev-status.ready {
+    color: var(--state-ready);
+    background: rgba(80, 220, 120, 0.08);
+    border-color: rgba(80, 220, 120, 0.18);
+  }
+
+  .dev-status.ready .dot { box-shadow: 0 0 6px rgba(80, 220, 120, 0.7); }
+
+  .dev-status.busy {
+    color: var(--state-busy);
+    background: rgba(238, 190, 110, 0.08);
+    border-color: rgba(238, 190, 110, 0.18);
+  }
+
+  .dev-status.busy .dot { box-shadow: 0 0 6px rgba(238, 190, 110, 0.6); }
+
+  .dev-status.offline {
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  .dev-spec {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .dev-spec span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dev-spec-sep {
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.24);
+    flex-shrink: 0;
+  }
+
+  .dev-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+  }
+
+  .dev-load {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.55);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .dev-cut {
+    height: 28px;
+    padding: 0 11px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .dev-cut:hover {
+    color: rgba(255,140,140,0.95);
+    border-color: rgba(255,80,80,0.32);
+    background: rgba(255,80,80,0.08);
+  }
+
+  .dev-card[data-state="offline"] .dev-icon { opacity: 0.5; }
+  .dev-card[data-state="offline"] .dev-name { color: rgba(255,255,255,0.55); }
+
+  /* 添加设备 */
+  .dev-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 148px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(255,255,255,0.16);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.22s ease;
+    animation: riseIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+  }
+
+  .dev-add:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+  }
+
+  .dev-add:focus-visible {
+    outline: 2px solid rgba(255,255,255,0.35);
+    outline-offset: 2px;
+  }
+
+  .dev-add-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s ease;
+  }
+
+  .dev-add:hover .dev-add-icon {
+    transform: rotate(90deg);
+    border-color: rgba(255,255,255,0.32);
+  }
+
+  .dev-add-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: inherit;
+  }
+
+  .dev-add-hint {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    opacity: 0.85;
+  }
+
+  .dev-add.pairing {
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 8px;
+    cursor: default;
+    border-style: solid;
+    border-color: rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.035);
+  }
+
+  .pair-label {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .pair-input {
+    height: 34px;
+    width: 100%;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .pair-input::placeholder {
+    color: rgba(255,255,255,0.34);
+    letter-spacing: 0.06em;
+    font-weight: 400;
+  }
+
+  .pair-input:focus {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .pair-input.err { border-color: rgba(255, 100, 100, 0.5); }
+
+  .pair-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+  }
+
+  .pair-btn {
+    flex: 1;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .pair-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+  }
+
+  .pair-btn.go {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.2);
+    color: var(--text);
+  }
+
+  .pair-btn.go:hover {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(255,255,255,0.3);
+  }
+
+  .pair-btn.go.loading {
+    pointer-events: none;
+    opacity: 0.72;
+  }
+
+  /* ========== Spinner / Toast ========== */
+  .gw-spinner {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.18);
+    border-top-color: currentColor;
+    animation: gw-spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes gw-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .gw-toast {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: rgba(28, 28, 32, 0.95);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .gw-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .gw-toast-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--state-ready);
+    box-shadow: 0 0 8px rgba(80, 220, 120, 0.7);
+    flex-shrink: 0;
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes meterGrow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @media (max-width: 1180px) {
+    .dev-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 860px) {
+    .dev-grid { grid-template-columns: 1fr; }
+    .host-meta { grid-template-columns: 1fr; }
+    .host-usage { grid-template-columns: 1fr; gap: 12px; }
+    .host-top { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-window">
+  <div class="laser-flow-container" id="laserFlowMount" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(270deg);z-index:0;display:none;"></div>
+  <div class="window-controls">
+    <button class="win-btn minimize" title="最小化">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/></svg>
+    </button>
+    <button class="win-btn maximize" title="全屏">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="1.5"/></svg>
+    </button>
+    <button class="win-btn close" title="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg>
+    </button>
+  </div>
+
+  <!-- Primary Sidebar (68px) -->
+  <div class="sidebar" id="primarySidebar">
+    <img class="sidebar-logo" src="images/logo.png" alt="logo" width="20" height="20">
+
+    <div class="sidebar-group top">
+      <a class="s-item" href="index.html" title="首页">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </a>
+      <a class="s-item" href="image-gen.html" title="工作台">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </a>
+      <a class="s-item" href="model-store.html" title="模型管理">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+      </a>
+      <a class="s-item active" href="route.html" title="路由策略">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+      </a>
+    </div>
+    <div class="sidebar-group bottom">
+      <a class="s-item" href="setting.html" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Route View -->
+  <div class="route-view">
+
+    <!-- Left: Navigation Card (220px) -->
+    <div class="ms-card ms-nav">
+      <div class="ms-nav-header">
+        <span class="ms-nav-title">团队路由</span>
+      </div>
+      <div class="ms-nav-list">
+        <a class="ms-nav-item" href="route.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+          网关连接
+        </a>
+        <a class="ms-nav-item active" href="Team Routing.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          团队路由
+        </a>
+        <a class="ms-nav-item" href="Routing policy.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+          路由策略
+        </a>
+        <a class="ms-nav-item" href="Routing configuration.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="12" r="3"/><line x1="6" y1="9" x2="6" y2="15"/><line x1="9" y1="6" x2="15" y2="11"/><line x1="9" y1="18" x2="15" y2="13"/></svg>
+          路由配置
+        </a>
+        <a class="ms-nav-item" href="dashboard.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          全局统计
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Main Area -->
+    <div class="ms-main">
+      <div class="ms-main-header">
+        <div class="ms-page-title">团队路由</div>
+        <div class="ms-page-subtitle">把局域网内的设备组成本地算力池，统一分发推理任务</div>
+      </div>
+
+      <div class="ms-content-scroll">
+
+        <!-- 本机服务 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <span class="section-title">本机服务</span>
+            <span class="section-desc">开启共享后，本机作为算力节点对外提供模型推理</span>
+          </div>
+
+          <div class="host-panel">
+            <div class="host-top">
+              <div class="host-id">
+                <div class="host-badge">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div>
+                  <div class="host-name-row">
+                    <span class="host-name">FlowyAIPC</span>
+                    <span class="host-tag">本机</span>
+                  </div>
+                  <div class="host-sub">Windows 11 · 192.168.1.24</div>
+                </div>
+              </div>
+
+              <div class="host-share">
+                <div>
+                  <span class="share-label">本机共享</span>
+                  <span class="share-state" id="shareState">共享中</span>
+                </div>
+                <div class="ms-switch on" id="shareSwitch" role="switch" aria-checked="true" aria-label="本机共享开关" tabindex="0">
+                  <span class="ms-switch-knob"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="host-meta">
+              <div class="meta-item">
+                <span class="meta-key">CPU</span>
+                <span class="meta-val">AMD Ryzen 9 7950X · 16 核</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-key">GPU</span>
+                <span class="meta-val">NVIDIA RTX 4090 · 24 GB</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-key">内存</span>
+                <span class="meta-val">64 GB DDR5</span>
+              </div>
+            </div>
+
+            <div class="host-usage" id="hostUsage">
+              <div class="meter">
+                <div class="meter-head">
+                  <span class="meter-label">CPU 使用率</span>
+                  <span class="meter-val">38%</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill" style="--v:38%"></div></div>
+              </div>
+              <div class="meter">
+                <div class="meter-head">
+                  <span class="meter-label">GPU 使用率</span>
+                  <span class="meter-val">62%</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill" style="--v:62%"></div></div>
+              </div>
+              <div class="meter">
+                <div class="meter-head">
+                  <span class="meter-label">内存占用</span>
+                  <span class="meter-val">47%</span>
+                </div>
+                <div class="meter-track"><div class="meter-fill" style="--v:47%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 团队设备 -->
+        <div class="config-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/><line x1="6.5" y1="6.5" x2="9.8" y2="9.8"/><line x1="17.5" y1="6.5" x2="14.2" y2="9.8"/><line x1="6.5" y1="17.5" x2="9.8" y2="14.2"/><line x1="17.5" y1="17.5" x2="14.2" y2="14.2"/></svg>
+            </div>
+            <span class="section-title">团队设备</span>
+            <span class="section-desc" id="devSummary">共 5 台 · 3 台就绪 · 1 台忙碌 · 1 台不可用</span>
+          </div>
+
+          <div class="dev-grid" id="devGrid">
+
+            <article class="dev-card" data-state="ready">
+              <div class="dev-head">
+                <div class="dev-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div class="dev-title">
+                  <span class="dev-name">Studio-Mac</span>
+                  <span class="dev-status ready"><span class="dot"></span>就绪</span>
+                </div>
+              </div>
+              <div class="dev-spec">
+                <span>Apple M3 Max</span>
+                <span class="dev-spec-sep"></span>
+                <span>36 GB 统一内存</span>
+              </div>
+              <div class="dev-foot">
+                <span class="dev-load">负载 12% · 8 ms</span>
+                <button class="dev-cut" type="button">断开设备</button>
+              </div>
+            </article>
+
+            <article class="dev-card" data-state="busy">
+              <div class="dev-head">
+                <div class="dev-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="15" y2="10"/><circle cx="12" cy="16" r="2"/></svg>
+                </div>
+                <div class="dev-title">
+                  <span class="dev-name">Render-Node</span>
+                  <span class="dev-status busy"><span class="dot"></span>忙碌 · 可排队</span>
+                </div>
+              </div>
+              <div class="dev-spec">
+                <span>RTX 4080 Super</span>
+                <span class="dev-spec-sep"></span>
+                <span>16 GB 显存</span>
+              </div>
+              <div class="dev-foot">
+                <span class="dev-load">负载 76% · 队列 2</span>
+                <button class="dev-cut" type="button">断开设备</button>
+              </div>
+            </article>
+
+            <article class="dev-card" data-state="ready">
+              <div class="dev-head">
+                <div class="dev-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="8" x2="18" y2="8"/><line x1="10" y1="12" x2="18" y2="12"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+                </div>
+                <div class="dev-title">
+                  <span class="dev-name">Edge-Mini</span>
+                  <span class="dev-status ready"><span class="dot"></span>就绪</span>
+                </div>
+              </div>
+              <div class="dev-spec">
+                <span>Intel Core Ultra 9</span>
+                <span class="dev-spec-sep"></span>
+                <span>32 GB 内存</span>
+              </div>
+              <div class="dev-foot">
+                <span class="dev-load">负载 6% · 11 ms</span>
+                <button class="dev-cut" type="button">断开设备</button>
+              </div>
+            </article>
+
+            <article class="dev-card" data-state="ready">
+              <div class="dev-head">
+                <div class="dev-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/><line x1="7" y1="16" x2="7" y2="19"/><line x1="17" y1="16" x2="17" y2="19"/></svg>
+                </div>
+                <div class="dev-title">
+                  <span class="dev-name">Office-PC</span>
+                  <span class="dev-status ready"><span class="dot"></span>就绪</span>
+                </div>
+              </div>
+              <div class="dev-spec">
+                <span>RTX 4070 Ti</span>
+                <span class="dev-spec-sep"></span>
+                <span>12 GB 显存</span>
+              </div>
+              <div class="dev-foot">
+                <span class="dev-load">负载 21% · 14 ms</span>
+                <button class="dev-cut" type="button">断开设备</button>
+              </div>
+            </article>
+
+            <article class="dev-card" data-state="offline">
+              <div class="dev-head">
+                <div class="dev-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="6" rx="2"/><rect x="2" y="15" width="20" height="6" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <div class="dev-title">
+                  <span class="dev-name">NAS-Llama</span>
+                  <span class="dev-status offline"><span class="dot"></span>不可用</span>
+                </div>
+              </div>
+              <div class="dev-spec">
+                <span>Intel i7-13700</span>
+                <span class="dev-spec-sep"></span>
+                <span>数据已过期</span>
+              </div>
+              <div class="dev-foot">
+                <span class="dev-load">负载 — · 离线 12 分钟</span>
+                <button class="dev-cut" type="button">断开设备</button>
+              </div>
+            </article>
+
+            <div class="dev-add" id="devAdd" role="button" tabindex="0" aria-label="添加设备">
+              <div class="dev-add-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span class="dev-add-title">添加设备</span>
+              <span class="dev-add-hint">输入配对码，把局域网设备加入团队</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Toast -->
+      <div class="gw-toast" id="gwToast">
+        <span class="gw-toast-dot"></span>
+        <span id="gwToastText">操作成功</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ========== Toast ==========
+  let toastTimer = null;
+  function showToast(text) {
+    const toast = document.getElementById('gwToast');
+    document.getElementById('gwToastText').textContent = text;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+
+  // ========== 本机共享开关 ==========
+  const shareSwitch = document.getElementById('shareSwitch');
+  const shareState = document.getElementById('shareState');
+  const hostUsage = document.getElementById('hostUsage');
+
+  function toggleShare() {
+    const on = !shareSwitch.classList.contains('on');
+    shareSwitch.classList.toggle('on', on);
+    shareSwitch.setAttribute('aria-checked', String(on));
+    shareState.textContent = on ? '共享中' : '已关闭';
+    shareState.classList.toggle('off', !on);
+    hostUsage.classList.toggle('paused', !on);
+    showToast(on ? '本机已加入团队算力池' : '本机已停止共享，不再接收任务');
+  }
+
+  shareSwitch.addEventListener('click', toggleShare);
+  shareSwitch.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleShare();
+    }
+  });
+
+  // ========== 设备统计 ==========
+  const devGrid = document.getElementById('devGrid');
+  const devSummary = document.getElementById('devSummary');
+
+  function updateSummary() {
+    const cards = devGrid.querySelectorAll('.dev-card');
+    const ready = devGrid.querySelectorAll('.dev-card[data-state="ready"]').length;
+    const busy = devGrid.querySelectorAll('.dev-card[data-state="busy"]').length;
+    const offline = devGrid.querySelectorAll('.dev-card[data-state="offline"]').length;
+    devSummary.textContent = '共 ' + cards.length + ' 台 · ' + ready + ' 台就绪' +
+      (busy ? ' · ' + busy + ' 台忙碌' : '') +
+      (offline ? ' · ' + offline + ' 台不可用' : '');
+  }
+
+  // ========== 断开设备 ==========
+  devGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.dev-cut');
+    if (!btn) return;
+    const card = btn.closest('.dev-card');
+    const name = card.querySelector('.dev-name').textContent;
+
+    card.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.97)';
+
+    setTimeout(() => {
+      card.remove();
+      updateSummary();
+      showToast('已断开「' + name + '」');
+    }, 220);
+  });
+
+  // ========== 添加设备（内联配对） ==========
+  const addCard = document.getElementById('devAdd');
+  const addDefaultHTML = addCard.innerHTML;
+
+  function resetAdd() {
+    addCard.classList.remove('pairing');
+    addCard.innerHTML = addDefaultHTML;
+  }
+
+  function closePairing(e) {
+    if (e) e.stopPropagation();
+    resetAdd();
+  }
+
+  function openPairing() {
+    if (addCard.classList.contains('pairing')) return;
+    addCard.classList.add('pairing');
+    addCard.innerHTML =
+      '<div class="pair-label">输入设备配对码</div>' +
+      '<input class="pair-input" id="pairInput" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="6 位配对码" aria-label="设备配对码">' +
+      '<div class="pair-actions">' +
+        '<button class="pair-btn" type="button" id="pairCancel">取消</button>' +
+        '<button class="pair-btn go" type="button" id="pairGo">配对</button>' +
+      '</div>';
+
+    const input = document.getElementById('pairInput');
+    input.focus();
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '');
+      input.classList.remove('err');
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') startPair();
+    });
+    document.getElementById('pairCancel').addEventListener('click', closePairing);
+    document.getElementById('pairGo').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startPair();
+    });
+  }
+
+  function buildDeviceCard(code) {
+    const card = document.createElement('article');
+    card.className = 'dev-card';
+    card.dataset.state = 'ready';
+    card.innerHTML =
+      '<div class="dev-head">' +
+        '<div class="dev-icon">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' +
+        '</div>' +
+        '<div class="dev-title">' +
+          '<span class="dev-name">Node-' + code.slice(-3).toUpperCase() + '</span>' +
+          '<span class="dev-status ready"><span class="dot"></span>就绪</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="dev-spec"><span>新配对设备</span><span class="dev-spec-sep"></span><span>局域网直连</span></div>' +
+      '<div class="dev-foot">' +
+        '<span class="dev-load">负载 0% · 检测中</span>' +
+        '<button class="dev-cut" type="button">断开设备</button>' +
+      '</div>';
+    return card;
+  }
+
+  function startPair() {
+    const input = document.getElementById('pairInput');
+    const go = document.getElementById('pairGo');
+    if (!input || go.classList.contains('loading')) return;
+
+    if (input.value.length !== 6) {
+      input.classList.add('err');
+      input.focus();
+      showToast('请输入 6 位配对码');
+      return;
+    }
+
+    if (devGrid.querySelectorAll('.dev-card').length >= 8) {
+      showToast('团队最多支持 8 台设备');
+      return;
+    }
+
+    const code = input.value;
+    go.classList.add('loading');
+    go.innerHTML = '<span class="gw-spinner"></span>配对中';
+
+    setTimeout(() => {
+      devGrid.insertBefore(buildDeviceCard(code), addCard);
+      resetAdd();
+      updateSummary();
+      showToast('新设备已加入团队');
+    }, 1200);
+  }
+
+  addCard.addEventListener('click', openPairing);
+  addCard.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      openPairing();
+    }
+  });
+</script>
+
+<script type="module">
+  import { LaserFlow } from './laser-flow.js';
+
+  const mount = document.getElementById('laserFlowMount');
+  const appWindow = document.querySelector('.app-window');
+
+  // Fill .app-window with 270deg rotation (swap width/height)
+  function fitRotated() {
+    const w = appWindow.clientWidth;
+    const h = appWindow.clientHeight;
+    mount.style.width = h + 'px';
+    mount.style.height = w + 'px';
+  }
+  fitRotated();
+  new ResizeObserver(fitRotated).observe(appWindow);
+
+  const laserFlow = new LaserFlow(mount, {
+    color: '#ffffff',
+    wispDensity: 1,
+    flowSpeed: 0.35,
+    verticalSizing: 2,
+    horizontalSizing: 0.5,
+    fogIntensity: 0.45,
+    fogScale: 0.3,
+    wispSpeed: 15,
+    wispIntensity: 5,
+    flowStrength: 0.25,
+    decay: 1.1,
+    horizontalBeamOffset: 0,
+    verticalBeamOffset: -0.5
+  });
+</script>
+</body>
+</html>
