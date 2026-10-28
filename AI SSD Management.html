@@ -548,11 +548,11 @@
   .kpi.is-sel .kpi-value { color: #ffffff; }
 
   /* Capacity section (no card frame) */
-  .ssd-cap-section { margin-bottom: 14px; flex-shrink: 0; }
+  .ssd-cap-section { margin-bottom: 24px; flex-shrink: 0; }
 
   /* Section header (same as routing configuration page) */
   .ssd-section {
-    margin-bottom: 14px;
+    margin-bottom: 24px;
     flex-shrink: 0;
   }
 
@@ -591,34 +591,37 @@
 
   .cap-bar {
     display: flex;
-    height: 36px;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
+    gap: 6px;
+    align-items: flex-end;
+  }
+
+  .cap-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    transition: width 0.5s ease;
+  }
+
+  .cap-pct {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .cap-seg {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 700;
-    transition: width 0.5s ease;
+    height: 26px;
+    border-radius: 10px;
     min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    letter-spacing: 0.01em;
   }
-  .cap-seg.text { background: linear-gradient(180deg, #f4f4f6 0%, #c8c8d0 100%); color: #101013; }
-  .cap-seg.image { background: linear-gradient(180deg, #8a8a96 0%, #4c4c58 100%); color: #ffffff; }
-  .cap-seg.empty {
-    width: 100%;
-    background: repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 8px, rgba(255,255,255,0.02) 8px 16px);
-    color: var(--text-dim);
-    font-weight: 500;
-  }
+  .cap-seg.text { background: #ececec; }
+  .cap-seg.image { background: #7a7a86; }
+  .cap-seg.empty { background: #2e2e36; border: 1px solid rgba(255,255,255,0.12); }
 
   .cap-legend {
     display: flex;
@@ -631,11 +634,10 @@
     font-variant-numeric: tabular-nums;
   }
   .cap-legend .item { display: inline-flex; align-items: center; gap: 7px; }
-  .cap-legend .dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-  .cap-legend .dot.text { background: #d4d4d8; }
-  .cap-legend .dot.image { background: #5f5f6b; }
-  .cap-legend .cap-total { margin-left: auto; color: var(--text-dim); }
-
+  .cap-pct .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .cap-pct .dot.text { background: #ececec; }
+  .cap-pct .dot.image { background: #7a7a86; }
+  .cap-pct .dot.empty { background: #2e2e36; border: 1px solid rgba(255,255,255,0.3); }
   /* Filters */
   .ssd-filters {
     display: flex;
@@ -671,7 +673,7 @@
   .ssd-table-card { flex: 1 0 auto; display: flex; flex-direction: column; }
 
   .ssd-table-head {
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     flex-shrink: 0;
   }
 
@@ -1273,12 +1275,7 @@
             <span class="section-title">缓存分布</span>
             <span class="section-desc">AI SSD · 已用 <span id="capUsed">0 GB</span></span>
           </div>
-          <div class="cap-bar" id="capBar"><div class="cap-seg empty">空闲 · 0 GB</div></div>
-          <div class="cap-legend">
-            <span class="item"><i class="dot text"></i>文本处理 · <span id="legText">0 GB</span></span>
-            <span class="item"><i class="dot image"></i>图片/视频 · <span id="legImage">0 GB</span></span>
-            <span class="cap-total">两个方案共用一颗 AI SSD</span>
-          </div>
+          <div class="cap-bar" id="capBar"></div>
         </section>
 
         <!-- Table header -->
@@ -1309,7 +1306,7 @@
                   <th>来源</th>
                   <th>类型</th>
                   <th>模型</th>
-                  <th>生成资产</th>
+                  <th>生成文件</th>
                   <th class="num">容量</th>
                   <th>状态 / 选项</th>
                 </tr>
@@ -1442,7 +1439,7 @@
   function seedRows() {
     return [
       { id: 'r1', source: 'image', type: 'weight', model: 'wan2.1', folder: '—', size: 11, state: 'normal' },
-      { id: 'r2', source: 'text', type: 'kv', model: 'Gemma4-26B-it', folder: '—', size: 2, state: 'partial', partial: 1, failOnce: true },
+      { id: 'r2', source: 'text', type: 'kv', typeLabel: '对话历史', model: 'Gemma4-26B-it', folder: '—', size: 2, state: 'partial', partial: 1, failOnce: true },
       { id: 'r3', source: 'image', type: 'weight', model: 'flux.2-dev', folder: '—', size: 20, state: 'inuse' },
       { id: 'r4', source: 'text', type: 'weight', model: 'Qwen3.5-35B-A3B', folder: '—', size: 12, state: 'normal' },
       { id: 'r5', source: 'text', type: 'weight', model: 'Gemma4-26B-it', folder: '—', size: 10, state: 'locked', reason: '系统占用，无法删除' },
@@ -1527,6 +1524,8 @@
     $('#kpiFreedSub').textContent = count ? count + ' 个项目已勾选' : '还没有勾选项目';
   }
 
+  var SSD_CAPACITY = 68;
+
   function renderCap() {
     var total = totalOf(rows);
     var text = totalOf(rows.filter(function (r) { return r.source === 'text'; }));
@@ -1534,45 +1533,32 @@
     var bar = $('#capBar');
 
     $('#capUsed').textContent = total + ' GB';
-    $('#legText').textContent = text + ' GB';
-    $('#legImage').textContent = image + ' GB';
 
-    if (!total) {
-      bar.innerHTML = '<div class="cap-seg empty">空闲 · 0 GB</div>';
-      return;
+    var textPct = text / SSD_CAPACITY * 100;
+    var imagePct = image / SSD_CAPACITY * 100;
+    var freePct = 100 - textPct - imagePct;
+
+    function seg(cls, label, pct) {
+      if (pct <= 0) return '';
+      return '<div class="cap-col" style="flex:' + pct + ' 1 0">' +
+        '<span class="cap-pct"><i class="dot ' + cls + '"></i>' + Math.round(pct) + '% ' + label + '</span>' +
+        '<div class="cap-seg ' + cls + '"></div></div>';
     }
 
-    var textPct = text / total * 100;
-    var imagePct = image / total * 100;
-
-    bar.innerHTML =
-      '<div class="cap-seg text" style="width:' + textPct + '%">文本处理 ' + Math.round(textPct) + '%</div>' +
-      '<div class="cap-seg image" style="width:' + imagePct + '%">图片/视频 ' + Math.round(imagePct) + '%</div>';
+    bar.innerHTML = seg('text', '文本处理', textPct) + seg('image', '图片/视频', imagePct) + seg('empty', '空闲', freePct);
   }
 
   function optionsHTML(r) {
-    if (r.state === 'inuse') {
-      return '<div class="opt-cell"><span class="chip warn">使用中</span><span class="opt-hint">停止相关模型后可删除</span></div>';
-    }
-    if (r.state === 'locked') {
-      return '<div class="opt-cell"><span class="chip risk">不可删除</span><span class="opt-hint">' + r.reason + '</span></div>';
-    }
     if (r.state === 'partial') {
-      return '<div class="opt-cell"><span class="chip ok">可部分删除</span>' +
+      return '<div class="opt-cell"><span class="chip ok">部分可删除</span>' +
         '<span class="opt-hint">删除</span>' +
         '<input type="number" class="part-inp" data-id="' + r.id + '" min="1" max="' + r.size + '" step="1" value="' + r.partial + '">' +
         '<span class="opt-hint">GB</span></div>';
     }
-    if (r.state === 'rag') {
-      return '<div class="opt-cell">' +
-        '<span class="chip warn">保留（RAG）</span>' +
-        '<label class="force-label"><input type="checkbox" class="cbx force-cbx" data-id="' + r.id + '"' + (forced.has(r.id) ? ' checked' : '') + '>强制删除</label>' +
-        '<span class="chip dim">整体删除</span></div>';
+    if (r.state === 'normal') {
+      return '<div class="opt-cell"><span class="chip ok">可删除</span></div>';
     }
-    if (r.type === 'weight') {
-      return '<div class="opt-cell"><span class="chip info" title="删除后下次启动需要重新加载">模型运行</span></div>';
-    }
-    return '<span class="opt-hint">—</span>';
+    return '<div class="opt-cell"><span class="chip info">不可删除</span></div>';
   }
 
   function rowHTML(r) {
@@ -1585,7 +1571,7 @@
     return '<tr class="' + cls.join(' ') + '" data-id="' + r.id + '">' +
       '<td class="col-check"><input type="checkbox" class="cbx row-cbx" data-id="' + r.id + '"' + (sel ? ' checked' : '') + (selectable ? '' : ' disabled') + ' aria-label="选择 ' + r.model + '"></td>' +
       '<td><span class="src ' + r.source + '">' + SOURCE[r.source] + '</span></td>' +
-      '<td>' + TYPE[r.type] + '</td>' +
+      '<td>' + (r.typeLabel || (r.type === 'kv' ? '文件上传' : TYPE[r.type])) + '</td>' +
       '<td class="model-cell">' + r.model + '</td>' +
       '<td><span class="folder">' + r.folder + '</span></td>' +
       '<td class="num">' + r.size + ' GB</td>' +
@@ -1594,7 +1580,10 @@
   }
 
   function renderTable() {
-    var list = rows.filter(FILTERS[filterKey]);
+    var rank = { normal: 0, partial: 1 };
+    var list = rows.filter(FILTERS[filterKey]).sort(function (a, b) {
+      return (rank[a.state] ?? 2) - (rank[b.state] ?? 2);
+    });
     $('#ssdTbody').innerHTML = list.map(rowHTML).join('');
     $('#filterCount').textContent = list.length + ' 个项目';
     $('#ssdEmpty').classList.toggle('show', list.length === 0);
